@@ -9,8 +9,8 @@
     <div class="flex items-center gap-3 px-5 py-5 border-b border-white/10">
         <img src="{{ asset('images/002-UTI.png') }}" alt="Logo UTI" class="w-16 h-auto object-contain drop-shadow-md">
         <div>
-            <h1 class="text-base font-bold text-white leading-tight">SIMAFATI</h1>
-            <p class="text-[10px] text-primary-300 tracking-wide">FSIP Universitas Teknokrat</p>
+            <h1 class="text-base font-bold text-white leading-tight">SILAKU</h1>
+            <p class="text-[10px] text-primary-300 tracking-wide">Sistem Pelaporan IKU</p>
         </div>
     </div>
 
@@ -53,7 +53,7 @@
         <div class="pt-4">
             <p class="sidebar-section-title">📚 Data Dosen</p>
         </div>
-        @role('Pimpinan')
+        @hasanyrole('Pimpinan|Wakil Dekan')
         <a href="{{ route('pimpinan.browse', 'dosen') }}"
            class="sidebar-link {{ request()->is('pimpinan/data/dosen') ? 'active' : '' }}">
             <svg class="w-5 h-5 flex-shrink-0 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -61,7 +61,7 @@
             </svg>
             <span class="truncate">Lihat Semua Data Dosen</span>
         </a>
-        @endrole
+        @endhasanyrole
         @foreach($dosenEntities as $entity)
         <a href="{{ route('entities.view', $entity) }}"
            class="sidebar-link {{ request()->is('entities/' . $entity->id . '*') ? 'active' : '' }}">
@@ -79,7 +79,7 @@
         <div class="pt-4">
             <p class="sidebar-section-title">🎓 Data Mahasiswa</p>
         </div>
-        @role('Pimpinan')
+        @hasanyrole('Pimpinan|Wakil Dekan')
         <a href="{{ route('pimpinan.browse', 'mahasiswa') }}"
            class="sidebar-link {{ request()->is('pimpinan/data/mahasiswa') ? 'active' : '' }}">
             <svg class="w-5 h-5 flex-shrink-0 text-teal-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -87,7 +87,7 @@
             </svg>
             <span class="truncate">Lihat Semua Data Mahasiswa</span>
         </a>
-        @endrole
+        @endhasanyrole
         @foreach($mahasiswaEntities as $entity)
         <a href="{{ route('entities.view', $entity) }}"
            class="sidebar-link {{ request()->is('entities/' . $entity->id . '*') ? 'active' : '' }}">

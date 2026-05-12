@@ -20,7 +20,7 @@ class DashboardAggregationService
         $entities = DynamicEntity::active()
             ->with(['fields' => fn($q) => $q->where('is_aggregatable', true)])
             ->withCount('records')
-            ->having('records_count', '>', 0)
+            ->whereHas('records')
             ->get();
 
         foreach ($entities as $entity) {

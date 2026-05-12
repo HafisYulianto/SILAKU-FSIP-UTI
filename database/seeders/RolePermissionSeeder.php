@@ -48,8 +48,15 @@ class RolePermissionSeeder extends Seeder
 
         // Create roles and assign permissions
         // Pimpinan: Read-only dashboard
-        $pimpinan = Role::create(['name' => 'Pimpinan']);
+        $pimpinan = Role::firstOrCreate(['name' => 'Pimpinan']);
         $pimpinan->givePermissionTo([
+            'dashboard.view',
+            'reports.view',
+        ]);
+
+        // Wakil Dekan: Same access as Pimpinan
+        $wakilDekan = Role::firstOrCreate(['name' => 'Wakil Dekan']);
+        $wakilDekan->givePermissionTo([
             'dashboard.view',
             'reports.view',
         ]);

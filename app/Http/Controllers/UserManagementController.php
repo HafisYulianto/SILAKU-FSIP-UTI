@@ -32,7 +32,7 @@ class UserManagementController extends Controller
 
     public function create()
     {
-        $roles = Role::whereIn('name', ['Kaprodi', 'Dosen'])->get();
+        $roles = Role::whereIn('name', ['Kaprodi', 'Dosen', 'Wakil Dekan'])->get();
         $programStudiList = ProgramStudi::where('is_active', true)->get();
 
         return view('users.create', compact('roles', 'programStudiList'));
@@ -45,7 +45,7 @@ class UserManagementController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => ['required', 'confirmed', Password::min(8)],
             'nip' => 'nullable|string|max:30|unique:users,nip',
-            'role' => ['required', Rule::in(['Kaprodi', 'Dosen'])],
+            'role' => ['required', Rule::in(['Kaprodi', 'Dosen', 'Wakil Dekan'])],
             'program_studi_id' => 'nullable|exists:program_studi,id',
         ]);
 
@@ -73,7 +73,7 @@ class UserManagementController extends Controller
 
     public function edit(User $user)
     {
-        $roles = Role::whereIn('name', ['Kaprodi', 'Dosen'])->get();
+        $roles = Role::whereIn('name', ['Kaprodi', 'Dosen', 'Wakil Dekan'])->get();
         $programStudiList = ProgramStudi::where('is_active', true)->get();
 
         return view('users.edit', compact('user', 'roles', 'programStudiList'));
@@ -86,7 +86,7 @@ class UserManagementController extends Controller
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable', 'confirmed', Password::min(8)],
             'nip' => ['nullable', 'string', 'max:30', Rule::unique('users')->ignore($user->id)],
-            'role' => ['required', Rule::in(['Kaprodi', 'Dosen'])],
+            'role' => ['required', Rule::in(['Kaprodi', 'Dosen', 'Wakil Dekan'])],
             'program_studi_id' => 'nullable|exists:program_studi,id',
             'is_active' => 'boolean',
         ]);

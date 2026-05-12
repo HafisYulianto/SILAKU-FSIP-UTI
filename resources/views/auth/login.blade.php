@@ -3,8 +3,8 @@
         {{-- Logo & Title --}}
         <div class="text-center mb-8">
             <img src="{{ asset('images/002-UTI.png') }}" alt="Logo Universitas Teknokrat Indonesia" class="w-40 h-auto mx-auto mb-5 object-contain drop-shadow-lg">
-            <h1 class="text-2xl font-bold text-white mb-1">SIMAFATI</h1>
-            <p class="text-primary-200 text-sm">Sistem Manajemen Fakultas Terintegrasi</p>
+            <h1 class="text-2xl font-bold text-white mb-1">SILAKU</h1>
+            <p class="text-primary-200 text-sm">Sistem Pelaporan IKU</p>
             <p class="text-primary-300/60 text-xs mt-1">FSIP — Universitas Teknokrat Indonesia</p>
         </div>
 

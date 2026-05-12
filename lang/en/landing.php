@@ -10,7 +10,7 @@ return [
     'hero_badge' => 'Faculty of Arts and Education',
     'hero_title_1' => 'Sistem Manajemen Fakultas',
     'hero_title_2' => 'Terintegrasi',
-    'hero_desc' => 'Empowering the Faculty of Arts and Education through digital transformation. A centralized platform for dynamic data management, accreditation tracking, and strategic governance.',
+    'hero_desc' => 'Empowering the Faculty of Arts and Education through digital transformation. A centralized platform for IKU reporting, dynamic data management, and strategic governance.',
     'hero_btn_dashboard' => 'Access Dashboard',
     'hero_btn_login' => 'Login to Portal',
     'hero_btn_learn' => 'Learn More',
@@ -45,6 +45,8 @@ return [
     'prog_por_desc' => 'Sports Education',
     'prog_pm_title' => 'S1 Pendidikan Matematika',
     'prog_pm_desc' => 'Mathematics Education',
+    'prog_s2pbi_title' => 'S2 Pendidikan Bahasa Inggris',
+    'prog_s2pbi_desc' => 'English Language Education (Masters)',
 
     'footer_faculty' => 'Fakultas Sastra dan Ilmu Pendidikan',
     'footer_rights' => 'All rights reserved.',

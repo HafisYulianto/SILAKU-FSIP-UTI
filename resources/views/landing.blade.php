@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMAFATI — FSIP Universitas Teknokrat Indonesia</title>
+    <title>SILAKU — FSIP Universitas Teknokrat Indonesia</title>
     <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,8 +39,8 @@
                 <div class="flex items-center gap-3">
                     <img src="{{ asset('images/002-UTI.png') }}" alt="Logo UTI" :class="scrolled ? 'h-12' : 'h-16'" class="w-auto object-contain drop-shadow-lg transition-all duration-500">
                     <div>
-                        <h1 class="text-xl font-bold text-white leading-tight tracking-tight">SIMAFATI</h1>
-                        <p class="text-xs text-primary-200 font-medium">FSIP Universitas Teknokrat</p>
+                        <h1 class="text-xl font-bold text-white leading-tight tracking-tight">SILAKU</h1>
+                        <p class="text-xs text-primary-200 font-medium">Sistem Pelaporan IKU</p>
                     </div>
                 </div>
                 <div class="hidden md:flex items-center space-x-1">
@@ -130,7 +130,7 @@
                 <div class="glass-stat rounded-2xl p-6 shadow-2xl shadow-gray-200/50">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 divide-x divide-gray-200/50">
                         <div class="text-center px-4">
-                            <p class="text-3xl font-black text-primary-600">4</p>
+                            <p class="text-3xl font-black text-primary-600">5</p>
                             <p class="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wider">Program Studi</p>
                         </div>
                         <div class="text-center px-4">
@@ -236,8 +236,9 @@
                 ['key'=>'pbi','color'=>'emerald','icon'=>'M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129'],
                 ['key'=>'por','color'=>'orange','icon'=>'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
                 ['key'=>'pm','color'=>'indigo','icon'=>'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z'],
+                ['key'=>'s2pbi','color'=>'violet','icon'=>'M19 14l-7 7m0 0l-7-7m7 7V3'],
             ]; @endphp
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                 @foreach($progs as $p)
                 <div class="group border border-gray-100 rounded-3xl p-8 hover:border-{{ $p['color'] }}-300 hover:shadow-2xl hover:shadow-{{ $p['color'] }}-100/50 transition-all duration-500 hover:-translate-y-2 bg-white relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-br from-{{ $p['color'] }}-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -261,7 +262,7 @@
                 <div class="flex items-center gap-4">
                     <img src="{{ asset('images/002-UTI.png') }}" alt="Logo UTI" class="h-16 w-auto object-contain bg-white/10 backdrop-blur rounded-2xl p-2 border border-white/10">
                     <div>
-                        <h2 class="text-xl font-bold text-white">SIMAFATI</h2>
+                        <h2 class="text-xl font-bold text-white">SILAKU</h2>
                         <p class="text-gray-400 text-sm">{{ __('landing.footer_faculty') }}</p>
                     </div>
                 </div>
@@ -276,7 +277,7 @@
     <!-- Scroll reveal script -->
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.card-hover, section > div > div').forEach(el => {
+        document.querySelectorAll('.card-hover').forEach(el => {
             el.classList.add('reveal');
         });
         const obs = new IntersectionObserver((entries) => {

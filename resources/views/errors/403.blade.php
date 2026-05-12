@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akses Ditolak — SIMAFATI</title>
+    <title>Akses Ditolak — SILAKU</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css'])
 </head>
@@ -40,7 +40,7 @@
         </div>
 
         {{-- Footer --}}
-        <p class="text-xs text-gray-300 mt-12">SIMAFATI — FSIP Universitas Teknokrat Indonesia</p>
+        <p class="text-xs text-gray-300 mt-12">SILAKU — FSIP Universitas Teknokrat Indonesia</p>
     </div>
 </body>
 </html>

@@ -86,8 +86,8 @@
             </div>
         </div>
 
-        {{-- Pimpinan Quick Access Portal --}}
-        @role('Pimpinan')
+        {{-- Pimpinan & Wakil Dekan Quick Access Portal --}}
+        @hasanyrole('Pimpinan|Wakil Dekan')
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 slide-up" style="animation-delay: 350ms">
             <a href="{{ route('pimpinan.browse', 'dosen') }}" class="group relative block overflow-hidden rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 p-8 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
@@ -125,7 +125,7 @@
                 </div>
             </a>
         </div>
-        @endrole
+        @endhasanyrole
 
         {{-- Charts Row --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">

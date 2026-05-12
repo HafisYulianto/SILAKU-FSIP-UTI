@@ -40,16 +40,6 @@
                     </div>
 
                     <div>
-                        <label class="form-label" for="parent-id">Sub-kategori dari (Opsional)</label>
-                        <select name="parent_id" id="parent-id" class="form-select">
-                            <option value="">— Kategori Independen —</option>
-                            @foreach($parentEntities as $parent)
-                            <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>{{ $parent->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
                         <label class="form-label" for="icon">Ikon</label>
                         <select name="icon" id="icon" class="form-select">
                             <option value="folder">📁 Folder</option>

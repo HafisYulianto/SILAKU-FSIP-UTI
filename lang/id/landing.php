@@ -10,7 +10,7 @@ return [
     'hero_badge' => 'Fakultas Sastra dan Ilmu Pendidikan',
     'hero_title_1' => 'Sistem Manajemen Fakultas',
     'hero_title_2' => 'Terintegrasi',
-    'hero_desc' => 'Memberdayakan Fakultas Sastra dan Ilmu Pendidikan melalui transformasi digital. Platform terpusat untuk manajemen data dinamis, pelacakan akreditasi, dan tata kelola strategis.',
+    'hero_desc' => 'Memberdayakan Fakultas Sastra dan Ilmu Pendidikan melalui transformasi digital. Platform terpusat untuk pelaporan IKU, manajemen data dinamis, dan tata kelola strategis.',
     'hero_btn_dashboard' => 'Akses Dashboard',
     'hero_btn_login' => 'Masuk ke Portal',
     'hero_btn_learn' => 'Pelajari Lebih Lanjut',
@@ -45,6 +45,8 @@ return [
     'prog_por_desc' => 'Pendidikan Olahraga',
     'prog_pm_title' => 'S1 Pendidikan Matematika',
     'prog_pm_desc' => 'Pendidikan Matematika',
+    'prog_s2pbi_title' => 'S2 Pendidikan Bahasa Inggris',
+    'prog_s2pbi_desc' => 'Pendidikan Bahasa Inggris',
 
     'footer_faculty' => 'Fakultas Sastra dan Ilmu Pendidikan',
     'footer_rights' => 'Hak cipta dilindungi undang-undang.',

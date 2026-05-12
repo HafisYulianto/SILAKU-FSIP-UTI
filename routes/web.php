@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SIMAFATI FSIP
+| Web Routes - SILAKU FSIP
 |--------------------------------------------------------------------------
 */
 
@@ -50,8 +50,8 @@ Route::middleware('auth')->group(function () {
             ->name('users.toggle-active');
     });
 
-    // Pimpinan read-only: browse all entities by category
-    Route::middleware('role:Pimpinan')->group(function () {
+    // Pimpinan & Wakil Dekan read-only: browse all entities by category
+    Route::middleware('role:Pimpinan|Wakil Dekan')->group(function () {
         Route::get('/pimpinan/data/{category}', [DashboardController::class, 'pimpinanBrowse'])
             ->name('pimpinan.browse')
             ->where('category', 'dosen|mahasiswa');

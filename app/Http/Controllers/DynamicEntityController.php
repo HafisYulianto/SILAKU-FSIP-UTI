@@ -26,8 +26,7 @@ class DynamicEntityController extends Controller
 
     public function create()
     {
-        $parentEntities = DynamicEntity::active()->rootOnly()->get();
-        return view('entities.create', compact('parentEntities'));
+        return view('entities.create');
     }
 
     public function store(Request $request)
@@ -36,7 +35,7 @@ class DynamicEntityController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'root_category' => ['required', Rule::in(['dosen', 'mahasiswa'])],
-            'parent_id' => 'nullable|exists:dynamic_entities,id',
+            'parent_id' => 'prohibited',
             'icon' => 'nullable|string|max:50',
             'fields' => 'required|array|min:1',
             'fields.*.name' => 'required|string|max:255',
@@ -57,7 +56,7 @@ class DynamicEntityController extends Controller
             'slug' => Str::slug($request->name),
             'description' => $request->description,
             'root_category' => $request->root_category,
-            'parent_id' => $request->parent_id,
+            'parent_id' => null,
             'created_by' => auth()->id(),
             'icon' => $request->icon ?? 'folder',
         ]);

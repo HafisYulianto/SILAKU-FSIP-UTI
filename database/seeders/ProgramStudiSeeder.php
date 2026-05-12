@@ -30,10 +30,18 @@ class ProgramStudiSeeder extends Seeder
                 'code' => 'PM',
                 'description' => 'Program Studi S1 Pendidikan Matematika',
             ],
+            [
+                'name' => 'S2 Pendidikan Bahasa Inggris',
+                'code' => 'S2PBI',
+                'description' => 'Program Studi S2 Pendidikan Bahasa Inggris',
+            ],
         ];
 
         foreach ($programStudi as $prodi) {
-            ProgramStudi::create($prodi);
+            ProgramStudi::updateOrCreate(
+                ['code' => $prodi['code']],
+                $prodi
+            );
         }
     }
 }

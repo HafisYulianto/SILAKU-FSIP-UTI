@@ -38,8 +38,9 @@
 |------|-----------|
 | **BAAK** | Full access — Kelola kategori, data, pengguna |
 | **Kaprodi** | CRUD data, hapus kategori |
-| **Dosen** | CRUD data, hapus kategori |
+| **Dosen** | Hanya Isi data pada kategori yang sudah dibuat |
 | **Pimpinan** | Read-only — Lihat seluruh data tanpa bisa mengubah |
+| **Wakil Dekan** | Read-only — Lihat seluruh data tanpa bisa mengubah |
 
 ### 📊 Dashboard & Analytics
 - Statistik real-time (Total Dosen, Mahasiswa, Kategori, Prodi)

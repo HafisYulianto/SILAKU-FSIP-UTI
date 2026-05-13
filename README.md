@@ -95,8 +95,9 @@ FSIP Universitas Teknokrat Indonesia memiliki 4 Program Studi:
 |----|---------------|------|
 | 1 | S1 Sastra Inggris | SI |
 | 2 | S1 Pendidikan Bahasa Inggris | PBI |
-| 3 | S1 Pendidikan Olahraga | POR |
+| 3 | S1 Pendidikan Olahraga | PO |
 | 4 | S1 Pendidikan Matematika | PM |
+| 5 | S2 Bahasa Inggris | BI |
 
 ---
 

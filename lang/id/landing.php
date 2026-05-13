@@ -8,8 +8,8 @@ return [
     'nav_login' => 'Masuk ke Sistem',
     
     'hero_badge' => 'Fakultas Sastra dan Ilmu Pendidikan',
-    'hero_title_1' => 'Sistem Manajemen Fakultas',
-    'hero_title_2' => 'Terintegrasi',
+    'hero_title_1' => 'Sistem Pelaporan IKU',
+    'hero_title_2' => '-SILAKU',
     'hero_desc' => 'Memberdayakan Fakultas Sastra dan Ilmu Pendidikan melalui transformasi digital. Platform terpusat untuk pelaporan IKU, manajemen data dinamis, dan tata kelola strategis.',
     'hero_btn_dashboard' => 'Akses Dashboard',
     'hero_btn_login' => 'Masuk ke Portal',

@@ -2,8 +2,8 @@
   <img src="public/images/002-UTI.png" alt="Logo Universitas Teknokrat Indonesia" width="120">
 </p>
 
-<h1 align="center">SIMAFATI</h1>
-<h3 align="center">Sistem Manajemen Fakultas Terintegrasi</h3>
+<h1 align="center">SILAKU</h1>
+<h3 align="center">SISTEM PELAPORAN IKU</h3>
 <p align="center">
   Fakultas Sastra dan Ilmu Pendidikan (FSIP) — Universitas Teknokrat Indonesia
 </p>
@@ -20,7 +20,7 @@
 
 ## 📖 Tentang
 
-**SIMAFATI** adalah platform manajemen data akreditasi fakultas berbasis web yang dibangun untuk Fakultas Sastra dan Ilmu Pendidikan (FSIP), Universitas Teknokrat Indonesia. Sistem ini memungkinkan pengelolaan data **dosen** dan **mahasiswa** secara dinamis, terintegrasi, dan terpusat dalam satu platform.
+**SILAKU** adalah platform manajemen data akreditasi fakultas berbasis web yang dibangun untuk Fakultas Sastra dan Ilmu Pendidikan (FSIP), Universitas Teknokrat Indonesia. Sistem ini memungkinkan pengelolaan data **dosen** dan **mahasiswa** secara dinamis, terintegrasi, dan terpusat dalam satu platform.
 
 > Dibangun dengan arsitektur **Dynamic Entity** — BAAK dapat membuat kategori data baru beserta field-nya secara fleksibel tanpa perlu mengubah kode sumber.
 
@@ -130,8 +130,8 @@ FSIP Universitas Teknokrat Indonesia memiliki 4 Program Studi:
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/HafisYulianto/SIMAFATI-FSIP-UTI.git
-cd SIMAFATI-FSIP-UTI
+git clone https://github.com/HafisYulianto/SILAKU-FSIP-UTI.git
+cd SILAKU-FSIP-UTI
 
 # 2. Install dependencies
 composer install
@@ -142,7 +142,7 @@ cp .env.example .env
 php artisan key:generate
 
 # 4. Konfigurasi database di .env
-# DB_DATABASE=simafati
+# DB_DATABASE=silaku
 # DB_USERNAME=root
 # DB_PASSWORD=
 
@@ -178,7 +178,7 @@ Akses aplikasi di: **http://127.0.0.1:8000**
 ## 📁 Struktur Proyek
 
 ```
-SIMAFATI-FSIP-UTI/
+SILAKU-FSIP-UTI/
 ├── app/
 │   ├── Http/Controllers/
 │   │   ├── Auth/LoginController.php        # Authentication

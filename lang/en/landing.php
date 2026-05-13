@@ -8,8 +8,8 @@ return [
     'nav_login' => 'Login to System',
     
     'hero_badge' => 'Faculty of Arts and Education',
-    'hero_title_1' => 'Sistem Manajemen Fakultas',
-    'hero_title_2' => 'Terintegrasi',
+    'hero_title_1' => 'Sistem Pelaporan IKU',
+    'hero_title_2' => 'SILAKU',
     'hero_desc' => 'Empowering the Faculty of Arts and Education through digital transformation. A centralized platform for IKU reporting, dynamic data management, and strategic governance.',
     'hero_btn_dashboard' => 'Access Dashboard',
     'hero_btn_login' => 'Login to Portal',

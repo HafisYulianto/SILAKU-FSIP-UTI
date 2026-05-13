@@ -165,6 +165,7 @@ Akses aplikasi di: **http://127.0.0.1:8000**
 |------|-------|----------|
 | **BAAK** | `baak@teknokrat.ac.id` | `password` |
 | **Pimpinan** | `pimpinan@teknokrat.ac.id` | `password` |
+| **Wakil Dekan** | `wd@teknokrat.ac.id` | `password` |
 | **Kaprodi** | `kaprodi.pbi@teknokrat.ac.id` | `password` |
 | **Dosen** | `dosen@teknokrat.ac.id` | `password` |
 

@@ -70,10 +70,20 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0"/>
                         </svg>
                     </div>
-                    <div class="px-6 py-4 flex justify-between items-center">
+                    <div class="px-6 py-4 flex justify-between items-center" x-data="{ showPw: false }">
                         <div>
                             <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">Password</p>
-                            <p class="text-sm text-gray-500 mt-1 italic">••••••••  <span class="text-xs text-gray-400">(terenkripsi)</span></p>
+                            @if($user->plain_password)
+                            <div class="flex items-center gap-2 mt-1">
+                                <p class="text-sm font-mono font-semibold text-gray-900" x-text="showPw ? '{{ $user->plain_password }}' : '••••••••'"></p>
+                                <button @click="showPw = !showPw" type="button" class="text-primary-600 hover:text-primary-800 transition-colors" :title="showPw ? 'Sembunyikan' : 'Tampilkan'">
+                                    <svg x-show="!showPw" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    <svg x-show="showPw" x-cloak class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/></svg>
+                                </button>
+                            </div>
+                            @else
+                            <p class="text-sm text-gray-400 mt-1 italic">Tidak tersedia <span class="text-xs">(dibuat sebelum fitur ini)</span></p>
+                            @endif
                         </div>
                         <svg class="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>

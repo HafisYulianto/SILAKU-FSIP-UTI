@@ -53,6 +53,7 @@ class UserManagementController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
+            'plain_password' => $request->password,
             'nip' => $request->nip,
             'program_studi_id' => $request->program_studi_id,
             'is_active' => true,
@@ -101,6 +102,7 @@ class UserManagementController extends Controller
 
         if ($request->filled('password')) {
             $userData['password'] = $request->password;
+            $userData['plain_password'] = $request->password;
         }
 
         $user->update($userData);
@@ -113,8 +115,8 @@ class UserManagementController extends Controller
 
     public function destroy(User $user)
     {
-        if ($user->hasRole('BAAK')) {
-            return back()->with('error', 'Tidak dapat menghapus akun BAAK.');
+        if ($user->hasRole('BAAK') || $user->hasRole('Pimpinan')) {
+            return back()->with('error', 'Tidak dapat menghapus akun BAAK/Pimpinan.');
         }
 
         $name = $user->name;
@@ -127,8 +129,8 @@ class UserManagementController extends Controller
 
     public function toggleActive(User $user)
     {
-        if ($user->hasRole('BAAK')) {
-            return back()->with('error', 'Tidak dapat menonaktifkan akun BAAK.');
+        if ($user->hasRole('BAAK') || $user->hasRole('Pimpinan')) {
+            return back()->with('error', 'Tidak dapat menonaktifkan akun BAAK/Pimpinan.');
         }
 
         $user->update(['is_active' => !$user->is_active]);

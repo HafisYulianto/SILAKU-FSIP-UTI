@@ -15,7 +15,7 @@
                 <div class="space-y-5">
                     <div>
                         <label class="form-label" for="name">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" required class="form-input" placeholder="Dr. Ahmad Fauzi, M.Pd">
+                        <input type="text" name="name" id="name" value="{{ old('name') }}" required class="form-input" placeholder="Nama">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -26,7 +26,7 @@
 
                         <div>
                             <label class="form-label" for="nip">NIP</label>
-                            <input type="text" name="nip" id="nip" value="{{ old('nip') }}" class="form-input" placeholder="198001012000121001">
+                            <input type="text" name="nip" id="nip" value="{{ old('nip') }}" class="form-input" placeholder="NIP">
                         </div>
                     </div>
 

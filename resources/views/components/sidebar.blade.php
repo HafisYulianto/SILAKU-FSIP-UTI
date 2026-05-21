@@ -100,6 +100,21 @@
         @endforeach
         @endif
 
+        @hasanyrole('BAAK|Pimpinan|Wakil Dekan')
+        {{-- Log Aktivitas --}}
+        <div class="pt-4">
+            <p class="sidebar-section-title">Aktivitas</p>
+        </div>
+
+        <a href="{{ route('activities.index') }}"
+           class="sidebar-link {{ request()->routeIs('activities.*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Log Aktivitas</span>
+        </a>
+        @endhasanyrole
+
         @role('BAAK')
         {{-- User Management --}}
         <div class="pt-4">

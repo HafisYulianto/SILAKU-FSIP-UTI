@@ -1,4 +1,5 @@
 <x-layouts.app :title="$entity->name">
+    <div x-data="{ showChart: false }">
     <div class="space-y-6 fade-in">
         {{-- Header --}}
         <div class="page-header">
@@ -37,6 +38,30 @@
                 </form>
                 @endhasanyrole
                 @endunlessrole
+
+                <!-- Export & Chart Buttons - Visible for all roles -->
+                <div class="flex items-center gap-2 border-l border-gray-200 pl-2 ml-2">
+                    @if($records->count() > 0)
+                        <button type="button" class="btn-secondary" @click="showChart = true; loadCharts({{ $entity->id }})" title="Lihat Visualisasi Data">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            Chart
+                        </button>
+                        <a href="{{ route('entities.export-excel', $entity) }}" class="btn-secondary" title="Export ke Excel">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Excel
+                        </a>
+                        <a href="{{ route('entities.export-pdf', $entity) }}" class="btn-secondary" title="Export ke PDF">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                            </svg>
+                            PDF
+                        </a>
+                    @endif
+                </div>
             </div>
         </div>
 
@@ -168,4 +193,169 @@
             @endif
         </div>
     </div>
+
+    <!-- Chart Modal (Tailwind + Alpine.js) -->
+    <div x-show="showChart" x-cloak class="fixed inset-0 z-50 overflow-y-auto"
+         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="showChart = false"></div>
+
+        <!-- Modal Panel -->
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div class="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl transform transition-all"
+                 x-show="showChart"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+                 @click.stop>
+                <!-- Header -->
+                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        Visualisasi Data — {{ $entity->name }}
+                    </h3>
+                    <button @click="showChart = false" class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <!-- Body -->
+                <div class="px-6 py-5 max-h-[70vh] overflow-y-auto">
+                    <div id="chartsContainer">
+                        <div class="flex items-center justify-center py-8">
+                            <svg class="animate-spin h-8 w-8 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer -->
+                <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
+                    <button @click="showChart = false" class="btn-secondary">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script>
+        function loadCharts(entityId) {
+            const container = document.getElementById('chartsContainer');
+            container.innerHTML = `
+                <div class="flex items-center justify-center py-8">
+                    <svg class="animate-spin h-8 w-8 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                </div>
+            `;
+
+            fetch(`/api/entity/${entityId}/chart-data`)
+                .then(response => response.json())
+                .then(data => {
+                    container.innerHTML = '';
+
+                    if (data.charts && data.charts.length > 0) {
+                        data.charts.forEach((chart, chartIndex) => {
+                            const chartDiv = document.createElement('div');
+                            chartDiv.className = 'mb-5 p-4 border rounded-xl bg-gray-50';
+                            chartDiv.innerHTML = `
+                                <h6 class="mb-3 font-semibold text-gray-700">${chart.field_name}</h6>
+                                <div class="relative h-64 w-full">
+                                    <canvas id="chart-${chartIndex}"></canvas>
+                                </div>
+                            `;
+                            container.appendChild(chartDiv);
+
+                            setTimeout(() => {
+                                const ctx = document.getElementById(`chart-${chartIndex}`).getContext('2d');
+                                new Chart(ctx, {
+                                    type: chart.chart_type,
+                                    data: {
+                                        labels: chart.data.labels || [],
+                                        datasets: [{
+                                            label: chart.field_name,
+                                            data: chart.data.values || [],
+                                            backgroundColor: generateColors(chart.data.values.length),
+                                            borderColor: generateBorderColors(chart.data.values.length),
+                                            borderWidth: 1,
+                                            tension: 0.4,
+                                            fill: true
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: chart.chart_type === 'doughnut' || chart.chart_type === 'pie',
+                                                position: 'bottom'
+                                            }
+                                        },
+                                        scales: (chart.chart_type !== 'doughnut' && chart.chart_type !== 'pie') ? {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        } : undefined
+                                    }
+                                });
+                            }, 350);
+                        });
+                    } else {
+                        container.innerHTML = '<p class="text-center text-gray-400 py-4">Tidak ada data untuk ditampilkan dalam chart</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    container.innerHTML = '<p class="text-center text-red-500 bg-red-50 rounded-lg px-4 py-3">Gagal memuat data chart</p>';
+                });
+        }
+
+        function generateColors(count) {
+            const colors = [
+                'rgba(255, 107, 107, 0.6)',
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(153, 102, 255, 0.6)',
+                'rgba(255, 159, 64, 0.6)',
+                'rgba(199, 199, 199, 0.6)',
+                'rgba(83, 102, 255, 0.6)',
+                'rgba(75, 227, 140, 0.6)',
+                'rgba(255, 99, 132, 0.6)',
+            ];
+            let result = [];
+            for (let i = 0; i < count; i++) {
+                result.push(colors[i % colors.length]);
+            }
+            return result;
+        }
+
+        function generateBorderColors(count) {
+            const colors = [
+                'rgba(255, 107, 107, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(199, 199, 199, 1)',
+                'rgba(83, 102, 255, 1)',
+                'rgba(75, 227, 140, 1)',
+                'rgba(255, 99, 132, 1)',
+            ];
+            let result = [];
+            for (let i = 0; i < count; i++) {
+                result.push(colors[i % colors.length]);
+            }
+            return result;
+        }
+    </script>
+    @endpush
 </x-layouts.app>

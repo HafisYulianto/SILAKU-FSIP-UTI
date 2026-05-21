@@ -66,9 +66,11 @@
                         <p class="text-xs text-gray-400">{{ $records instanceof \Illuminate\Pagination\LengthAwarePaginator ? $records->total() : $records->count() }} record</p>
                     </div>
                 </div>
-                <a href="{{ route('entities.view', $selectedEntity) }}" class="text-xs text-{{ $category === 'dosen' ? 'primary' : 'blue' }}-600 hover:underline font-medium">
-                    Lihat Detail Lengkap →
-                </a>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('entities.view', $selectedEntity) }}" class="text-xs text-{{ $category === 'dosen' ? 'primary' : 'blue' }}-600 hover:underline font-medium">
+                        Lihat Detail Lengkap →
+                    </a>
+                </div>
             </div>
 
             @if(($records instanceof \Illuminate\Pagination\LengthAwarePaginator ? $records->count() : $records->count()) > 0)

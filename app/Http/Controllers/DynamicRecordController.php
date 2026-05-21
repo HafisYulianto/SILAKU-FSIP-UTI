@@ -7,6 +7,7 @@ use App\Models\DynamicField;
 use App\Models\DynamicRecord;
 use App\Models\DynamicFileUpload;
 use App\Models\ProgramStudi;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -60,6 +61,17 @@ class DynamicRecordController extends Controller
             'created_by' => auth()->id(),
             'program_studi_id' => $request->program_studi_id,
         ]);
+
+        if (auth()->user()->hasAnyRole(['Kaprodi', 'Dosen'])) {
+            $role = auth()->user()->hasRole('Kaprodi') ? 'Kaprodi' : 'Dosen';
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'actor_name' => auth()->user()->name,
+                'actor_role' => $role,
+                'action' => 'create_record',
+                'description' => "Mengisi data pada kategori \"{$entity->name}\"",
+            ]);
+        }
 
         // Handle file uploads
         foreach ($entity->fields as $field) {

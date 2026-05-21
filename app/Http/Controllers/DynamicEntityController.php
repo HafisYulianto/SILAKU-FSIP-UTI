@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\DynamicEntity;
 use App\Models\DynamicField;
+use App\Models\ActivityLog;
+use App\Services\ExportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -60,6 +62,16 @@ class DynamicEntityController extends Controller
             'created_by' => auth()->id(),
             'icon' => $request->icon ?? 'folder',
         ]);
+
+        if (auth()->user()->hasRole('Kaprodi')) {
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'actor_name' => auth()->user()->name,
+                'actor_role' => 'Kaprodi',
+                'action' => 'create_category',
+                'description' => "Membuat kategori baru \"{$entity->name}\"",
+            ]);
+        }
 
         // Create fields
         foreach ($request->fields as $index => $fieldData) {
@@ -141,10 +153,51 @@ class DynamicEntityController extends Controller
     public function destroy(DynamicEntity $entity)
     {
         $name = $entity->name;
+
+        if (auth()->user()->hasRole('Kaprodi')) {
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'actor_name' => auth()->user()->name,
+                'actor_role' => 'Kaprodi',
+                'action' => 'delete_category',
+                'description' => "Menghapus kategori \"{$name}\"",
+            ]);
+        }
+
         $entity->delete();
 
         return redirect()
             ->route('dashboard')
             ->with('success', "Kategori data \"{$name}\" beserta seluruh datanya berhasil dihapus.");
+    }
+
+    /**
+     * Export entity records to Excel.
+     */
+    public function exportExcel(DynamicEntity $entity, ExportService $exportService)
+    {
+        return $exportService->exportToExcel($entity);
+    }
+
+    /**
+     * Export entity records to PDF.
+     */
+    public function exportPdf(DynamicEntity $entity, ExportService $exportService)
+    {
+        return $exportService->exportToPdf($entity);
+    }
+
+    /**
+     * Get chart data for entity as JSON API.
+     */
+    public function getChartData(DynamicEntity $entity, ExportService $exportService)
+    {
+        $charts = $exportService->getEntityChartData($entity);
+        
+        return response()->json([
+            'entity_id' => $entity->id,
+            'entity_name' => $entity->name,
+            'charts' => $charts,
+        ]);
     }
 }

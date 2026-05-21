@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DynamicEntityController;
 use App\Http\Controllers\DynamicRecordController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ActivityLogController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -57,6 +58,17 @@ Route::middleware('auth')->group(function () {
             ->where('category', 'dosen|mahasiswa');
     });
 
+    // Activity logs - BAAK & Pimpinan & Wakil Dekan
+    Route::middleware('role:BAAK|Pimpinan|Wakil Dekan')->group(function () {
+        Route::get('/activities', [ActivityLogController::class, 'index'])->name('activities.index');
+
+        // Deletion actions - BAAK only
+        Route::middleware('role:BAAK')->group(function () {
+            Route::delete('/activities/{activity}', [ActivityLogController::class, 'destroy'])->name('activities.destroy');
+            Route::post('/activities/clear', [ActivityLogController::class, 'clear'])->name('activities.clear');
+        });
+    });
+
     // View entity details & record detail - all authenticated roles
     Route::get('/entities/{entity}/view', [DynamicEntityController::class, 'show'])
         ->name('entities.view');
@@ -84,6 +96,16 @@ Route::middleware('auth')->group(function () {
             ->name('records.update');
         Route::delete('/entities/{entity}/records/{record}', [DynamicRecordController::class, 'destroy'])
             ->name('records.destroy');
+    });
+
+    // Export routes - accessible by all authenticated roles
+    Route::middleware('auth')->group(function () {
+        Route::get('/entities/{entity}/export-excel', [DynamicEntityController::class, 'exportExcel'])
+            ->name('entities.export-excel');
+        Route::get('/entities/{entity}/export-pdf', [DynamicEntityController::class, 'exportPdf'])
+            ->name('entities.export-pdf');
+        Route::get('/api/entity/{entity}/chart-data', [DynamicEntityController::class, 'getChartData'])
+            ->name('api.entity-chart-data');
     });
 
     // API endpoint for dashboard chart data (AJAX)

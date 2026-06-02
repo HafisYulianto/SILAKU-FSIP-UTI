@@ -6,6 +6,7 @@ use App\Http\Controllers\DynamicEntityController;
 use App\Http\Controllers\DynamicRecordController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\ApprovalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,11 +45,16 @@ Route::middleware('auth')->group(function () {
         Route::resource('entities', DynamicEntityController::class);
     });
 
-    // User management - BAAK only
+    // User management & Approvals - BAAK only
     Route::middleware('role:BAAK')->group(function () {
         Route::resource('users', UserManagementController::class);
         Route::patch('/users/{user}/toggle-active', [UserManagementController::class, 'toggleActive'])
             ->name('users.toggle-active');
+
+        // Category approval routes
+        Route::get('/approvals', [ApprovalController::class, 'index'])->name('approvals.index');
+        Route::post('/approvals/{entity}/approve', [ApprovalController::class, 'approve'])->name('approvals.approve');
+        Route::post('/approvals/{entity}/reject', [ApprovalController::class, 'reject'])->name('approvals.reject');
     });
 
     // Pimpinan & Wakil Dekan read-only: browse all entities by category

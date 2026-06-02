@@ -38,17 +38,6 @@
                         <label class="form-label" for="description">Deskripsi</label>
                         <textarea name="description" id="description" rows="2" class="form-input" placeholder="Deskripsi singkat tentang kategori data ini">{{ old('description') }}</textarea>
                     </div>
-
-                    <div>
-                        <label class="form-label" for="icon">Ikon</label>
-                        <select name="icon" id="icon" class="form-select">
-                            <option value="folder">📁 Folder</option>
-                            <option value="document">📄 Dokumen</option>
-                            <option value="academic">🎓 Akademik</option>
-                            <option value="certificate">📜 Sertifikat</option>
-                            <option value="chart">📊 Grafik</option>
-                        </select>
-                    </div>
                 </div>
             </div>
 

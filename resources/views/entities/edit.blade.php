@@ -32,21 +32,11 @@
                         <textarea name="description" id="description" rows="2" class="form-input">{{ old('description', $entity->description) }}</textarea>
                     </div>
 
-                    <div>
-                        <label class="form-label" for="icon">Ikon</label>
-                        <select name="icon" id="icon" class="form-select">
-                            <option value="folder" {{ $entity->icon === 'folder' ? 'selected' : '' }}>📁 Folder</option>
-                            <option value="document" {{ $entity->icon === 'document' ? 'selected' : '' }}>📄 Dokumen</option>
-                            <option value="academic" {{ $entity->icon === 'academic' ? 'selected' : '' }}>🎓 Akademik</option>
-                            <option value="certificate" {{ $entity->icon === 'certificate' ? 'selected' : '' }}>📜 Sertifikat</option>
-                        </select>
-                    </div>
-
-                    <div class="flex items-end">
-                        <label class="flex items-center gap-2">
+                    <div class="flex items-center pt-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" name="is_active" value="1" {{ $entity->is_active ? 'checked' : '' }}
                                    class="w-4 h-4 text-primary-600 rounded focus:ring-primary-500">
-                            <span class="text-sm text-gray-600">Kategori aktif</span>
+                            <span class="text-sm text-gray-700 font-medium">Kategori aktif</span>
                         </label>
                     </div>
                 </div>

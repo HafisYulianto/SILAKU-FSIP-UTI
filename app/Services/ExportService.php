@@ -11,6 +11,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class ExportService
 {
@@ -32,59 +34,187 @@ class ExportService
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Data');
 
-        // Set column headers
-        $row = 1;
-        $column = 1;
-        foreach ($tableFields as $field) {
-            $columnLetter = $this->getColumnLetter($column);
-            $sheet->setCellValue($columnLetter . $row, $field->name);
-            $column++;
-        }
-        $columnLetter = $this->getColumnLetter($column);
-        $sheet->setCellValue($columnLetter . $row, 'Dibuat Oleh');
-        $column++;
-        $columnLetter = $this->getColumnLetter($column);
-        $sheet->setCellValue($columnLetter . $row, 'Program Studi');
-        $column++;
-        $columnLetter = $this->getColumnLetter($column);
-        $sheet->setCellValue($columnLetter . $row, 'Tanggal Dibuat');
+        $totalColumns = count($tableFields) + 4;
+        $lastColumnLetter = $this->getColumnLetter($totalColumns);
 
-        // Style header row
-        $headerRange = 'A1:' . $columnLetter . '1';
-        $sheet->getStyle($headerRange)->applyFromArray([
-            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '1E5A4A']],
+        // 1. Center & Merge Category Name as Title
+        $sheet->getRowDimension('2')->setRowHeight(35);
+        $sheet->mergeCells("A2:{$lastColumnLetter}2");
+        $sheet->setCellValue('A2', strtoupper($entity->name));
+        $sheet->getStyle('A2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 16,
+                'color' => ['rgb' => '1E5A4A']
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+        
+        // Bottom border under title as a horizontal rule line
+        $sheet->getStyle("A2:{$lastColumnLetter}2")->applyFromArray([
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_MEDIUM,
+                    'color' => ['rgb' => '1E5A4A'],
+                ],
+            ],
         ]);
 
-        // Add data rows
-        $row = 2;
-        foreach ($records as $record) {
+        // 2. Metadata Info
+        // Deskripsi
+        $sheet->setCellValue('A4', 'Deskripsi:');
+        $sheet->getStyle('A4')->getFont()->setBold(true);
+        $sheet->setCellValue('B4', $entity->description ?? '-');
+        
+        // Kategori
+        $sheet->setCellValue('A5', 'Kategori:');
+        $sheet->getStyle('A5')->getFont()->setBold(true);
+        $sheet->setCellValue('B5', ucfirst($entity->root_category));
+        
+        // Total Records
+        $sheet->setCellValue('A6', 'Total Records:');
+        $sheet->getStyle('A6')->getFont()->setBold(true);
+        $sheet->setCellValue('B6', $records->count());
+        
+        // Tanggal Export
+        $sheet->setCellValue('A7', 'Tanggal Export:');
+        $sheet->getStyle('A7')->getFont()->setBold(true);
+        $sheet->setCellValue('B7', now()->timezone('Asia/Jakarta')->format('d M Y H:i:s'));
+
+        // 3. Set Table Headers (Row 9)
+        $headerRow = 9;
+        $sheet->getRowDimension($headerRow)->setRowHeight(25);
+        $column = 1;
+        
+        // Col 1: No
+        $sheet->setCellValue($this->getColumnLetter($column) . $headerRow, 'No');
+        $column++;
+        
+        // Dynamic fields
+        foreach ($tableFields as $field) {
+            $sheet->setCellValue($this->getColumnLetter($column) . $headerRow, $field->name);
+            $column++;
+        }
+        
+        // Col Dibuat Oleh
+        $sheet->setCellValue($this->getColumnLetter($column) . $headerRow, 'Dibuat Oleh');
+        $column++;
+        
+        // Col Program Studi
+        $sheet->setCellValue($this->getColumnLetter($column) . $headerRow, 'Program Studi');
+        $column++;
+        
+        // Col Tanggal Dibuat
+        $sheet->setCellValue($this->getColumnLetter($column) . $headerRow, 'Tanggal Dibuat');
+
+        // Style the headers (Dark Green, White Text, Left/Center Aligned, Bold)
+        $headerRange = "A{$headerRow}:{$lastColumnLetter}{$headerRow}";
+        $sheet->getStyle($headerRange)->applyFromArray([
+            'font' => [
+                'bold' => true, 
+                'color' => ['rgb' => 'FFFFFF']
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID, 
+                'startColor' => ['rgb' => '1E5A4A']
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+        // Specific alignment for table headers
+        $sheet->getStyle("A{$headerRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        for ($c = 2; $c <= $totalColumns; $c++) {
+            $sheet->getStyle($this->getColumnLetter($c) . $headerRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        }
+
+        // 4. Fill Data Rows (Row 10 onwards)
+        $dataRow = 10;
+        foreach ($records as $index => $record) {
+            $sheet->getRowDimension($dataRow)->setRowHeight(20);
             $column = 1;
             
+            // Col 1: No
+            $sheet->setCellValue($this->getColumnLetter($column) . $dataRow, $index + 1);
+            $column++;
+            
+            // Dynamic fields
             foreach ($tableFields as $field) {
                 $value = $record->getFieldValue($field->slug, '');
-                
-                // Handle file fields
                 if ($field->type === 'file' && is_string($value)) {
                     $value = url('storage/' . $value);
                 }
                 
-                $columnLetter = $this->getColumnLetter($column);
-                $sheet->setCellValue($columnLetter . $row, $value);
+                $sheet->setCellValue($this->getColumnLetter($column) . $dataRow, $value);
                 $column++;
             }
             
-            $columnLetter = $this->getColumnLetter($column);
-            $sheet->setCellValue($columnLetter . $row, $record->creator?->name ?? '-');
+            // Dibuat Oleh
+            $sheet->setCellValue($this->getColumnLetter($column) . $dataRow, $record->creator?->name ?? '-');
             $column++;
-            $columnLetter = $this->getColumnLetter($column);
-            $sheet->setCellValue($columnLetter . $row, $record->programStudi?->name ?? 'Umum');
-            $column++;
-            $columnLetter = $this->getColumnLetter($column);
-            $sheet->setCellValue($columnLetter . $row, $record->created_at->format('Y-m-d H:i:s'));
             
-            $row++;
+            // Program Studi
+            $sheet->setCellValue($this->getColumnLetter($column) . $dataRow, $record->programStudi?->name ?? 'Umum');
+            $column++;
+            
+            // Tanggal Dibuat
+            $sheet->setCellValue($this->getColumnLetter($column) . $dataRow, $record->created_at->format('d/m/Y H:i'));
+
+            // Alternating background colors & thin borders
+            $rowRange = "A{$dataRow}:{$lastColumnLetter}{$dataRow}";
+            if (($index % 2) !== 0) {
+                $sheet->getStyle($rowRange)->applyFromArray([
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'F9F9F9'],
+                    ],
+                ]);
+            }
+            
+            // Add thin borders to the row cells
+            $sheet->getStyle($rowRange)->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => 'DDDDDD'],
+                    ],
+                ],
+            ]);
+            
+            // Alignments
+            $sheet->getStyle("A{$dataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            for ($c = 2; $c <= $totalColumns; $c++) {
+                $sheet->getStyle($this->getColumnLetter($c) . $dataRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            }
+
+            $dataRow++;
         }
+
+        // 5. Add Footer
+        $footerRow = $dataRow + 1;
+        $sheet->getRowDimension($footerRow)->setRowHeight(30);
+        $sheet->mergeCells("A{$footerRow}:{$lastColumnLetter}{$footerRow}");
+        $sheet->setCellValue("A{$footerRow}", 'Dokumen ini dihasilkan oleh SILAKU FSIP - Sistem Pelaporan IKU');
+        $sheet->getStyle("A{$footerRow}")->applyFromArray([
+            'font' => [
+                'italic' => true,
+                'size' => 10,
+                'color' => ['rgb' => '999999']
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'top' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => 'DDDDDD'],
+                ],
+            ],
+        ]);
 
         // Auto-fit columns
         foreach ($sheet->getColumnIterator() as $col) {

@@ -18,12 +18,24 @@ class DynamicEntityController extends Controller
 
         $entities = DynamicEntity::with(['fields', 'parent', 'creator'])
             ->withCount('records')
+            ->where('approval_status', 'approved')
             ->when($category, fn($q) => $q->where('root_category', $category))
             ->orderBy('root_category')
             ->orderBy('sort_order')
             ->paginate(20);
 
-        return view('entities.index', compact('entities', 'category'));
+        // Show pending/rejected entities for Kaprodi
+        $pendingEntities = collect();
+        if (auth()->user()->hasRole('Kaprodi')) {
+            $pendingEntities = DynamicEntity::with(['fields', 'parent', 'creator'])
+                ->withCount('records')
+                ->whereIn('approval_status', ['pending', 'rejected', 'pending_delete'])
+                ->when($category, fn($q) => $q->where('root_category', $category))
+                ->orderBy('updated_at', 'desc')
+                ->get();
+        }
+
+        return view('entities.index', compact('entities', 'category', 'pendingEntities'));
     }
 
     public function create()
@@ -61,6 +73,7 @@ class DynamicEntityController extends Controller
             'parent_id' => null,
             'created_by' => auth()->id(),
             'icon' => $request->icon ?? 'folder',
+            'approval_status' => auth()->user()->hasRole('Kaprodi') ? 'pending' : 'approved',
         ]);
 
         if (auth()->user()->hasRole('Kaprodi')) {
@@ -68,8 +81,8 @@ class DynamicEntityController extends Controller
                 'user_id' => auth()->id(),
                 'actor_name' => auth()->user()->name,
                 'actor_role' => 'Kaprodi',
-                'action' => 'create_category',
-                'description' => "Membuat kategori baru \"{$entity->name}\"",
+                'action' => 'request_create_category',
+                'description' => "Mengajukan pembuatan kategori baru \"{$entity->name}\"",
             ]);
         }
 
@@ -95,6 +108,12 @@ class DynamicEntityController extends Controller
                 'show_in_table' => $fieldData['show_in_table'] ?? true,
                 'sort_order' => $index,
             ]);
+        }
+
+        if (auth()->user()->hasRole('Kaprodi')) {
+            return redirect()
+                ->route('entities.index')
+                ->with('info', "Kategori data \"{$entity->name}\" berhasil diajukan dan menunggu persetujuan Admin BAAK.");
         }
 
         return redirect()
@@ -154,16 +173,24 @@ class DynamicEntityController extends Controller
     {
         $name = $entity->name;
 
+        // Kaprodi: request deletion (pending), don't actually delete
         if (auth()->user()->hasRole('Kaprodi')) {
+            $entity->update(['approval_status' => 'pending_delete']);
+
             ActivityLog::create([
                 'user_id' => auth()->id(),
                 'actor_name' => auth()->user()->name,
                 'actor_role' => 'Kaprodi',
-                'action' => 'delete_category',
-                'description' => "Menghapus kategori \"{$name}\"",
+                'action' => 'request_delete_category',
+                'description' => "Mengajukan penghapusan kategori \"{$name}\"",
             ]);
+
+            return redirect()
+                ->route('entities.index')
+                ->with('info', "Permintaan hapus kategori \"{$name}\" menunggu persetujuan Admin BAAK.");
         }
 
+        // BAAK: delete immediately
         $entity->delete();
 
         return redirect()

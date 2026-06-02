@@ -20,6 +20,8 @@ class DynamicEntity extends Model
         'icon',
         'is_active',
         'sort_order',
+        'approval_status',
+        'rejection_reason',
     ];
 
     protected $casts = [
@@ -88,7 +90,17 @@ class DynamicEntity extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('is_active', true)->where('approval_status', 'approved');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->whereIn('approval_status', ['pending', 'pending_delete']);
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('approval_status', 'approved');
     }
 
     public function scopeByCategory($query, string $category)
@@ -99,5 +111,25 @@ class DynamicEntity extends Model
     public function scopeRootOnly($query)
     {
         return $query->whereNull('parent_id');
+    }
+
+    public function isPending(): bool
+    {
+        return $this->approval_status === 'pending';
+    }
+
+    public function isPendingDelete(): bool
+    {
+        return $this->approval_status === 'pending_delete';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->approval_status === 'rejected';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->approval_status === 'approved';
     }
 }

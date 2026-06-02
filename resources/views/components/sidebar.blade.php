@@ -51,54 +51,88 @@
 
         {{-- Dosen Category --}}
         @if($dosenEntities->count() > 0)
-        <div class="pt-4">
-            <p class="sidebar-section-title">📚 Data Dosen</p>
+        @php
+            $dosenActive = request()->is('pimpinan/data/dosen') || request()->is('entities/dosen/*');
+            foreach($dosenEntities as $entity) {
+                if (request()->is('entities/' . $entity->id . '*')) {
+                    $dosenActive = true;
+                    break;
+                }
+            }
+        @endphp
+        <div class="pt-2" x-data="{ open: {{ $dosenActive ? 'true' : 'false' }} }">
+            <div @click="open = !open" class="flex items-center justify-between px-4 py-2 cursor-pointer group select-none hover:bg-white/5 rounded-lg mx-2 transition-colors">
+                <span class="text-xs font-bold uppercase tracking-wider text-primary-300/80 group-hover:text-white transition-colors flex items-center gap-1.5">
+                    📚 Data Dosen
+                </span>
+                <span class="text-primary-300/80 group-hover:text-white transition-colors text-[10px]" x-text="open ? '▲' : '▼'"></span>
+            </div>
+            
+            <div x-show="open" x-transition.opacity class="mt-1 space-y-1">
+                @hasanyrole('Pimpinan|Wakil Dekan')
+                <a href="{{ route('pimpinan.browse', 'dosen') }}"
+                   class="sidebar-link {{ request()->is('pimpinan/data/dosen') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 flex-shrink-0 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                    </svg>
+                    <span class="truncate">Lihat Semua Data Dosen</span>
+                </a>
+                @endhasanyrole
+                @foreach($dosenEntities as $entity)
+                <a href="{{ route('entities.view', $entity) }}"
+                   class="sidebar-link {{ request()->is('entities/' . $entity->id . '*') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 flex-shrink-0 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="truncate">{{ $entity->name }}</span>
+                    <span class="ml-auto text-xs bg-white/10 rounded-full px-2 py-0.5">{{ $entity->records_count ?? $entity->records()->count() }}</span>
+                </a>
+                @endforeach
+            </div>
         </div>
-        @hasanyrole('Pimpinan|Wakil Dekan')
-        <a href="{{ route('pimpinan.browse', 'dosen') }}"
-           class="sidebar-link {{ request()->is('pimpinan/data/dosen') ? 'active' : '' }}">
-            <svg class="w-5 h-5 flex-shrink-0 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-            </svg>
-            <span class="truncate">Lihat Semua Data Dosen</span>
-        </a>
-        @endhasanyrole
-        @foreach($dosenEntities as $entity)
-        <a href="{{ route('entities.view', $entity) }}"
-           class="sidebar-link {{ request()->is('entities/' . $entity->id . '*') ? 'active' : '' }}">
-            <svg class="w-5 h-5 flex-shrink-0 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            <span class="truncate">{{ $entity->name }}</span>
-            <span class="ml-auto text-xs bg-white/10 rounded-full px-2 py-0.5">{{ $entity->records_count ?? $entity->records()->count() }}</span>
-        </a>
-        @endforeach
         @endif
 
         {{-- Mahasiswa Category --}}
         @if($mahasiswaEntities->count() > 0)
-        <div class="pt-4">
-            <p class="sidebar-section-title">🎓 Data Mahasiswa</p>
+        @php
+            $mahasiswaActive = request()->is('pimpinan/data/mahasiswa') || request()->is('entities/mahasiswa/*');
+            foreach($mahasiswaEntities as $entity) {
+                if (request()->is('entities/' . $entity->id . '*')) {
+                    $mahasiswaActive = true;
+                    break;
+                }
+            }
+        @endphp
+        <div class="pt-2" x-data="{ open: {{ $mahasiswaActive ? 'true' : 'false' }} }">
+            <div @click="open = !open" class="flex items-center justify-between px-4 py-2 cursor-pointer group select-none hover:bg-white/5 rounded-lg mx-2 transition-colors">
+                <span class="text-xs font-bold uppercase tracking-wider text-primary-300/80 group-hover:text-white transition-colors flex items-center gap-1.5">
+                    🎓 Data Mahasiswa
+                </span>
+                <span class="text-primary-300/80 group-hover:text-white transition-colors text-[10px]" x-text="open ? '▲' : '▼'"></span>
+            </div>
+            
+            <div x-show="open" x-transition.opacity class="mt-1 space-y-1">
+                @hasanyrole('Pimpinan|Wakil Dekan')
+                <a href="{{ route('pimpinan.browse', 'mahasiswa') }}"
+                   class="sidebar-link {{ request()->is('pimpinan/data/mahasiswa') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 flex-shrink-0 text-teal-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                    </svg>
+                    <span class="truncate">Lihat Semua Data Mahasiswa</span>
+                </a>
+                @endhasanyrole
+                @foreach($mahasiswaEntities as $entity)
+                <a href="{{ route('entities.view', $entity) }}"
+                   class="sidebar-link {{ request()->is('entities/' . $entity->id . '*') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 flex-shrink-0 text-teal-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="truncate">{{ $entity->name }}</span>
+                    <span class="ml-auto text-xs bg-white/10 rounded-full px-2 py-0.5">{{ $entity->records_count ?? $entity->records()->count() }}</span>
+                </a>
+                @endforeach
+            </div>
         </div>
-        @hasanyrole('Pimpinan|Wakil Dekan')
-        <a href="{{ route('pimpinan.browse', 'mahasiswa') }}"
-           class="sidebar-link {{ request()->is('pimpinan/data/mahasiswa') ? 'active' : '' }}">
-            <svg class="w-5 h-5 flex-shrink-0 text-teal-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-            </svg>
-            <span class="truncate">Lihat Semua Data Mahasiswa</span>
-        </a>
-        @endhasanyrole
-        @foreach($mahasiswaEntities as $entity)
-        <a href="{{ route('entities.view', $entity) }}"
-           class="sidebar-link {{ request()->is('entities/' . $entity->id . '*') ? 'active' : '' }}">
-            <svg class="w-5 h-5 flex-shrink-0 text-teal-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            <span class="truncate">{{ $entity->name }}</span>
-            <span class="ml-auto text-xs bg-white/10 rounded-full px-2 py-0.5">{{ $entity->records_count ?? $entity->records()->count() }}</span>
-        </a>
-        @endforeach
         @endif
 
         @hasanyrole('BAAK|Pimpinan|Wakil Dekan')

@@ -13,6 +13,21 @@
             </a>
         </div>
 
+        {{-- Flash Messages --}}
+        @if(session('info'))
+        <div class="flex items-center gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 slide-up">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="text-sm font-medium">{{ session('info') }}</span>
+        </div>
+        @endif
+
+        @if(session('success'))
+        <div class="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 slide-up">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="text-sm font-medium">{{ session('success') }}</span>
+        </div>
+        @endif
+
         {{-- Filter tabs --}}
         <div class="flex gap-2">
             <a href="{{ route('entities.index') }}"
@@ -29,7 +44,84 @@
             </a>
         </div>
 
-        {{-- Entities Grid --}}
+        {{-- Pending/Rejected Entities Section (Kaprodi only) --}}
+        @if($pendingEntities->count() > 0)
+        <div>
+            <h2 class="text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                Status Pengajuan Anda
+                <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">{{ $pendingEntities->count() }}</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                @foreach($pendingEntities as $entity)
+                <div class="card p-6 slide-up border-l-4
+                    {{ $entity->approval_status === 'pending' ? 'border-l-amber-400 bg-amber-50/30' : '' }}
+                    {{ $entity->approval_status === 'pending_delete' ? 'border-l-orange-400 bg-orange-50/30' : '' }}
+                    {{ $entity->approval_status === 'rejected' ? 'border-l-red-400 bg-red-50/30' : '' }}"
+                     style="animation-delay: {{ $loop->index * 50 }}ms">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 {{ $entity->root_category === 'dosen' ? 'bg-primary-100' : 'bg-blue-100' }} rounded-xl flex items-center justify-center">
+                                <span class="text-lg">{{ $entity->root_category === 'dosen' ? '📚' : '🎓' }}</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">{{ $entity->name }}</h3>
+                                <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : 'badge-info' }}">{{ ucfirst($entity->root_category) }}</span>
+                            </div>
+                        </div>
+
+                        {{-- Status Badge --}}
+                        @if($entity->approval_status === 'pending')
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            Menunggu Persetujuan
+                        </span>
+                        @elseif($entity->approval_status === 'pending_delete')
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                            Menunggu Hapus
+                        </span>
+                        @elseif($entity->approval_status === 'rejected')
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Ditolak
+                        </span>
+                        @endif
+                    </div>
+
+                    @if($entity->description)
+                    <p class="text-sm text-gray-500 mb-3 line-clamp-2">{{ $entity->description }}</p>
+                    @endif
+
+                    {{-- Rejection reason --}}
+                    @if($entity->approval_status === 'rejected' && $entity->rejection_reason)
+                    <div class="flex items-start gap-2 p-2.5 bg-red-50 rounded-lg border border-red-100 mb-3">
+                        <svg class="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <p class="text-xs text-red-700"><strong>Alasan:</strong> {{ $entity->rejection_reason }}</p>
+                    </div>
+                    @endif
+
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="flex items-center gap-4 text-xs text-gray-400">
+                            <span>{{ $entity->fields_count ?? $entity->fields->count() }} field</span>
+                            <span>{{ $entity->updated_at->diffForHumans() }}</span>
+                        </div>
+                        {{-- Delete rejected entity option --}}
+                        @if($entity->approval_status === 'rejected')
+                        <form method="POST" action="{{ route('entities.destroy', $entity) }}" onsubmit="return confirm('Hapus kategori yang ditolak ini?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium transition-colors">Hapus</button>
+                        </form>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        {{-- Approved Entities Grid --}}
         @if($entities->count() > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             @foreach($entities as $entity)
@@ -91,7 +183,7 @@
         <div class="mt-6">
             {{ $entities->links() }}
         </div>
-        @else
+        @elseif($pendingEntities->count() === 0)
         <div class="card px-6 py-16 text-center">
             <svg class="w-20 h-20 mx-auto mb-4 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>

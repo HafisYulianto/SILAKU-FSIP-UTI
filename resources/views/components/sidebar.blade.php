@@ -2,6 +2,7 @@
     $entities = \App\Models\DynamicEntity::active()->with('children')->rootOnly()->orderBy('root_category')->orderBy('sort_order')->get();
     $dosenEntities = $entities->where('root_category', 'dosen');
     $mahasiswaEntities = $entities->where('root_category', 'mahasiswa');
+    $pendingApprovalCount = \App\Models\DynamicEntity::pending()->count();
 @endphp
 
 <aside class="sidebar" :class="{ '-translate-x-full lg:translate-x-0': !mobileMenu, 'translate-x-0': mobileMenu }">
@@ -116,10 +117,21 @@
         @endhasanyrole
 
         @role('BAAK')
-        {{-- User Management --}}
+        {{-- User Management & Approval --}}
         <div class="pt-4">
             <p class="sidebar-section-title">Administrasi</p>
         </div>
+
+        <a href="{{ route('approvals.index') }}"
+           class="sidebar-link {{ request()->routeIs('approvals.*') ? 'active' : '' }}">
+            <svg class="w-5 h-5 flex-shrink-0 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            <span>Persetujuan Kategori</span>
+            @if($pendingApprovalCount > 0)
+            <span class="ml-auto text-xs bg-red-500 text-white rounded-full px-2 py-0.5 font-bold animate-pulse">{{ $pendingApprovalCount }}</span>
+            @endif
+        </a>
 
         <a href="{{ route('users.index') }}"
            class="sidebar-link {{ request()->routeIs('users.*') ? 'active' : '' }}">

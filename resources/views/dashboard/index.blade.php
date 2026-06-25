@@ -1053,27 +1053,22 @@
                 });
 
                 // Map popup close event to Zoom Out
-                map.on('popupclose', function(e) {
-                    setTimeout(() => {
-                        // Check if any popup is still open on the map (e.g. user clicked another marker)
-                        let anyOpen = false;
-                        map.eachLayer(function(layer) {
-                            if (layer instanceof L.Popup && map.hasLayer(layer)) {
-                                anyOpen = true;
-                            }
-                        });
+                let popupCloseTimer;
+                map.on('popupopen', function() {
+                    if (popupCloseTimer) clearTimeout(popupCloseTimer);
+                });
 
-                        if (!anyOpen && !map._popup) {
-                            const views = {
-                                lampung:   { center: [-5.40, 105.26], zoom: 8.5 },
-                                indonesia: { center: [-2.50, 117.00], zoom: 5 },
-                                dunia:     { center: [20.0, 0.0],     zoom: 2 }
-                            };
-                            const activeView = window.activeMapView || 'lampung';
-                            const v = views[activeView];
-                            map.flyTo(v.center, v.zoom, { duration: 1.2 });
-                        }
-                    }, 150);
+                map.on('popupclose', function(e) {
+                    popupCloseTimer = setTimeout(() => {
+                        const views = {
+                            lampung:   { center: [-5.40, 105.26], zoom: 8.5 },
+                            indonesia: { center: [-2.50, 117.00], zoom: 5 },
+                            dunia:     { center: [20.0, 0.0],     zoom: 2 }
+                        };
+                        const activeView = window.activeMapView || 'lampung';
+                        const v = views[activeView];
+                        map.flyTo(v.center, v.zoom, { duration: 1.2 });
+                    }, 300);
                 });
 
                 // If no markers, show info

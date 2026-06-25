@@ -48,7 +48,7 @@
                 <div class="relative inline-flex w-20 h-20 bg-white/10 border border-white/20 rounded-2xl items-center justify-center shadow-xl mb-4 group hover:scale-105 transition-transform duration-300">
                     <!-- Ring glow indicator -->
                     <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-30 group-hover:opacity-60 transition-opacity duration-300"></div>
-                    <img src="{{ asset('images/002-UTI.png') }}" alt="Logo UTI" class="h-14 w-auto object-contain drop-shadow-lg relative z-10">
+                    <img src="{{ asset('images/Logo FSIP 1.png') }}" alt="Logo FSIP" class="h-14 w-auto object-contain drop-shadow-lg relative z-10">
                 </div>
                 <h2 class="text-3xl font-black text-white tracking-tight leading-none">SILAKU</h2>
                 <p class="text-xs text-emerald-300 font-bold tracking-wider uppercase mt-2.5">Sistem Pelaporan IKU</p>

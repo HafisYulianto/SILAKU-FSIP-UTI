@@ -56,8 +56,15 @@
                             <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required class="form-input">
                         </div>
                         <div>
-                            <label class="form-label" for="nip">NIP / NIK / NITK</label>
-                            <input type="text" name="nip" id="nip" value="{{ old('nip', $user->nip) }}" class="form-input" placeholder="Masukkan NIP, NIK, atau NITK">
+                            <label class="form-label" for="nip">Identitas (NIP / NIK / NITK)</label>
+                            <div class="flex gap-2">
+                                <select name="nip_type" id="nip_type" class="form-input w-28 bg-white dark:bg-gray-800">
+                                    <option value="NIP" {{ old('nip_type', $user->nip_type) === 'NIP' ? 'selected' : '' }}>NIP</option>
+                                    <option value="NIK" {{ old('nip_type', $user->nip_type) === 'NIK' ? 'selected' : '' }}>NIK</option>
+                                    <option value="NITK" {{ old('nip_type', $user->nip_type) === 'NITK' ? 'selected' : '' }}>NITK</option>
+                                </select>
+                                <input type="text" name="nip" id="nip" value="{{ old('nip', $user->nip) }}" class="form-input flex-1" placeholder="Masukkan nomor identitas">
+                            </div>
                         </div>
                     </div>
 

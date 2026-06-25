@@ -8,7 +8,7 @@
 <aside class="sidebar" :class="{ '-translate-x-full lg:translate-x-0': !mobileMenu, 'translate-x-0': mobileMenu }">
     {{-- Logo --}}
     <div class="flex items-center gap-3 px-5 py-5 border-b border-white/10">
-        <img src="{{ asset('images/002-UTI.png') }}" alt="Logo UTI" class="w-16 h-auto object-contain drop-shadow-md">
+        <img src="{{ asset('images/Logo FSIP 1.png') }}" alt="Logo FSIP" class="w-16 h-auto object-contain drop-shadow-md">
         <div>
             <h1 class="text-base font-bold text-white leading-tight">SILAKU</h1>
             <p class="text-[10px] text-primary-300 tracking-wide">Sistem Pelaporan IKU</p>

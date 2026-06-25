@@ -8,13 +8,13 @@
     <!-- OpenGraph SEO Preview Metadata -->
     <meta property="og:title" content="{{ $title ?? 'Dashboard' }} — SILAKU FSIP">
     <meta property="og:description" content="Sistem Pelaporan IKU - Platform digital terpadu untuk pelaporan dan manajemen data Indikator Kinerja Utama FSIP Universitas Teknokrat Indonesia.">
-    <meta property="og:image" content="{{ asset('images/002-UTI.png') }}">
+    <meta property="og:image" content="{{ asset('images/Logo FSIP 1.png') }}">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $title ?? 'Dashboard' }} — SILAKU FSIP">
     <meta name="twitter:description" content="Sistem Pelaporan IKU - Platform digital terpadu untuk pelaporan dan manajemen data Indikator Kinerja Utama FSIP Universitas Teknokrat Indonesia.">
-    <meta name="twitter:image" content="{{ asset('images/002-UTI.png') }}">
+    <meta name="twitter:image" content="{{ asset('images/Logo FSIP 1.png') }}">
     <script>
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -267,67 +267,95 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        /* ─── Toast Factory ──────────────────────────── */
-        const SilakuToast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 4000,
-            timerProgressBar: true,
-            showClass: {
-                popup: 'swal2-show',
-                backdrop: 'swal2-backdrop-show'
-            },
-            customClass: {
-                popup: 'swal-toast-popup'
-            },
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer);
-                toast.addEventListener('mouseleave', Swal.resumeTimer);
+        /* ─── Notification Alert Factory ──────────────────────────── */
+        const showSilakuAlert = (icon, title, text) => {
+            let confirmColor = '#059669'; // Emerald
+            let svgIcon = '';
+            
+            if (icon === 'success') {
+                confirmColor = '#059669';
+                svgIcon = `
+                    <div class="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 mb-5 ring-8 ring-emerald-500/10 dark:ring-emerald-400/5 animate__animated animate__pulse">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                `;
+            } else if (icon === 'error') {
+                confirmColor = '#ef4444';
+                svgIcon = `
+                    <div class="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 mb-5 ring-8 ring-red-500/10 dark:ring-red-400/5 animate__animated animate__pulse">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                `;
+            } else if (icon === 'warning') {
+                confirmColor = '#f59e0b';
+                svgIcon = `
+                    <div class="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 mb-5 ring-8 ring-amber-500/10 dark:ring-amber-400/5 animate__animated animate__pulse">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                `;
+            } else {
+                confirmColor = '#3b82f6';
+                svgIcon = `
+                    <div class="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 mb-5 ring-8 ring-blue-500/10 dark:ring-blue-400/5 animate__animated animate__pulse">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                `;
             }
-        });
 
-        /* ─── Flash → Toast ──────────────────────────── */
+            Swal.fire({
+                html: `
+                    <div class="text-center pt-2">
+                        ${svgIcon}
+                        <h3 class="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-2" style="font-family:'Inter',sans-serif; font-size:1.25rem; font-weight:800; margin-bottom:0.5rem; margin-top:0;">
+                            ${title}
+                        </h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400" style="font-family:'Inter',sans-serif; font-size:0.9rem; color:#6b7280; line-height:1.6; margin:0;">
+                            ${text}
+                        </p>
+                    </div>
+                `,
+                confirmButtonColor: confirmColor,
+                confirmButtonText: 'Tutup',
+                customClass: {
+                    popup: 'swal-custom-popup',
+                    confirmButton: 'swal-confirm-btn'
+                },
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown animate__faster'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp animate__faster'
+                }
+            });
+        };
+
+        /* ─── Flash → Centered Alert ──────────────────────────── */
         @if(session('success'))
-        SilakuToast.fire({
-            icon: 'success',
-            title: {!! json_encode(session('success')) !!},
-            customClass: { popup: 'swal-toast-popup swal-toast-success' }
-        });
+        showSilakuAlert('success', 'Berhasil', {!! json_encode(session('success')) !!});
         @endif
 
         @if(session('error'))
-        SilakuToast.fire({
-            icon: 'error',
-            title: {!! json_encode(session('error')) !!},
-            timer: 6000,
-            customClass: { popup: 'swal-toast-popup swal-toast-error' }
-        });
+        showSilakuAlert('error', 'Error', {!! json_encode(session('error')) !!});
         @endif
 
         @if(session('info'))
-        SilakuToast.fire({
-            icon: 'info',
-            title: {!! json_encode(session('info')) !!},
-            customClass: { popup: 'swal-toast-popup swal-toast-info' }
-        });
+        showSilakuAlert('info', 'Informasi', {!! json_encode(session('info')) !!});
         @endif
 
         @if(session('warning'))
-        SilakuToast.fire({
-            icon: 'warning',
-            title: {!! json_encode(session('warning')) !!},
-            customClass: { popup: 'swal-toast-popup swal-toast-warning' }
-        });
+        showSilakuAlert('warning', 'Peringatan', {!! json_encode(session('warning')) !!});
         @endif
 
         @if($errors->any())
-        SilakuToast.fire({
-            icon: 'error',
-            title: 'Terdapat kesalahan pada input Anda',
-            timer: 6000,
-            customClass: { popup: 'swal-toast-popup swal-toast-error' }
-        });
+        showSilakuAlert('error', 'Error', 'Terdapat kesalahan pada input Anda');
         @endif
 
         /* ─── Confirm Dialog Interceptor ─────────────── */
@@ -352,27 +380,62 @@
                 if (lowerMsg.includes('hapus') || lowerMsg.includes('delete') || lowerMsg.includes('bersihkan') || lowerMsg.includes('kosongkan')) {
                     confirmColor = '#ef4444';
                     iconType     = 'warning';
-                    confirmText  = '🗑️ Ya, Hapus';
+                    confirmText  = 'Ya, Hapus';
                     titleText    = 'Yakin Ingin Menghapus?';
                 } else if (lowerMsg.includes('tolak') || lowerMsg.includes('reject')) {
                     confirmColor = '#ef4444';
                     iconType     = 'warning';
-                    confirmText  = '✕ Ya, Tolak';
+                    confirmText  = 'Ya, Tolak';
                     titleText    = 'Konfirmasi Penolakan';
                 } else if (lowerMsg.includes('setujui') || lowerMsg.includes('approve') || lowerMsg.includes('terima')) {
                     confirmColor = '#059669';
                     iconType     = 'success';
-                    confirmText  = '✓ Ya, Setujui';
+                    confirmText  = 'Ya, Setujui';
                     titleText    = 'Konfirmasi Persetujuan';
+                }
+
+                let svgIcon = '';
+                if (iconType === 'warning') {
+                    svgIcon = `
+                        <div class="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 mb-5 ring-8 ring-red-500/10 dark:ring-red-400/5 animate__animated animate__pulse">
+                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </div>
+                    `;
+                } else if (iconType === 'success') {
+                    svgIcon = `
+                        <div class="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 mb-5 ring-8 ring-emerald-500/10 dark:ring-emerald-400/5 animate__animated animate__pulse">
+                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    `;
+                } else {
+                    svgIcon = `
+                        <div class="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 mb-5 ring-8 ring-indigo-500/10 dark:ring-indigo-400/5 animate__animated animate__pulse">
+                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    `;
                 }
 
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
 
                     Swal.fire({
-                        title: titleText,
-                        html: `<p style="margin:0;line-height:1.6">${message}</p>`,
-                        icon: iconType,
+                        html: `
+                            <div class="text-center pt-2">
+                                ${svgIcon}
+                                <h3 class="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-2" style="font-family:'Inter',sans-serif; font-size:1.25rem; font-weight:800; margin-bottom:0.5rem; margin-top:0;">
+                                    ${titleText}
+                                </h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400" style="font-family:'Inter',sans-serif; font-size:0.9rem; color:#6b7280; line-height:1.6; margin:0;">
+                                    ${message}
+                                </p>
+                            </div>
+                        `,
                         showCancelButton: true,
                         confirmButtonColor: confirmColor,
                         cancelButtonColor: '#9ca3af',
@@ -381,7 +444,9 @@
                         reverseButtons: true,
                         focusCancel: true,
                         customClass: {
-                            popup: 'swal-custom-popup'
+                            popup: 'swal-custom-popup',
+                            confirmButton: 'swal-confirm-btn',
+                            cancelButton: 'swal-cancel-btn'
                         },
                         showClass: {
                             popup: 'animate__animated animate__fadeInDown animate__faster'
@@ -393,12 +458,20 @@
                         if (result.isConfirmed) {
                             // Show brief loading state
                             Swal.fire({
-                                title: 'Memproses...',
+                                html: `
+                                    <div class="text-center pt-2">
+                                        <div class="mx-auto flex items-center justify-center w-16 h-16 mb-5">
+                                            <div class="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent"></div>
+                                        </div>
+                                        <h3 class="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight" style="font-family:'Inter',sans-serif; font-size:1.25rem; font-weight:800; margin:0;">
+                                            Memproses...
+                                        </h3>
+                                    </div>
+                                `,
                                 allowOutsideClick: false,
                                 allowEscapeKey: false,
                                 showConfirmButton: false,
-                                customClass: { popup: 'swal-custom-popup' },
-                                didOpen: () => { Swal.showLoading(); }
+                                customClass: { popup: 'swal-custom-popup' }
                             });
                             form.submit();
                         }

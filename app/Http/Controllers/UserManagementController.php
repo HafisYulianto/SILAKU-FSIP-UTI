@@ -45,6 +45,7 @@ class UserManagementController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => ['required', 'confirmed', Password::min(8)],
             'nip' => 'nullable|string|max:30|unique:users,nip',
+            'nip_type' => ['nullable', 'string', Rule::in(['NIP', 'NIK', 'NITK'])],
             'role' => ['required', Rule::in(['Kaprodi', 'Dosen', 'Wakil Dekan'])],
             'program_studi_id' => 'nullable|exists:program_studi,id',
         ]);
@@ -55,6 +56,7 @@ class UserManagementController extends Controller
             'password' => $request->password,
             'plain_password' => $request->password,
             'nip' => $request->nip,
+            'nip_type' => $request->nip_type,
             'program_studi_id' => $request->program_studi_id,
             'is_active' => true,
         ]);
@@ -87,6 +89,7 @@ class UserManagementController extends Controller
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable', 'confirmed', Password::min(8)],
             'nip' => ['nullable', 'string', 'max:30', Rule::unique('users')->ignore($user->id)],
+            'nip_type' => ['nullable', 'string', Rule::in(['NIP', 'NIK', 'NITK'])],
             'role' => ['required', Rule::in(['Kaprodi', 'Dosen', 'Wakil Dekan'])],
             'program_studi_id' => 'nullable|exists:program_studi,id',
             'is_active' => 'boolean',
@@ -96,6 +99,7 @@ class UserManagementController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'nip' => $request->nip,
+            'nip_type' => $request->nip_type,
             'program_studi_id' => $request->program_studi_id,
             'is_active' => $request->boolean('is_active', true),
         ];

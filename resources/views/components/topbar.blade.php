@@ -31,21 +31,48 @@
         </button>
 
         {{-- Notification Dropdown --}}
+        @role('BAAK')
         @php
             $recentActivities = \App\Models\ActivityLog::orderBy('created_at', 'desc')->take(5)->get();
         @endphp
         <div class="relative" x-data="{ 
             open: false, 
-            unreadCount: {{ min(3, $recentActivities->count()) }}, 
+            latestId: {{ \App\Models\ActivityLog::max('id') ?? 0 }},
+            activities: {{ json_encode($recentActivities->map(fn($a) => ['id' => $a->id])) }},
+            lastReadId: 0,
+            readIds: [],
+            unreadCount: 0,
+            init() { 
+                this.lastReadId = parseInt(localStorage.getItem('last_read_activity_id') || '0');
+                this.readIds = JSON.parse(localStorage.getItem('read_activity_ids') || '[]');
+                let count = 0;
+                this.activities.forEach(act => {
+                    if (act.id > this.lastReadId && !this.readIds.includes(act.id)) {
+                        count++;
+                    }
+                });
+                this.unreadCount = count;
+            },
             markAllRead() { 
+                localStorage.setItem('last_read_activity_id', this.latestId);
+                localStorage.removeItem('read_activity_ids');
+                this.lastReadId = this.latestId;
+                this.readIds = [];
                 this.unreadCount = 0; 
-            } 
+            },
+            markItemRead(id) {
+                if (id > this.lastReadId && !this.readIds.includes(id)) {
+                    this.readIds.push(id);
+                    localStorage.setItem('read_activity_ids', JSON.stringify(this.readIds));
+                    this.unreadCount = Math.max(0, this.unreadCount - 1);
+                }
+            }
         }">
             <button @click="open = !open" class="btn-icon relative" id="notification-button" aria-label="Notifications">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                 </svg>
-                <span x-show="unreadCount > 0" x-text="unreadCount" class="absolute top-1.5 right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center animate-bounce"></span>
+                <span x-show="unreadCount > 0" x-text="unreadCount" class="absolute top-1.5 right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full w-3.5 h-3.5 flex items-center justify-center"></span>
             </button>
 
             <div x-show="open" @click.away="open = false"
@@ -64,13 +91,24 @@
                 
                 <div class="divide-y divide-gray-100 dark:divide-gray-800 max-h-64 overflow-y-auto">
                     @forelse($recentActivities as $activity)
-                    <div class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-850/50 transition-colors">
-                        <div class="flex items-start gap-2.5">
-                            <div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 flex items-center justify-center flex-shrink-0 text-xs font-bold">
+                    @php
+                        $description = strtolower($activity->description);
+                        $targetUrl = route('activities.index');
+                        if (str_contains($description, 'mengajukan') || str_contains($description, 'persetujuan') || str_contains($description, 'menolak') || str_contains($description, 'menyetujui') || str_contains($description, 'kategori')) {
+                            $targetUrl = route('approvals.index');
+                        }
+                    @endphp
+                    <a href="{{ $targetUrl }}" @click="markItemRead({{ $activity->id }})" 
+                       class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-850/50 transition-colors relative"
+                       :class="{ 'bg-primary-50/20 dark:bg-primary-950/10': {{ $activity->id }} > lastReadId && !readIds.includes({{ $activity->id }}) }">
+                        <div class="flex items-start gap-2.5 pr-4">
+                            <div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 flex items-center justify-center flex-shrink-0 text-xs font-bold"
+                                 :class="{ 'ring-2 ring-primary-500/20': {{ $activity->id }} > lastReadId && !readIds.includes({{ $activity->id }}) }">
                                 {{ substr($activity->actor_name ?? 'U', 0, 1) }}
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-xs text-gray-700 dark:text-gray-300 leading-normal">
+                                <p class="text-xs text-gray-700 dark:text-gray-300 leading-normal"
+                                   :class="{ 'font-medium text-gray-900 dark:text-white': {{ $activity->id }} > lastReadId && !readIds.includes({{ $activity->id }}) }">
                                     <span class="font-semibold text-gray-900 dark:text-white">{{ $activity->actor_name }}</span>
                                     ({{ $activity->actor_role }}):
                                     {{ $activity->description }}
@@ -78,7 +116,8 @@
                                 <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-1">{{ $activity->created_at->diffForHumans() }}</p>
                             </div>
                         </div>
-                    </div>
+                        <div x-show="{{ $activity->id }} > lastReadId && !readIds.includes({{ $activity->id }})" class="w-1.5 h-1.5 rounded-full bg-primary-500 absolute top-4 right-4" title="Baru"></div>
+                    </a>
                     @empty
                     <div class="px-4 py-8 text-center text-gray-400 dark:text-gray-500 text-xs">
                         Belum ada notifikasi aktivitas baru
@@ -93,6 +132,7 @@
                 @endhasanyrole
             </div>
         </div>
+        @endrole
 
         {{-- User dropdown --}}
         <div class="relative" x-data="{ open: false }">

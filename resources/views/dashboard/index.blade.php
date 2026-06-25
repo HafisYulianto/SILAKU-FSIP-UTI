@@ -2,6 +2,7 @@
     <div class="space-y-8 fade-in" x-data="{
         tourActive: !localStorage.getItem('tour_completed'),
         tourStep: localStorage.getItem('tour_completed') ? 0 : 1,
+        tourPositionStyle: 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 28rem; max-width: 90vw;',
         startTour() {
             this.tourStep = 1;
             this.tourActive = true;
@@ -16,15 +17,78 @@
             this.tourActive = false;
             this.tourStep = 0;
             localStorage.setItem('tour_completed', 'true');
-            document.querySelectorAll('.tour-highlight').forEach(el => {
-                el.classList.remove('tour-highlight', 'ring-4', 'ring-primary-500', 'dark:ring-primary-400', 'z-50', 'relative');
+            document.querySelectorAll('.tour-highlight-style').forEach(el => {
+                el.style.boxShadow = '';
+                el.classList.remove('tour-highlight-style');
             });
+        },
+        updateTourPosition() {
+            if (this.tourStep === 1 || this.tourStep === 0) {
+                this.tourPositionStyle = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 28rem; max-width: 90vw;';
+                const cutout = document.querySelector('#tour-mask-cutout');
+                if (cutout) {
+                    cutout.setAttribute('width', '0');
+                    cutout.setAttribute('height', '0');
+                }
+                return;
+            }
+            
+            let target = null;
+            if (this.tourStep === 2) target = document.querySelector('#tour-stats');
+            if (this.tourStep === 3) target = document.querySelector('#tour-charts');
+            if (this.tourStep === 4) target = document.querySelector('#theme-toggle');
+            if (this.tourStep === 5) target = document.querySelector('#user-menu-button');
+            
+            if (target) {
+                const rect = target.getBoundingClientRect();
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                
+                const cutout = document.querySelector('#tour-mask-cutout');
+                if (cutout) {
+                    const pad = 12;
+                    cutout.setAttribute('x', rect.left - pad);
+                    cutout.setAttribute('y', rect.top - pad);
+                    cutout.setAttribute('width', rect.width + pad * 2);
+                    cutout.setAttribute('height', rect.height + pad * 2);
+                }
+                
+                let top, left, transform = '';
+                const targetCenterY = rect.top + rect.height / 2;
+                const placeAbove = targetCenterY > windowHeight / 2;
+                
+                if (placeAbove) {
+                    top = rect.top - 16;
+                    transform = 'translateY(-100%)';
+                } else {
+                    top = rect.bottom + 16;
+                    transform = 'translateY(0)';
+                }
+                
+                left = rect.left + rect.width / 2;
+                transform += ' translateX(-50%)';
+                
+                const bubbleWidth = 448;
+                const minLeft = bubbleWidth / 2 + 16;
+                const maxLeft = windowWidth - (bubbleWidth / 2) - 16;
+                
+                if (left < minLeft) {
+                    left = minLeft;
+                } else if (left > maxLeft) {
+                    left = maxLeft;
+                }
+                
+                this.tourPositionStyle = `position: fixed; top: ${top}px; left: ${left}px; transform: ${transform}; width: 28rem; max-width: calc(100vw - 32px);`;
+            }
         }
     }" x-init="
         $watch('tourStep', step => {
-            document.querySelectorAll('.tour-highlight').forEach(el => {
-                el.classList.remove('tour-highlight', 'ring-4', 'ring-primary-500', 'dark:ring-primary-400', 'z-50', 'relative');
+            document.querySelectorAll('.tour-highlight-style').forEach(el => {
+                el.style.boxShadow = '';
+                el.classList.remove('tour-highlight-style');
             });
+            
+            if (step === 0) return;
             
             let target = null;
             if (step === 2) target = document.querySelector('#tour-stats');
@@ -33,10 +97,16 @@
             if (step === 5) target = document.querySelector('#user-menu-button');
             
             if (target) {
-                target.classList.add('tour-highlight', 'ring-4', 'ring-primary-500', 'dark:ring-primary-400', 'z-50', 'relative', 'transition-all', 'duration-300');
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                target.classList.add('tour-highlight-style');
+                target.style.boxShadow = '0 0 0 4px rgba(16, 185, 129, 0.4)';
+                target.scrollIntoView({ behavior: 'auto', block: 'center' });
             }
+            
+            setTimeout(() => {
+                updateTourPosition();
+            }, 100);
         });
+        
         $watch('darkMode', val => {
             const chartTheme = val ? 'dark' : 'light';
             if (window.prodiChart) {
@@ -51,6 +121,7 @@
                 });
             }
         });
+        
         setTimeout(() => {
             const isDark = document.documentElement.classList.contains('dark');
             const chartTheme = isDark ? 'dark' : 'light';
@@ -61,8 +132,13 @@
                     if (c) c.updateOptions({ theme: { mode: chartTheme } });
                 });
             }
+            if (tourActive) {
+                updateTourPosition();
+            }
         }, 1000);
-    ">
+    "
+    @resize.window.debounce.50ms="updateTourPosition()"
+    @scroll.window.debounce.50ms="updateTourPosition()">
         {{-- Page Header --}}
         <div class="page-header">
             <div>
@@ -437,90 +513,115 @@
             </div>
         </div>
 
-        {{-- Guided Tour Overlay --}}
-        <div x-show="tourActive" x-cloak class="fixed inset-0 bg-black/40 dark:bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 max-w-md w-full overflow-hidden transform transition-all duration-300 scale-100 p-6 flex flex-col gap-4">
+        <!-- SVG Spotlight Overlay -->
+        <svg class="fixed inset-0 w-full h-full pointer-events-none transition-all duration-300" 
+             style="z-index: 45;" 
+             x-show="tourActive && tourStep > 1" 
+             x-cloak>
+            <defs>
+                <mask id="tour-spotlight-mask">
+                    <!-- White keeps backdrop dark -->
+                    <rect width="100%" height="100%" fill="white" />
+                    <!-- Black cutout with rounded corners creates the spotlight cutout -->
+                    <rect x="0" y="0" width="0" height="0" rx="16" fill="black" id="tour-mask-cutout" style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" />
+                </mask>
+            </defs>
+            <!-- Semi-transparent backdrop -->
+            <rect width="100%" height="100%" fill="rgba(15, 23, 42, 0.65)" mask="url(#tour-spotlight-mask)" class="pointer-events-auto" />
+        </svg>
+
+        <!-- General dark backdrop for Step 1 (Welcome) -->
+        <div x-show="tourActive && tourStep === 1" 
+             x-cloak 
+             class="fixed inset-0 bg-slate-900/65 z-45 backdrop-blur-xs transition-opacity duration-300"></div>
+
+        <!-- Guided Tour Overlay / Card -->
+        <div x-show="tourActive" 
+             x-cloak 
+             id="tour-bubble"
+             :style="tourPositionStyle"
+             class="fixed bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800/80 p-6 flex flex-col gap-4 transition-all duration-300 ease-out"
+             style="z-index: 50; display: none;">
+            
+            {{-- Tour Header --}}
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
+                <span class="text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">Panduan SILAKU • Langkah <span x-text="tourStep"></span> dari 5</span>
+                <button @click="endTour()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            {{-- Tour Content --}}
+            <div>
+                <!-- Step 1: Welcome -->
+                <div x-show="tourStep === 1" class="space-y-3">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white">Selamat Datang di SILAKU FSIP! 🎓</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                        SILAKU adalah Sistem Pelaporan IKU (Indikator Kinerja Utama) untuk Fakultas Sastra dan Ilmu Pendidikan Universitas Teknokrat Indonesia. 
+                        Mari kita telusuri fitur-fitur penting dalam dashboard ini.
+                    </p>
+                </div>
+
+                <!-- Step 2: Stats -->
+                <div x-show="tourStep === 2" class="space-y-3">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white">Kartu Statistik Ringkasan 📊</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                        Bagian ini menampilkan total data dosen, mahasiswa, kategori aktif, dan jumlah program studi. 
+                        Anda bisa melihat pertumbuhan data IKU secara sekilas.
+                    </p>
+                </div>
+
+                <!-- Step 3: Charts -->
+                <div x-show="tourStep === 3" class="space-y-3">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white">Grafik Visual Distribusi 📈</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                        Visualisasi data per Program Studi dan kategori. 
+                        Anda dapat beralih tipe grafik atau mengunduh visualisasi ini untuk laporan akreditasi.
+                    </p>
+                </div>
+
+                <!-- Step 4: Dark/Light Mode -->
+                <div x-show="tourStep === 4" class="space-y-3">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white">Mode Gelap / Terang 🌗</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                        Gunakan tombol matahari/bulan di atas untuk beralih antara tema Terang dan Gelap yang premium untuk kenyamanan mata Anda.
+                    </p>
+                </div>
+
+                <!-- Step 5: Profil & Keluar -->
+                <div x-show="tourStep === 5" class="space-y-3">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white">Menu Pengguna & Logout 👤</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                        Klik nama atau foto profil Anda untuk melihat detail akun yang sedang aktif, atau untuk keluar dari aplikasi secara aman.
+                    </p>
+                </div>
+            </div>
+
+            {{-- Tour Actions --}}
+            <div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-4 mt-2">
+                <button @click="endTour()" class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-white underline focus:outline-none">
+                    Lewati
+                </button>
                 
-                {{-- Tour Header --}}
-                <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">Panduan SILAKU • Langkah <span x-text="tourStep"></span> dari 5</span>
-                    <button @click="endTour()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                {{-- Progress Dots --}}
+                <div class="flex items-center gap-1.5 select-none">
+                    <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 1 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
+                    <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 2 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
+                    <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 3 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
+                    <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 4 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
+                    <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 5 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
                 </div>
 
-                {{-- Tour Content --}}
-                <div>
-                    <!-- Step 1: Welcome -->
-                    <div x-show="tourStep === 1" class="space-y-3">
-                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Selamat Datang di SILAKU FSIP! 🎓</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                            SILAKU adalah Sistem Pelaporan IKU (Indikator Kinerja Utama) untuk Fakultas Sastra dan Ilmu Pendidikan Universitas Teknokrat Indonesia. 
-                            Mari kita telusuri fitur-fitur penting dalam dashboard ini.
-                        </p>
-                    </div>
-
-                    <!-- Step 2: Stats -->
-                    <div x-show="tourStep === 2" class="space-y-3">
-                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Kartu Statistik Ringkasan 📊</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                            Bagian ini menampilkan total data dosen, mahasiswa, kategori aktif, dan jumlah program studi. 
-                            Anda bisa melihat pertumbuhan data IKU secara sekilas.
-                        </p>
-                    </div>
-
-                    <!-- Step 3: Charts -->
-                    <div x-show="tourStep === 3" class="space-y-3">
-                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Grafik Visual Distribusi 📈</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                            Visualisasi data per Program Studi dan kategori. 
-                            Anda dapat beralih tipe grafik atau mengunduh visualisasi ini untuk laporan akreditasi.
-                        </p>
-                    </div>
-
-                    <!-- Step 4: Dark/Light Mode -->
-                    <div x-show="tourStep === 4" class="space-y-3">
-                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Mode Gelap / Terang 🌗</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                            Gunakan tombol matahari/bulan di atas untuk beralih antara tema Terang dan Gelap yang premium untuk kenyamanan mata Anda.
-                        </p>
-                    </div>
-
-                    <!-- Step 5: Profil & Keluar -->
-                    <div x-show="tourStep === 5" class="space-y-3">
-                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Menu Pengguna & Logout 👤</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                            Klik nama atau foto profil Anda untuk melihat detail akun yang sedang aktif, atau untuk keluar dari aplikasi secara aman.
-                        </p>
-                    </div>
-                </div>
-
-                {{-- Tour Actions --}}
-                <div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-4 mt-2">
-                    <button @click="endTour()" class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-white underline focus:outline-none">
-                        Lewati
+                <div class="flex items-center gap-2">
+                    <button x-show="tourStep > 1" @click="prevStep()" class="btn-secondary btn-sm py-1 px-2.5 text-xs">
+                        Mundur
                     </button>
-                    
-                    {{-- Progress Dots --}}
-                    <div class="flex items-center gap-1.5 select-none">
-                        <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 1 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
-                        <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 2 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
-                        <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 3 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
-                        <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 4 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
-                        <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 5 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <button x-show="tourStep > 1" @click="prevStep()" class="btn-secondary btn-sm py-1 px-2.5 text-xs">
-                            Mundur
-                        </button>
-                        <button x-show="tourStep < 5" @click="nextStep()" class="btn-primary btn-sm py-1 px-3 text-xs">
-                            Lanjut
-                        </button>
-                        <button x-show="tourStep === 5" @click="endTour()" class="btn-primary btn-sm py-1 px-3 text-xs bg-emerald-600 hover:bg-emerald-700">
-                            Selesai
-                        </button>
-                    </div>
+                    <button x-show="tourStep < 5" @click="nextStep()" class="btn-primary btn-sm py-1 px-3 text-xs">
+                        Lanjut
+                    </button>
+                    <button x-show="tourStep === 5" @click="endTour()" class="btn-primary btn-sm py-1 px-3 text-xs bg-emerald-600 hover:bg-emerald-700">
+                        Selesai
+                    </button>
                 </div>
             </div>
         </div>

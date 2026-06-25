@@ -17,6 +17,7 @@ class User extends Authenticatable
         'password',
         'plain_password',
         'nip',
+        'nip_type',
         'program_studi_id',
         'is_active',
     ];
@@ -53,6 +54,9 @@ class User extends Authenticatable
 
     public function getIdentifierLabelAttribute(): string
     {
+        if ($this->nip_type) {
+            return $this->nip_type;
+        }
         if ($this->hasRole('BAAK')) {
             return 'NITK';
         }

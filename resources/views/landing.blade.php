@@ -8,13 +8,13 @@
     <!-- OpenGraph SEO Preview Metadata -->
     <meta property="og:title" content="SILAKU — FSIP Universitas Teknokrat Indonesia">
     <meta property="og:description" content="Sistem Pelaporan IKU - Platform digital terpadu untuk pelaporan dan manajemen data Indikator Kinerja Utama FSIP Universitas Teknokrat Indonesia.">
-    <meta property="og:image" content="{{ asset('images/002-UTI.png') }}">
+    <meta property="og:image" content="{{ asset('images/Logo FSIP 1.png') }}">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="SILAKU — FSIP Universitas Teknokrat Indonesia">
     <meta name="twitter:description" content="Sistem Pelaporan IKU - Platform digital terpadu untuk pelaporan dan manajemen data Indikator Kinerja Utama FSIP Universitas Teknokrat Indonesia.">
-    <meta name="twitter:image" content="{{ asset('images/002-UTI.png') }}">
+    <meta name="twitter:image" content="{{ asset('images/Logo FSIP 1.png') }}">
     <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -256,7 +256,7 @@
                 <!-- Logo -->
                 <a href="#" class="flex items-center gap-3 group">
                     <div class="relative">
-                        <img src="{{ asset('images/002-UTI.png') }}" alt="Logo UTI"
+                        <img src="{{ asset('images/Logo FSIP 1.png') }}" alt="Logo FSIP"
                              :class="scrolled ? 'h-8' : 'h-12'"
                              class="w-auto object-contain drop-shadow-lg transition-all duration-500 group-hover:scale-105">
                     </div>
@@ -552,7 +552,20 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- PROGRAMS SECTION                            -->
     <!-- ═══════════════════════════════════════════ -->
-    <section id="programs" class="py-28 bg-white relative section-accent overflow-hidden">
+    <section id="programs" class="py-28 bg-white relative section-accent overflow-hidden"
+             x-data="{
+                 showModal: false,
+                 activeProg: {},
+                 openModal(key, title, desc, link, focus, from, to, bg, text, icon) {
+                     this.activeProg = { key, title, desc, link, focus, from, to, bg, text, icon };
+                     this.showModal = true;
+                     document.body.style.overflow = 'hidden';
+                 },
+                 closeModal() {
+                     this.showModal = false;
+                     document.body.style.overflow = 'auto';
+                 }
+             }">
         <div class="absolute bottom-0 right-0 w-80 h-80 bg-emerald-50/50 rounded-full blur-3xl translate-y-1/2 translate-x-1/4"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -561,17 +574,18 @@
             </div>
 
             @php $progs = [
-                ['key'=>'s1ss','from'=>'from-blue-500','to'=>'to-cyan-500','bg'=>'bg-blue-50','text'=>'text-blue-600','border'=>'border-blue-200','shadow'=>'shadow-blue-100/50','icon'=>'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
-                ['key'=>'s1pbi','from'=>'from-emerald-500','to'=>'to-teal-500','bg'=>'bg-emerald-50','text'=>'text-emerald-600','border'=>'border-emerald-200','shadow'=>'shadow-emerald-100/50','icon'=>'M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129'],
-                ['key'=>'s1po','from'=>'from-orange-500','to'=>'to-amber-500','bg'=>'bg-orange-50','text'=>'text-orange-600','border'=>'border-orange-200','shadow'=>'shadow-orange-100/50','icon'=>'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
-                ['key'=>'s1pma','from'=>'from-indigo-500','to'=>'to-violet-500','bg'=>'bg-indigo-50','text'=>'text-indigo-600','border'=>'border-indigo-200','shadow'=>'shadow-indigo-100/50','icon'=>'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z'],
-                ['key'=>'s2bi','from'=>'from-violet-500','to'=>'to-purple-500','bg'=>'bg-violet-50','text'=>'text-violet-600','border'=>'border-violet-200','shadow'=>'shadow-violet-100/50','icon'=>'M19 14l-7 7m0 0l-7-7m7 7V3'],
+                ['key'=>'s1ss','link'=>'https://fsip.teknokrat.ac.id/s1-english-literature/','from'=>'from-blue-500','to'=>'to-cyan-500','bg'=>'bg-blue-50','text'=>'text-blue-600','border'=>'border-blue-200','shadow'=>'shadow-blue-100/50','icon'=>'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'],
+                ['key'=>'s1pbi','link'=>'https://fsip.teknokrat.ac.id/s1-english-education/','from'=>'from-emerald-500','to'=>'to-teal-500','bg'=>'bg-emerald-50','text'=>'text-emerald-600','border'=>'border-emerald-200','shadow'=>'shadow-emerald-100/50','icon'=>'M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129'],
+                ['key'=>'s1po','link'=>'https://fsip.teknokrat.ac.id/s1-physical-education/','from'=>'from-orange-500','to'=>'to-amber-500','bg'=>'bg-orange-50','text'=>'text-orange-600','border'=>'border-orange-200','shadow'=>'shadow-orange-100/50','icon'=>'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+                ['key'=>'s1pma','link'=>'https://fsip.teknokrat.ac.id/s1-mathematics-education/','from'=>'from-indigo-500','to'=>'to-violet-500','bg'=>'bg-indigo-50','text'=>'text-indigo-600','border'=>'border-indigo-200','shadow'=>'shadow-indigo-100/50','icon'=>'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z'],
+                ['key'=>'s2bi','link'=>'https://fsip.teknokrat.ac.id/s2-english-language-studies/','from'=>'from-violet-500','to'=>'to-purple-500','bg'=>'bg-violet-50','text'=>'text-violet-600','border'=>'border-violet-200','shadow'=>'shadow-violet-100/50','icon'=>'M19 14l-7 7m0 0l-7-7m7 7V3'],
             ]; @endphp
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                 @foreach($progs as $idx => $p)
-                <div class="group bg-white border border-gray-100 rounded-3xl p-8 hover:border-transparent hover:shadow-2xl {{ $p['shadow'] }} transition-all duration-500 hover:-translate-y-3 relative overflow-hidden card-3d reveal"
-                     style="transition-delay: {{ $idx * 100 }}ms">
+                <div class="group bg-white border border-gray-100 rounded-3xl p-8 hover:border-transparent hover:shadow-2xl {{ $p['shadow'] }} transition-all duration-500 hover:-translate-y-3 relative overflow-hidden card-3d reveal cursor-pointer"
+                     style="transition-delay: {{ $idx * 100 }}ms"
+                     @click="openModal('{{ $p['key'] }}', '{{ __('landing.prog_'.$p['key'].'_title') }}', '{{ __('landing.prog_'.$p['key'].'_detail_desc') }}', '{{ $p['link'] }}', ['{{ __('landing.prog_'.$p['key'].'_focus_1') }}', '{{ __('landing.prog_'.$p['key'].'_focus_2') }}', '{{ __('landing.prog_'.$p['key'].'_focus_3') }}'], '{{ $p['from'] }}', '{{ $p['to'] }}', '{{ $p['bg'] }}', '{{ $p['text'] }}', '{{ $p['icon'] }}')">
                     <!-- Hover gradient bg -->
                     <div class="absolute inset-0 bg-gradient-to-br {{ $p['from'] }}/5 {{ $p['to'] }}/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
 
@@ -595,6 +609,99 @@
                 @endforeach
             </div>
         </div>
+
+        <!-- Study Program Detail Modal -->
+        <div x-show="showModal" 
+             class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6" 
+             x-cloak>
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-gray-950/60 backdrop-blur-md transition-opacity duration-300"
+                 x-show="showModal"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="closeModal()"></div>
+
+            <!-- Modal Panel -->
+            <div class="relative bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl w-full max-w-lg shadow-2xl p-6 sm:p-8 transform transition-all duration-300 z-10"
+                 x-show="showModal"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+                 @keydown.escape.window="closeModal()">
+                
+                <!-- Close Button -->
+                <button @click="closeModal()" 
+                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100/80 transition-all focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+
+                <!-- Modal Content -->
+                <div class="flex items-start gap-4 mb-6">
+                    <!-- Dynamic Icon -->
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform duration-500 shadow-md"
+                         :class="activeProg.bg">
+                        <svg class="w-7 h-7" :class="activeProg.text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="activeProg.icon"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 leading-tight" x-text="activeProg.title"></h3>
+                        <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider mt-1">Fakultas Sastra & Ilmu Pendidikan</p>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-6">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">{{ __('landing.prog_modal_about') }}</h4>
+                    <p class="text-gray-600 text-sm leading-relaxed" x-text="activeProg.desc"></p>
+                </div>
+
+                <!-- Focus Points -->
+                <div class="mb-8">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{{ __('landing.prog_modal_focus') }}</h4>
+                    <ul class="space-y-3">
+                        <template x-for="(foc, idx) in activeProg.focus" :key="idx">
+                            <li class="flex items-start gap-3">
+                                <span class="w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
+                                      :class="activeProg.bg">
+                                    <svg class="w-3 h-3" :class="activeProg.text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </span>
+                                <span class="text-gray-700 text-sm font-medium" x-text="foc"></span>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <a :href="activeProg.link" 
+                       target="_blank"
+                       class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95 text-sm"
+                       :class="'bg-gradient-to-r ' + activeProg.from + ' ' + activeProg.to">
+                        {{ __('landing.prog_modal_website') }}
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
+                    <button @click="closeModal()" 
+                            class="px-5 py-3 rounded-2xl bg-gray-100 text-gray-600 font-semibold hover:bg-gray-200 transition-all duration-300 text-sm">
+                        {{ __('landing.prog_modal_close') }}
+                    </button>
+                </div>
+
+            </div>
+        </div>
     </section>
 
     <!-- ═══════════════════════════════════════════ -->
@@ -612,7 +719,7 @@
                 <!-- Left: Brand -->
                 <div class="flex items-center gap-5">
                     <div class="w-16 h-16 bg-white/8 backdrop-blur rounded-2xl p-2.5 border border-white/10 flex items-center justify-center">
-                        <img src="{{ asset('images/002-UTI.png') }}" alt="Logo UTI" class="h-full w-auto object-contain">
+                        <img src="{{ asset('images/Logo FSIP 1.png') }}" alt="Logo FSIP" class="h-full w-auto object-contain">
                     </div>
                     <div>
                         <h2 class="text-2xl font-black text-white tracking-tight">SILAKU</h2>

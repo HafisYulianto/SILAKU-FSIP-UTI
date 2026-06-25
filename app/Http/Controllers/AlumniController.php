@@ -6,6 +6,7 @@ use App\Models\Alumni;
 use App\Models\ProgramStudi;
 use App\Models\ActivityLog;
 use App\Models\DataApprovalRequest;
+use App\Services\GeocodingService;
 use Illuminate\Http\Request;
 
 class AlumniController extends Controller
@@ -77,7 +78,7 @@ class AlumniController extends Controller
 
         $user = auth()->user();
 
-        // BAAK langsung simpan
+        // BAAK langsung simpan + geocode
         if ($user->hasRole('BAAK')) {
             $alumni = Alumni::create([
                 'nama'             => $request->nama,
@@ -87,6 +88,13 @@ class AlumniController extends Controller
                 'program_studi_id' => $request->program_studi_id,
                 'created_by'       => $user->id,
             ]);
+
+            // Geocode asynchronously (best-effort)
+            try {
+                app(GeocodingService::class)->geocodeAlumni($alumni);
+            } catch (\Exception $e) {
+                // Geocoding failure is non-critical
+            }
 
             ActivityLog::create([
                 'user_id'     => $user->id,

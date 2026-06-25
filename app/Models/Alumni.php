@@ -14,6 +14,8 @@ class Alumni extends Model
         'nama_perusahaan',
         'posisi',
         'lokasi',
+        'lat',
+        'lng',
         'program_studi_id',
         'created_by',
     ];

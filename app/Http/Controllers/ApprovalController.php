@@ -8,6 +8,7 @@ use App\Models\DynamicFileUpload;
 use App\Models\Alumni;
 use App\Models\ActivityLog;
 use App\Models\DataApprovalRequest;
+use App\Services\GeocodingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -225,7 +226,7 @@ class ApprovalController extends Controller
         if ($dataRequest->action === 'create') {
             if ($dataRequest->type === 'alumni') {
                 $payload = $dataRequest->payload;
-                Alumni::create([
+                $alumni = Alumni::create([
                     'nama'             => $payload['nama'],
                     'nama_perusahaan'  => $payload['nama_perusahaan'],
                     'posisi'           => $payload['posisi'],
@@ -233,6 +234,12 @@ class ApprovalController extends Controller
                     'program_studi_id' => $payload['program_studi_id'] ?? null,
                     'created_by'       => $payload['created_by'],
                 ]);
+                // Geocode the new alumni's location
+                try {
+                    app(GeocodingService::class)->geocodeAlumni($alumni);
+                } catch (\Exception $e) {
+                    // Non-critical
+                }
             } elseif ($dataRequest->type === 'record' && $dataRequest->entity_id) {
                 $payload = $dataRequest->payload;
                 $data = collect($payload)->reject(fn($v, $k) => str_starts_with($k, '_'))->toArray();

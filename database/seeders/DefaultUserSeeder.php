@@ -13,8 +13,8 @@ class DefaultUserSeeder extends Seeder
         $baak = User::create([
             'name' => 'Mohammad Aminudin',
             'email' => 'aminudin@teknokrat.ac.id',
-            'password' => 'amin123',
-            'plain_password' => 'amin123',
+            'password' => 'amin123F51p@UTI',
+            'plain_password' => 'amin123F51p@UTI',
             'nip' => '7700011292',
             'is_active' => true,
         ]);
@@ -24,8 +24,8 @@ class DefaultUserSeeder extends Seeder
         $pimpinan = User::create([
             'name' => 'Dr. Heri Kuswoyo, S.S., M.Hum.',
             'email' => 'hery@teknokrat.ac.id',
-            'password' => 'heri123',
-            'plain_password' => 'heri123',
+            'password' => 'heri123F51p@UTI',
+            'plain_password' => 'heri123F51p@UTI',
             'nip' => '023080701',
             'is_active' => true,
         ]);

@@ -51,6 +51,17 @@ class User extends Authenticatable
         return $this->hasMany(DynamicEntity::class, 'created_by');
     }
 
+    public function getIdentifierLabelAttribute(): string
+    {
+        if ($this->hasRole('BAAK')) {
+            return 'NITK';
+        }
+        if ($this->hasRole('Pimpinan') || $this->hasRole('Wakil Dekan')) {
+            return 'NIK';
+        }
+        return 'NIP';
+    }
+
     public function getInitialsAttribute(): string
     {
         $words = explode(' ', $this->name);

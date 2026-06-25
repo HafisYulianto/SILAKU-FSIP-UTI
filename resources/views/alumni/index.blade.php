@@ -60,7 +60,7 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="w-12 text-center">#</th>
+                            <th class="w-12 text-center">No</th>
                             <th>Nama</th>
                             <th>Nama Perusahaan</th>
                             <th>Posisi</th>

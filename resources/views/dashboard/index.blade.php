@@ -359,7 +359,7 @@
         </div>
 
         @php
-            $mapRecords = \App\Models\Alumni::with('programStudi')->get();
+            $mapRecords = \App\Models\Alumni::with('programStudi')->orderBy('nama', 'asc')->get();
         @endphp
         {{-- Map Row --}}
         <div class="card slide-up relative" style="animation-delay: 550ms"
@@ -913,15 +913,18 @@
                     maxZoom: 20
                 }).addTo(map);
 
-                // Map data — now with lat/lng from database
+                // Map data — sorted A-Z (matches the list), with row number
                 const mapRecordsData = [
+                    @php $mapIdx = 0; @endphp
                     @foreach($mapRecords as $record)
                     @if($record->lat && $record->lng)
+                    @php $mapIdx++; @endphp
                     {
+                        no:      {{ $mapIdx }},
                         nama:    "{{ addslashes($record->nama) }}",
-                        status:  "Alumni",
                         lokasi:  "{{ addslashes($record->lokasi) }}",
                         instansi:"{{ addslashes($record->nama_perusahaan) }}",
+                        posisi:  "{{ addslashes($record->posisi) }}",
                         prodi:   "{{ addslashes($record->programStudi->name ?? 'FSIP') }}",
                         lat:     {{ $record->lat }},
                         lng:     {{ $record->lng }},
@@ -930,67 +933,74 @@
                     @endforeach
                 ];
 
-                const createMarkerHtml = (count) => {
-                    return `
-                        <div class="relative flex items-center justify-center w-7 h-7">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60"></span>
-                            <span class="relative inline-flex rounded-full h-6 w-6 bg-emerald-500 text-[10px] font-bold text-white items-center justify-center border-2 border-white dark:border-gray-800 shadow-lg">
-                                ${count}
-                            </span>
-                        </div>
-                    `;
-                };
-
-                // Group markers by approximate coordinates (cluster within ~0.05 degree)
-                const clusters = {};
+                // Small offset to separate markers at identical coordinates
+                const coordCount = {};
                 mapRecordsData.forEach(item => {
-                    const key = `${Math.round(item.lat * 20) / 20}_${Math.round(item.lng * 20) / 20}`;
-                    if (!clusters[key]) {
-                        clusters[key] = { lat: item.lat, lng: item.lng, lokasi: item.lokasi, items: [] };
-                    }
-                    clusters[key].items.push(item);
+                    const key = `${item.lat.toFixed(4)}_${item.lng.toFixed(4)}`;
+                    coordCount[key] = (coordCount[key] || 0) + 1;
+                    item._offsetIndex = coordCount[key] - 1;
+                    item._coordKey   = key;
                 });
 
-                for (const [key, cluster] of Object.entries(clusters)) {
-                    const { lat, lng, lokasi, items } = cluster;
+                const offsets = [
+                    [0, 0], [0.005, 0], [-0.005, 0], [0, 0.005], [0, -0.005],
+                    [0.005, 0.005], [-0.005, -0.005], [0.005, -0.005], [-0.005, 0.005]
+                ];
 
-                    let popupHtml = `
-                        <div class="p-2 min-w-[200px] font-sans">
-                            <h4 class="text-xs font-bold text-gray-900 border-b border-gray-100 pb-1 mb-1.5 flex items-center justify-between">
-                                <span>📍 ${lokasi}</span>
-                                <span class="bg-emerald-100 text-emerald-700 rounded-full px-1.5 py-0.5 text-[9px]">${items.length} Alumni</span>
-                            </h4>
-                            <div class="space-y-1.5 max-h-36 overflow-y-auto">
+                const createNumberMarker = (no) => `
+                    <div style="
+                        position:relative;
+                        display:flex;align-items:center;justify-content:center;
+                        width:28px;height:28px;
+                    ">
+                        <span style="
+                            position:absolute;
+                            display:inline-flex;width:100%;height:100%;
+                            border-radius:50%;background:#10b981;opacity:0.4;
+                            animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;
+                        "></span>
+                        <span style="
+                            position:relative;display:inline-flex;border-radius:50%;
+                            width:24px;height:24px;background:#10b981;
+                            color:white;font-size:10px;font-weight:700;font-family:sans-serif;
+                            align-items:center;justify-content:center;
+                            border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.25);
+                        ">${no}</span>
+                    </div>
+                `;
+
+                mapRecordsData.forEach(item => {
+                    const off = offsets[item._offsetIndex % offsets.length] || [0, 0];
+                    const lat = item.lat + off[0];
+                    const lng = item.lng + off[1];
+
+                    const popupHtml = `
+                        <div style="padding:8px;min-width:190px;font-family:sans-serif;">
+                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #f3f4f6;">
+                                <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#10b981;color:white;border-radius:50%;font-size:9px;font-weight:700;flex-shrink:0;">
+                                    ${item.no}
+                                </span>
+                                <span style="font-size:12px;font-weight:700;color:#111827;">${item.nama}</span>
+                            </div>
+                            <div style="font-size:10px;color:#6b7280;margin-bottom:3px;">📍 ${item.lokasi}</div>
+                            <div style="font-size:10px;font-weight:600;color:#059669;margin-bottom:2px;">${item.instansi}</div>
+                            <div style="font-size:9px;color:#6b7280;">${item.posisi} · ${item.prodi}</div>
+                        </div>
                     `;
 
-                    items.forEach(item => {
-                        popupHtml += `
-                            <div class="text-[10px] leading-relaxed border-b border-gray-100 pb-1 last:border-b-0">
-                                <div class="flex items-center justify-between gap-1 mb-0.5">
-                                    <span class="font-semibold text-gray-800">${item.nama}</span>
-                                    <span class="text-[7px] font-extrabold uppercase rounded px-1 bg-emerald-50 text-emerald-700">Alumni</span>
-                                </div>
-                                <div class="text-gray-500 text-[9px]">${item.prodi}</div>
-                                <div class="text-emerald-600 font-medium text-[9px]">${item.instansi}</div>
-                            </div>
-                        `;
-                    });
-
-                    popupHtml += `</div></div>`;
-
-                    const customIcon = L.divIcon({
-                        html: createMarkerHtml(items.length),
+                    const icon = L.divIcon({
+                        html: createNumberMarker(item.no),
                         className: 'custom-leaflet-marker',
                         iconSize: [28, 28],
-                        iconAnchor: [14, 14]
+                        iconAnchor: [14, 14],
                     });
 
-                    L.marker([lat, lng], { icon: customIcon })
-                        .bindPopup(popupHtml, { className: 'premium-leaflet-popup' })
+                    L.marker([lat, lng], { icon })
+                        .bindPopup(popupHtml, { className: 'premium-leaflet-popup', maxWidth: 240 })
                         .addTo(map);
-                }
+                });
 
-                // If no markers with coords, show info
+                // If no markers, show info
                 if (mapRecordsData.length === 0) {
                     mapElement.innerHTML = `
                         <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:8px;color:#9ca3af;font-family:sans-serif;">
@@ -999,7 +1009,6 @@
                             <p style="font-size:11px;">Jalankan: php artisan alumni:geocode</p>
                         </div>
                     `;
-                    return;
                 }
             };
             document.head.appendChild(leafletScript);

@@ -17,7 +17,7 @@ class AlumniController extends Controller
 
         $alumnis = Alumni::with(['programStudi', 'creator'])
             ->when($prodiId, fn($q) => $q->where('program_studi_id', $prodiId))
-            ->latest()
+            ->orderBy('nama', 'asc')
             ->paginate(20);
 
         $programStudis = ProgramStudi::where('is_active', true)->get();
@@ -42,7 +42,7 @@ class AlumniController extends Controller
 
         $alumnis = Alumni::with(['programStudi', 'creator'])
             ->when($prodiId, fn($q) => $q->where('program_studi_id', $prodiId))
-            ->latest()
+            ->orderBy('nama', 'asc')
             ->get();
 
         return $exportService->exportAlumniToExcel($alumnis);

@@ -71,62 +71,81 @@
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                         </a>
                     @endauth
-                </div>
-            </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center overflow-hidden bg-cover bg-center" style="background-image: url('{{ asset('images/hero-bg.jpg') }}')">
-        <!-- Overlay mask to ensure content readability -->
-        <div class="absolute inset-0 bg-gradient-to-br from-white/75 via-white/50 to-primary-50/35"></div>
+    <section class="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary-50/30">
         <!-- Animated grid background -->
-        <div class="absolute inset-0 hero-grid opacity-30"></div>
+        <div class="absolute inset-0 hero-grid opacity-60"></div>
         <!-- Floating gradient orbs -->
         <div class="absolute top-20 right-[10%] w-[500px] h-[500px] bg-gradient-to-br from-primary-400/20 to-teal-300/20 rounded-full blur-3xl float-slow glow-pulse"></div>
         <div class="absolute bottom-20 left-[5%] w-[400px] h-[400px] bg-gradient-to-tr from-emerald-400/15 to-cyan-300/15 rounded-full blur-3xl float-med"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary-300/10 to-teal-200/10 rounded-full blur-3xl float-fast"></div>
-        <!-- Geometric decorations -->
-        <div class="absolute top-32 left-[15%] w-3 h-3 bg-primary-400 rounded-full float-fast opacity-40"></div>
-        <div class="absolute top-48 right-[20%] w-2 h-2 bg-teal-400 rounded-full float-slow opacity-50"></div>
-        <div class="absolute bottom-40 left-[25%] w-4 h-4 border-2 border-primary-300 rounded-full float-med opacity-30"></div>
-        <div class="absolute top-60 right-[35%] w-6 h-6 border border-emerald-300 rotate-45 float-slow opacity-20"></div>
-        <div class="absolute bottom-32 right-[15%] w-3 h-3 bg-emerald-400 rounded-full float-fast opacity-30"></div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 pb-12">
-            <div class="text-center max-w-5xl mx-auto">
-                <div class="inline-flex items-center px-5 py-2.5 rounded-full bg-white/80 backdrop-blur-sm border border-primary-100 text-primary-700 text-sm font-semibold mb-10 shadow-lg shadow-primary-500/5 fade-in">
-                    <span class="relative flex h-2.5 w-2.5 mr-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-500"></span>
-                    </span>
-                    {{ __('landing.hero_badge') }}
-                </div>
-                <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-gray-900 mb-8 fade-in leading-[0.9]" style="animation-delay: 100ms;">
-                    {{ __('landing.hero_title_1') }} <br>
-                    <span class="text-gradient">{{ __('landing.hero_title_2') }}</span>
-                </h1>
-                <p class="mt-8 text-lg md:text-xl text-gray-500 leading-relaxed mb-12 fade-in max-w-2xl mx-auto" style="animation-delay: 200ms;">
-                    {{ __('landing.hero_desc') }}
-                </p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4 fade-in" style="animation-delay: 300ms;">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="group px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-emerald-600 rounded-full hover:from-primary-700 hover:to-emerald-700 transition-all shadow-2xl shadow-primary-600/30 hover:shadow-primary-600/50 hover:scale-105 flex items-center justify-center gap-2">
-                            {{ __('landing.hero_btn_dashboard') }}
-                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-28 pb-16 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Column: Content -->
+                <div class="lg:col-span-7 text-left space-y-6">
+                    <div class="inline-flex items-center px-5 py-2.5 rounded-full bg-white border border-primary-100 text-primary-700 text-sm font-semibold shadow-md shadow-primary-500/5 fade-in">
+                        <span class="relative flex h-2.5 w-2.5 mr-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-500"></span>
+                        </span>
+                        {{ __('landing.hero_badge') }}
+                    </div>
+                    
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-gray-900 leading-[1.1] fade-in" style="animation-delay: 100ms;">
+                        {{ __('landing.hero_title_1') }} <br>
+                        <span class="text-gradient">{{ __('landing.hero_title_2') }}</span>
+                    </h1>
+                    
+                    <p class="text-base md:text-lg text-gray-500 leading-relaxed fade-in max-w-2xl" style="animation-delay: 200ms;">
+                        {{ __('landing.hero_desc') }}
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 fade-in" style="animation-delay: 300ms;">
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="group px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-emerald-600 rounded-full hover:from-primary-700 hover:to-emerald-700 transition-all shadow-2xl shadow-primary-600/30 hover:shadow-primary-600/50 hover:scale-105 flex items-center justify-center gap-2">
+                                {{ __('landing.hero_btn_dashboard') }}
+                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}" class="group px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-emerald-600 rounded-full hover:from-primary-700 hover:to-emerald-700 transition-all shadow-2xl shadow-primary-600/30 hover:shadow-primary-600/50 hover:scale-105 flex items-center justify-center gap-2">
+                                {{ __('landing.hero_btn_login') }}
+                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </a>
+                        @endauth
+                        <a href="#about" class="px-8 py-4 text-base font-semibold text-gray-600 bg-white border border-gray-200 rounded-full hover:bg-gray-50 hover:border-primary-300 hover:text-primary-700 transition-all shadow-lg shadow-gray-200/50 flex items-center justify-center">
+                            {{ __('landing.hero_btn_learn') }}
                         </a>
-                    @else
-                        <a href="{{ route('login') }}" class="group px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-emerald-600 rounded-full hover:from-primary-700 hover:to-emerald-700 transition-all shadow-2xl shadow-primary-600/30 hover:shadow-primary-600/50 hover:scale-105 flex items-center justify-center gap-2">
-                            {{ __('landing.hero_btn_login') }}
-                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                        </a>
-                    @endauth
-                    <a href="#about" class="px-8 py-4 text-base font-semibold text-gray-600 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full hover:bg-white hover:border-primary-300 hover:text-primary-700 transition-all shadow-lg shadow-gray-200/50">
-                        {{ __('landing.hero_btn_learn') }}
-                    </a>
+                    </div>
                 </div>
+                
+                <!-- Right Column: Image showcase -->
+                <div class="lg:col-span-5 relative fade-in" style="animation-delay: 400ms;">
+                    <!-- Decorative back glow -->
+                    <div class="absolute -inset-4 bg-gradient-to-tr from-primary-500 to-teal-400 rounded-[2.5rem] opacity-25 blur-xl"></div>
+                    
+                    <!-- Main image frame -->
+                    <div class="relative bg-white p-4 rounded-[2.5rem] shadow-2xl border border-gray-100 transform hover:scale-[1.02] hover:-rotate-1 transition-all duration-500">
+                        <div class="rounded-[1.75rem] overflow-hidden aspect-[4/3] relative">
+                            <img src="{{ asset('images/hero-bg.jpg') }}" alt="Gedung FSIP UTI" class="w-full h-full object-cover">
+                            
+                            <!-- Small glass overlay tag -->
+                            <div class="absolute bottom-4 left-4 right-4 bg-white/70 backdrop-blur-md border border-white/30 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-sm font-bold text-gray-900">Gedung FSIP</h4>
+                                    <p class="text-xs text-gray-600">Universitas Teknokrat Indonesia</p>
+                                </div>
+                                <span class="text-xs bg-primary-600 text-white font-semibold px-3 py-1.5 rounded-full shadow-md shadow-primary-600/20">Teknokrat</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
-
+            
             <!-- Stats Bar -->
             <div class="mt-20 max-w-3xl mx-auto fade-in" style="animation-delay: 500ms;">
                 <div class="glass-stat rounded-2xl p-6 shadow-2xl shadow-gray-200/50">

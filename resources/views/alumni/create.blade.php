@@ -59,25 +59,10 @@
 
                 <div>
                     <label for="lokasi" class="form-label">Lokasi <span class="text-red-500">*</span></label>
-                    <select name="lokasi" id="lokasi" required class="form-select @error('lokasi') border-red-500 @enderror">
-                        <option value="">— Pilih Lokasi Kabupaten/Kota Lampung —</option>
-                        <option value="Bandar Lampung" {{ old('lokasi') === 'Bandar Lampung' ? 'selected' : '' }}>Bandar Lampung</option>
-                        <option value="Metro" {{ old('lokasi') === 'Metro' ? 'selected' : '' }}>Metro</option>
-                        <option value="Lampung Selatan" {{ old('lokasi') === 'Lampung Selatan' ? 'selected' : '' }}>Lampung Selatan</option>
-                        <option value="Lampung Tengah" {{ old('lokasi') === 'Lampung Tengah' ? 'selected' : '' }}>Lampung Tengah</option>
-                        <option value="Lampung Timur" {{ old('lokasi') === 'Lampung Timur' ? 'selected' : '' }}>Lampung Timur</option>
-                        <option value="Lampung Utara" {{ old('lokasi') === 'Lampung Utara' ? 'selected' : '' }}>Lampung Utara</option>
-                        <option value="Pringsewu" {{ old('lokasi') === 'Pringsewu' ? 'selected' : '' }}>Pringsewu</option>
-                        <option value="Tanggamus" {{ old('lokasi') === 'Tanggamus' ? 'selected' : '' }}>Tanggamus</option>
-                        <option value="Pesawaran" {{ old('lokasi') === 'Pesawaran' ? 'selected' : '' }}>Pesawaran</option>
-                        <option value="Way Kanan" {{ old('lokasi') === 'Way Kanan' ? 'selected' : '' }}>Way Kanan</option>
-                        <option value="Tulang Bawang" {{ old('lokasi') === 'Tulang Bawang' ? 'selected' : '' }}>Tulang Bawang</option>
-                        <option value="Mesuji" {{ old('lokasi') === 'Mesuji' ? 'selected' : '' }}>Mesuji</option>
-                        <option value="Lampung Barat" {{ old('lokasi') === 'Lampung Barat' ? 'selected' : '' }}>Lampung Barat</option>
-                        <option value="Pesisir Barat" {{ old('lokasi') === 'Pesisir Barat' ? 'selected' : '' }}>Pesisir Barat</option>
-                        <option value="Tulang Bawang Barat" {{ old('lokasi') === 'Tulang Bawang Barat' ? 'selected' : '' }}>Tulang Bawang Barat</option>
-                    </select>
-                    <p class="text-xs text-gray-400 mt-1">Lokasi kabupaten/kota ini akan digunakan untuk visualisasi pemetaan di peta sebaran.</p>
+                    <input type="text" name="lokasi" id="lokasi" value="{{ old('lokasi') }}" required 
+                           class="form-input @error('lokasi') border-red-500 @enderror" 
+                           placeholder="Contoh: Bandar Lampung, Jakarta, Singapore, Tokyo">
+                    <p class="text-xs text-gray-400 mt-1">Tulis nama kabupaten/kota, provinsi, atau negara secara bebas. Sistem akan mendeteksi koordinatnya secara otomatis untuk peta sebaran.</p>
                     @error('lokasi')
                         <p class="form-error">{{ $message }}</p>
                     @enderror

@@ -12,8 +12,8 @@
     <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-primary-950 flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
+<body class="min-h-screen bg-gradient-to-br from-primary-950 via-primary-900 to-emerald-950 flex items-center justify-center p-4 sm:p-6 md:p-10">
+    <div class="w-full max-w-5xl">
         {{ $slot }}
     </div>
 </body>

@@ -59,36 +59,7 @@ class DynamicRecordController extends Controller
         $user = auth()->user();
         $role = $user->roles->first()?->name ?? 'User';
 
-        // Kaprodi / Dosen — ajukan permintaan approval
-        if ($user->hasAnyRole(['Kaprodi', 'Dosen'])) {
-            DataApprovalRequest::create([
-                'type'           => 'record',
-                'action'         => 'create',
-                'status'         => 'pending',
-                'entity_id'      => $entity->id,
-                'payload'        => array_merge($data, [
-                    '_program_studi_id' => $request->program_studi_id,
-                    '_created_by'       => $user->id,
-                ]),
-                'requester_id'   => $user->id,
-                'requester_name' => $user->name,
-                'requester_role' => $role,
-            ]);
-
-            ActivityLog::create([
-                'user_id'     => $user->id,
-                'actor_name'  => $user->name,
-                'actor_role'  => $role,
-                'action'      => 'request_create_record',
-                'description' => "Mengajukan permintaan tambah data pada kategori \"{$entity->name}\" — menunggu persetujuan BAAK",
-            ]);
-
-            return redirect()
-                ->route('entities.view', $entity)
-                ->with('info', "Permintaan tambah data pada kategori \"{$entity->name}\" telah dikirim. Menunggu persetujuan BAAK.");
-        }
-
-        // BAAK — langsung simpan, tidak perlu log
+        // Simpan langsung untuk semua role (BAAK, Kaprodi, Dosen)
         $record = DynamicRecord::create([
             'entity_id'        => $entity->id,
             'data'             => $data,
@@ -96,13 +67,16 @@ class DynamicRecordController extends Controller
             'program_studi_id' => $request->program_studi_id,
         ]);
 
-        ActivityLog::create([
-            'user_id'     => $user->id,
-            'actor_name'  => $user->name,
-            'actor_role'  => $role,
-            'action'      => 'create_record',
-            'description' => "Mengisi data pada kategori \"{$entity->name}\"",
-        ]);
+        // Log hanya untuk Kaprodi dan Dosen
+        if (in_array($role, ['Kaprodi', 'Dosen'])) {
+            ActivityLog::create([
+                'user_id'     => $user->id,
+                'actor_name'  => $user->name,
+                'actor_role'  => $role,
+                'action'      => 'create_record',
+                'description' => "Mengisi data pada kategori \"{$entity->name}\"",
+            ]);
+        }
 
         // Handle file uploads
         foreach ($entity->fields as $field) {

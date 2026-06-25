@@ -79,67 +79,43 @@ class AlumniController extends Controller
         ]);
 
         $user = auth()->user();
+        $role = $user->roles->first()?->name ?? 'User';
 
-        // BAAK langsung simpan + geocode
-        if ($user->hasRole('BAAK')) {
-            $alumni = Alumni::create([
-                'nama'             => $request->nama,
-                'nama_perusahaan'  => $request->nama_perusahaan,
-                'posisi'           => $request->posisi,
-                'lokasi'           => $request->lokasi,
-                'program_studi_id' => $request->program_studi_id,
-                'lat'              => $request->lat,
-                'lng'              => $request->lng,
-                'created_by'       => $user->id,
-            ]);
+        // Simpan langsung untuk semua role (BAAK, Kaprodi, Dosen)
+        $alumni = Alumni::create([
+            'nama'             => $request->nama,
+            'nama_perusahaan'  => $request->nama_perusahaan,
+            'posisi'           => $request->posisi,
+            'lokasi'           => $request->lokasi,
+            'program_studi_id' => $request->program_studi_id,
+            'lat'              => $request->lat,
+            'lng'              => $request->lng,
+            'created_by'       => $user->id,
+        ]);
 
-            // Geocode asynchronously (best-effort) only if no coordinate provided
-            if (empty($alumni->lat) || empty($alumni->lng)) {
-                try {
-                    app(GeocodingService::class)->geocodeAlumni($alumni);
-                } catch (\Exception $e) {
-                    // Geocoding failure is non-critical
-                }
+        // Geocode asynchronously (best-effort) only if no coordinate provided
+        if (empty($alumni->lat) || empty($alumni->lng)) {
+            try {
+                app(GeocodingService::class)->geocodeAlumni($alumni);
+            } catch (\Exception $e) {
+                // Geocoding failure is non-critical
             }
-
-            return redirect()
-                ->route('alumni.index')
-                ->with('success', "Data alumni \"{$alumni->nama}\" berhasil ditambahkan.");
         }
 
-        // Kaprodi / Dosen — ajukan permintaan
-        $role = $user->hasRole('Kaprodi') ? 'Kaprodi' : 'Dosen';
-
-        DataApprovalRequest::create([
-            'type'           => 'alumni',
-            'action'         => 'create',
-            'status'         => 'pending',
-            'payload'        => [
-                'nama'             => $request->nama,
-                'nama_perusahaan'  => $request->nama_perusahaan,
-                'posisi'           => $request->posisi,
-                'lokasi'           => $request->lokasi,
-                'lat'              => $request->lat,
-                'lng'              => $request->lng,
-                'program_studi_id' => $request->program_studi_id,
-                'created_by'       => $user->id,
-            ],
-            'requester_id'   => $user->id,
-            'requester_name' => $user->name,
-            'requester_role' => $role,
-        ]);
-
-        ActivityLog::create([
-            'user_id'     => $user->id,
-            'actor_name'  => $user->name,
-            'actor_role'  => $role,
-            'action'      => 'request_create_alumni',
-            'description' => "Mengajukan permintaan tambah data alumni \"{$request->nama}\" — menunggu persetujuan BAAK",
-        ]);
+        // Log hanya untuk Kaprodi dan Dosen
+        if (in_array($role, ['Kaprodi', 'Dosen'])) {
+            ActivityLog::create([
+                'user_id'     => $user->id,
+                'actor_name'  => $user->name,
+                'actor_role'  => $role,
+                'action'      => 'create_alumni',
+                'description' => "Menambahkan data alumni \"{$alumni->nama}\"",
+            ]);
+        }
 
         return redirect()
             ->route('alumni.index')
-            ->with('info', "Permintaan tambah data alumni \"{$request->nama}\" telah dikirim dan menunggu persetujuan BAAK.");
+            ->with('success', "Data alumni \"{$alumni->nama}\" berhasil ditambahkan.");
     }
 
     public function show(Alumni $alumni)

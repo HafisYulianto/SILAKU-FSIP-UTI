@@ -1,35 +1,106 @@
 <x-layouts.app :title="'Dashboard Akreditasi'">
-    <div class="space-y-8 fade-in">
+    <div class="space-y-8 fade-in" x-data="{
+        tourActive: !localStorage.getItem('tour_completed'),
+        tourStep: localStorage.getItem('tour_completed') ? 0 : 1,
+        startTour() {
+            this.tourStep = 1;
+            this.tourActive = true;
+        },
+        nextStep() {
+            if (this.tourStep < 5) this.tourStep++;
+        },
+        prevStep() {
+            if (this.tourStep > 1) this.tourStep--;
+        },
+        endTour() {
+            this.tourActive = false;
+            this.tourStep = 0;
+            localStorage.setItem('tour_completed', 'true');
+            document.querySelectorAll('.tour-highlight').forEach(el => {
+                el.classList.remove('tour-highlight', 'ring-4', 'ring-primary-500', 'dark:ring-primary-400', 'z-50', 'relative');
+            });
+        }
+    }" x-init="
+        $watch('tourStep', step => {
+            document.querySelectorAll('.tour-highlight').forEach(el => {
+                el.classList.remove('tour-highlight', 'ring-4', 'ring-primary-500', 'dark:ring-primary-400', 'z-50', 'relative');
+            });
+            
+            let target = null;
+            if (step === 2) target = document.querySelector('#tour-stats');
+            if (step === 3) target = document.querySelector('#tour-charts');
+            if (step === 4) target = document.querySelector('#theme-toggle');
+            if (step === 5) target = document.querySelector('#user-menu-button');
+            
+            if (target) {
+                target.classList.add('tour-highlight', 'ring-4', 'ring-primary-500', 'dark:ring-primary-400', 'z-50', 'relative', 'transition-all', 'duration-300');
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+        $watch('darkMode', val => {
+            const chartTheme = val ? 'dark' : 'light';
+            if (window.prodiChart) {
+                window.prodiChart.updateOptions({ theme: { mode: chartTheme } });
+            }
+            if (window.entityChart) {
+                window.entityChart.updateOptions({ theme: { mode: chartTheme } });
+            }
+            if (window.dynamicCharts) {
+                window.dynamicCharts.forEach(c => {
+                    if (c) c.updateOptions({ theme: { mode: chartTheme } });
+                });
+            }
+        });
+        setTimeout(() => {
+            const isDark = document.documentElement.classList.contains('dark');
+            const chartTheme = isDark ? 'dark' : 'light';
+            if (window.prodiChart) window.prodiChart.updateOptions({ theme: { mode: chartTheme } });
+            if (window.entityChart) window.entityChart.updateOptions({ theme: { mode: chartTheme } });
+            if (window.dynamicCharts) {
+                window.dynamicCharts.forEach(c => {
+                    if (c) c.updateOptions({ theme: { mode: chartTheme } });
+                });
+            }
+        }, 1000);
+    ">
         {{-- Page Header --}}
         <div class="page-header">
             <div>
                 <h1 class="page-title">Dashboard Akreditasi</h1>
                 <p class="page-subtitle">Ringkasan data FSIP Universitas Teknokrat Indonesia</p>
             </div>
-            <div class="flex items-center gap-2">
-                <span class="text-xs text-gray-400">Terakhir diperbarui:</span>
-                <span class="text-xs font-medium text-gray-600">{{ now()->translatedFormat('d F Y, H:i') }}</span>
+            <div class="flex items-center gap-3">
+                <button @click="startTour()" class="btn-secondary btn-sm flex items-center gap-1.5 transition-all duration-300 hover:scale-105" id="start-tour-btn">
+                    <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Panduan Portal</span>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-400">Terakhir diperbarui:</span>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">{{ now()->translatedFormat('d F Y, H:i') }}</span>
+                </div>
             </div>
         </div>
 
         {{-- Stat Cards --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="tour-stats">
             {{-- Total Dosen --}}
             <div class="stat-card slide-up" style="animation-delay: 0ms">
                 <div class="absolute top-0 right-0 w-24 h-24 bg-primary-500 rounded-full opacity-10 -translate-y-6 translate-x-6"></div>
                 <div class="flex items-start justify-between relative">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Total Data Dosen</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ number_format($stats['total_dosen']) }}</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Data Dosen</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ number_format($stats['total_dosen']) }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-12 h-12 bg-primary-100 dark:bg-primary-950/30 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
                     </div>
                 </div>
                 <div class="flex items-center gap-1 mt-3">
-                    <span class="text-xs text-primary-600 font-medium">{{ $dosenEntities->count() }} kategori</span>
+                    <span class="text-xs text-primary-600 dark:text-primary-400 font-medium">{{ $dosenEntities->count() }} kategori</span>
                 </div>
             </div>
 
@@ -38,18 +109,18 @@
                 <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500 rounded-full opacity-10 -translate-y-6 translate-x-6"></div>
                 <div class="flex items-start justify-between relative">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Total Data Mahasiswa</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ number_format($stats['total_mahasiswa']) }}</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Data Mahasiswa</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ number_format($stats['total_mahasiswa']) }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-950/30 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
                         </svg>
                     </div>
                 </div>
                 <div class="flex items-center gap-1 mt-3">
-                    <span class="text-xs text-blue-600 font-medium">{{ $mahasiswaEntities->count() }} kategori</span>
+                    <span class="text-xs text-blue-600 dark:text-blue-400 font-medium">{{ $mahasiswaEntities->count() }} kategori</span>
                 </div>
             </div>
 
@@ -58,10 +129,10 @@
                 <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500 rounded-full opacity-10 -translate-y-6 translate-x-6"></div>
                 <div class="flex items-start justify-between relative">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Kategori Data Aktif</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ number_format($stats['total_entities']) }}</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Kategori Data Aktif</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ number_format($stats['total_entities']) }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                    <div class="w-12 h-12 bg-amber-100 dark:bg-amber-950/30 rounded-xl flex items-center justify-center">
                         <svg class="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                         </svg>
@@ -74,10 +145,10 @@
                 <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500 rounded-full opacity-10 -translate-y-6 translate-x-6"></div>
                 <div class="flex items-start justify-between relative">
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Program Studi</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ number_format($stats['total_prodi']) }}</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Program Studi</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ number_format($stats['total_prodi']) }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-950/30 rounded-xl flex items-center justify-center">
                         <svg class="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                         </svg>
@@ -128,17 +199,48 @@
         @endhasanyrole
 
         {{-- Charts Row --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="tour-charts">
             {{-- Program Studi Distribution --}}
-            <div class="chart-card slide-up" style="animation-delay: 400ms">
-                <h3 class="chart-title">Distribusi Data per Program Studi</h3>
-                <div id="chart-prodi-distribution" class="h-80"></div>
+            <div class="chart-card slide-up relative" style="animation-delay: 400ms" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 800)">
+                <!-- Skeleton overlay -->
+                <div x-show="isLoading" class="absolute inset-0 bg-white dark:bg-gray-900 z-10 flex flex-col p-6 rounded-2xl">
+                    <div class="skeleton h-6 w-1/3 mb-6"></div>
+                    <div class="flex items-end gap-3 h-full pb-4">
+                        <div class="skeleton h-[35%] flex-1 animate-pulse"></div>
+                        <div class="skeleton h-[65%] flex-1 animate-pulse"></div>
+                        <div class="skeleton h-[45%] flex-1 animate-pulse"></div>
+                        <div class="skeleton h-[80%] flex-1 animate-pulse"></div>
+                        <div class="skeleton h-[25%] flex-1 animate-pulse"></div>
+                        <div class="skeleton h-[55%] flex-1 animate-pulse"></div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="chart-title mb-0">Distribusi Data per Program Studi</h3>
+                    <div class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 p-0.5 rounded-lg text-xs" x-data="{ chartType: 'bar' }">
+                        <button @click="chartType = 'bar'; window.prodiChart.updateOptions({ chart: { type: 'bar' } })" :class="chartType === 'bar' ? 'bg-white dark:bg-gray-700 shadow-sm text-primary-600 dark:text-primary-400 font-semibold' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'" class="px-2 py-0.5 rounded-md transition-all">Bar</button>
+                        <button @click="chartType = 'line'; window.prodiChart.updateOptions({ chart: { type: 'line' } })" :class="chartType === 'line' ? 'bg-white dark:bg-gray-700 shadow-sm text-primary-600 dark:text-primary-400 font-semibold' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'" class="px-2 py-0.5 rounded-md transition-all">Line</button>
+                    </div>
+                </div>
+                <div :class="{ 'opacity-0': isLoading, 'opacity-100 transition-opacity duration-500': !isLoading }">
+                    <div id="chart-prodi-distribution" class="h-80"></div>
+                </div>
             </div>
 
             {{-- Entity Summary Donut --}}
-            <div class="chart-card slide-up" style="animation-delay: 500ms">
+            <div class="chart-card slide-up relative" style="animation-delay: 500ms" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 800)">
+                <!-- Skeleton overlay -->
+                <div x-show="isLoading" class="absolute inset-0 bg-white dark:bg-gray-900 z-10 flex flex-col p-6 rounded-2xl">
+                    <div class="skeleton h-6 w-1/3 mb-6"></div>
+                    <div class="flex items-center justify-center h-full">
+                        <div class="skeleton w-48 h-48 rounded-full border-[20px] border-gray-100 dark:border-gray-800 flex items-center justify-center animate-pulse"></div>
+                    </div>
+                </div>
+                
                 <h3 class="chart-title">Sebaran Kategori Data</h3>
-                <div id="chart-entity-summary" class="h-80"></div>
+                <div :class="{ 'opacity-0': isLoading, 'opacity-100 transition-opacity duration-500': !isLoading }">
+                    <div id="chart-entity-summary" class="h-80"></div>
+                </div>
             </div>
         </div>
 
@@ -146,36 +248,69 @@
         @if(count($chartData) > 0)
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             @foreach($chartData as $index => $chart)
-            <div class="chart-card slide-up" style="animation-delay: {{ 600 + ($index * 100) }}ms">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h3 class="text-base font-semibold text-gray-900">{{ $chart['entity_name'] }}</h3>
-                        <p class="text-xs text-gray-500">Berdasarkan {{ $chart['field_name'] }}</p>
+            <div class="chart-card slide-up relative" style="animation-delay: {{ 600 + ($index * 100) }}ms" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 800)">
+                <!-- Skeleton overlay -->
+                <div x-show="isLoading" class="absolute inset-0 bg-white dark:bg-gray-900 z-10 flex flex-col p-6 rounded-2xl">
+                    <div class="skeleton h-6 w-1/3 mb-6"></div>
+                    <div class="flex items-end gap-3 h-full pb-4">
+                        <div class="skeleton h-[55%] flex-1 animate-pulse"></div>
+                        <div class="skeleton h-[30%] flex-1 animate-pulse"></div>
+                        <div class="skeleton h-[75%] flex-1 animate-pulse"></div>
+                        <div class="skeleton h-[45%] flex-1 animate-pulse"></div>
                     </div>
-                    <span class="badge {{ $chart['root_category'] === 'dosen' ? 'badge-primary' : 'badge-info' }}">
-                        {{ ucfirst($chart['root_category']) }}
-                    </span>
                 </div>
-                <div id="chart-dynamic-{{ $index }}" class="h-72"></div>
+                
+                <div class="flex items-center justify-between mb-4" x-data="{ chartType: '{{ $chart['type'] === 'donut' ? 'donut' : 'bar' }}' }">
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ $chart['entity_name'] }}</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Berdasarkan {{ $chart['field_name'] }}</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        @if($chart['type'] !== 'donut')
+                        <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-0.5 rounded-lg text-xs">
+                            <button @click="chartType = 'bar'; window.dynamicCharts[{{ $index }}].updateOptions({ chart: { type: 'bar' } })" :class="chartType === 'bar' ? 'bg-white dark:bg-gray-700 shadow-sm text-primary-600 dark:text-primary-400 font-semibold' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'" class="px-2 py-0.5 rounded-md transition-all">Bar</button>
+                            <button @click="chartType = 'line'; window.dynamicCharts[{{ $index }}].updateOptions({ chart: { type: 'line' } })" :class="chartType === 'line' ? 'bg-white dark:bg-gray-700 shadow-sm text-primary-600 dark:text-primary-400 font-semibold' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'" class="px-2 py-0.5 rounded-md transition-all">Line</button>
+                        </div>
+                        @endif
+                        <span class="badge {{ $chart['root_category'] === 'dosen' ? 'badge-primary' : 'badge-info' }}">
+                            {{ ucfirst($chart['root_category']) }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div :class="{ 'opacity-0': isLoading, 'opacity-100 transition-opacity duration-500': !isLoading }">
+                    <div id="chart-dynamic-{{ $index }}" class="h-72"></div>
+                </div>
             </div>
             @endforeach
         </div>
         @endif
 
         {{-- Entity Overview Table --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="tour-categories">
             {{-- Dosen Entities --}}
-            <div class="card slide-up" style="animation-delay: 700ms">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h3 class="font-semibold text-gray-900">📚 Kategori Dosen</h3>
+            <div class="card slide-up relative" style="animation-delay: 700ms" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 800)">
+                <!-- Skeleton overlay -->
+                <div x-show="isLoading" class="absolute inset-0 bg-white dark:bg-gray-900 z-10 flex flex-col p-6 rounded-2xl">
+                    <div class="skeleton h-6 w-1/3 mb-6"></div>
+                    <div class="space-y-3">
+                        <div class="skeleton h-10 w-full animate-pulse"></div>
+                        <div class="skeleton h-10 w-full animate-pulse"></div>
+                        <div class="skeleton h-10 w-full animate-pulse"></div>
+                    </div>
+                </div>
+                
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                    <h3 class="font-semibold text-gray-900 dark:text-white">📚 Kategori Dosen</h3>
                     @role('BAAK')
-                    <a href="{{ route('entities.create') }}" class="text-xs text-primary-600 hover:text-primary-700 font-medium">+ Tambah</a>
+                    <a href="{{ route('entities.create') }}" class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 font-medium">+ Tambah</a>
                     @endrole
                 </div>
-                <div class="divide-y divide-gray-100">
+                <div class="divide-y divide-gray-100 dark:divide-gray-800">
                     @forelse($dosenEntities as $entity)
-                    <a href="{{ route('entities.view', $entity) }}" class="flex items-center justify-between px-6 py-3 hover:bg-primary-50/50 transition-colors">
-                        <span class="text-sm text-gray-700">{{ $entity->name }}</span>
+                    <a href="{{ route('entities.view', $entity) }}" class="flex items-center justify-between px-6 py-3 hover:bg-primary-50/50 dark:hover:bg-primary-950/20 transition-colors">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">{{ $entity->name }}</span>
                         <span class="badge-primary">{{ $entity->records_count }} data</span>
                     </a>
                     @empty
@@ -187,17 +322,27 @@
             </div>
 
             {{-- Mahasiswa Entities --}}
-            <div class="card slide-up" style="animation-delay: 800ms">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h3 class="font-semibold text-gray-900">🎓 Kategori Mahasiswa</h3>
+            <div class="card slide-up relative" style="animation-delay: 800ms" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 800)">
+                <!-- Skeleton overlay -->
+                <div x-show="isLoading" class="absolute inset-0 bg-white dark:bg-gray-900 z-10 flex flex-col p-6 rounded-2xl">
+                    <div class="skeleton h-6 w-1/3 mb-6"></div>
+                    <div class="space-y-3">
+                        <div class="skeleton h-10 w-full animate-pulse"></div>
+                        <div class="skeleton h-10 w-full animate-pulse"></div>
+                        <div class="skeleton h-10 w-full animate-pulse"></div>
+                    </div>
+                </div>
+                
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                    <h3 class="font-semibold text-gray-900 dark:text-white">🎓 Kategori Mahasiswa</h3>
                     @role('BAAK')
-                    <a href="{{ route('entities.create') }}" class="text-xs text-primary-600 hover:text-primary-700 font-medium">+ Tambah</a>
+                    <a href="{{ route('entities.create') }}" class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 font-medium">+ Tambah</a>
                     @endrole
                 </div>
-                <div class="divide-y divide-gray-100">
+                <div class="divide-y divide-gray-100 dark:divide-gray-800">
                     @forelse($mahasiswaEntities as $entity)
-                    <a href="{{ route('entities.view', $entity) }}" class="flex items-center justify-between px-6 py-3 hover:bg-blue-50/50 transition-colors">
-                        <span class="text-sm text-gray-700">{{ $entity->name }}</span>
+                    <a href="{{ route('entities.view', $entity) }}" class="flex items-center justify-between px-6 py-3 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-colors">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">{{ $entity->name }}</span>
                         <span class="badge-info">{{ $entity->records_count }} data</span>
                     </a>
                     @empty
@@ -210,20 +355,39 @@
         </div>
 
         {{-- Recent Activity --}}
-        <div class="card slide-up" style="animation-delay: 900ms">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h3 class="font-semibold text-gray-900">Aktivitas Terbaru</h3>
+        <div class="card slide-up relative" style="animation-delay: 900ms" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 800)">
+            <!-- Skeleton overlay -->
+            <div x-show="isLoading" class="absolute inset-0 bg-white dark:bg-gray-900 z-10 flex flex-col p-6 rounded-2xl">
+                <div class="skeleton h-6 w-1/3 mb-6"></div>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="skeleton skeleton-avatar animate-pulse"></div>
+                        <div class="skeleton h-4 flex-1 animate-pulse"></div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="skeleton skeleton-avatar animate-pulse"></div>
+                        <div class="skeleton h-4 flex-1 animate-pulse"></div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="skeleton skeleton-avatar animate-pulse"></div>
+                        <div class="skeleton h-4 flex-1 animate-pulse"></div>
+                    </div>
+                </div>
             </div>
-            <div class="divide-y divide-gray-100">
+            
+            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+                <h3 class="font-semibold text-gray-900 dark:text-white">Aktivitas Terbaru</h3>
+            </div>
+            <div class="divide-y divide-gray-100 dark:divide-gray-800">
                 @forelse($recentRecords as $record)
                 <div class="flex items-center justify-between px-6 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-xs font-bold text-primary-700">
+                        <div class="w-8 h-8 bg-primary-100 dark:bg-primary-950/40 rounded-full flex items-center justify-center text-xs font-bold text-primary-700 dark:text-primary-300">
                             {{ substr($record->creator->name ?? 'U', 0, 1) }}
                         </div>
                         <div>
-                            <p class="text-sm text-gray-700"><span class="font-medium">{{ $record->creator->name ?? 'Unknown' }}</span> menambah data ke <span class="font-medium text-primary-600">{{ $record->entity->name }}</span></p>
-                            <p class="text-xs text-gray-400">{{ $record->created_at->diffForHumans() }}</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300"><span class="font-medium text-gray-900 dark:text-white">{{ $record->creator->name ?? 'Unknown' }}</span> menambah data ke <span class="font-medium text-primary-600 dark:text-primary-400">{{ $record->entity->name }}</span></p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500">{{ $record->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
                     @if($record->programStudi)
@@ -241,6 +405,84 @@
                 @endforelse
             </div>
         </div>
+
+        {{-- Guided Tour Overlay --}}
+        <div x-show="tourActive" x-cloak class="fixed inset-0 bg-black/40 dark:bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 max-w-md w-full overflow-hidden transform transition-all duration-300 scale-100 p-6 flex flex-col gap-4">
+                
+                {{-- Tour Header --}}
+                <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">Panduan SILAKU • Langkah <span x-text="tourStep"></span> dari 5</span>
+                    <button @click="endTour()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                {{-- Tour Content --}}
+                <div>
+                    <!-- Step 1: Welcome -->
+                    <div x-show="tourStep === 1" class="space-y-3">
+                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Selamat Datang di SILAKU FSIP! 🎓</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                            SILAKU adalah Sistem Pelaporan IKU (Indikator Kinerja Utama) untuk Fakultas Sastra dan Ilmu Pendidikan Universitas Teknokrat Indonesia. 
+                            Mari kita telusuri fitur-fitur penting dalam dashboard ini.
+                        </p>
+                    </div>
+
+                    <!-- Step 2: Stats -->
+                    <div x-show="tourStep === 2" class="space-y-3">
+                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Kartu Statistik Ringkasan 📊</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                            Bagian ini menampilkan total data dosen, mahasiswa, kategori aktif, dan jumlah program studi. 
+                            Anda bisa melihat pertumbuhan data IKU secara sekilas.
+                        </p>
+                    </div>
+
+                    <!-- Step 3: Charts -->
+                    <div x-show="tourStep === 3" class="space-y-3">
+                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Grafik Visual Distribusi 📈</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                            Visualisasi data per Program Studi dan kategori. 
+                            Anda dapat beralih tipe grafik atau mengunduh visualisasi ini untuk laporan akreditasi.
+                        </p>
+                    </div>
+
+                    <!-- Step 4: Dark/Light Mode -->
+                    <div x-show="tourStep === 4" class="space-y-3">
+                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Mode Gelap / Terang 🌗</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                            Gunakan tombol matahari/bulan di atas untuk beralih antara tema Terang dan Gelap yang premium untuk kenyamanan mata Anda.
+                        </p>
+                    </div>
+
+                    <!-- Step 5: Profil & Keluar -->
+                    <div x-show="tourStep === 5" class="space-y-3">
+                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Menu Pengguna & Logout 👤</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                            Klik nama atau foto profil Anda untuk melihat detail akun yang sedang aktif, atau untuk keluar dari aplikasi secara aman.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Tour Actions --}}
+                <div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-4 mt-2">
+                    <button @click="endTour()" class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-white underline">
+                        Lewati Panduan
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button x-show="tourStep > 1" @click="prevStep()" class="btn-secondary btn-sm py-1.5 px-3">
+                            Sebelumnya
+                        </button>
+                        <button x-show="tourStep < 5" @click="nextStep()" class="btn-primary btn-sm py-1.5 px-4">
+                            Lanjut
+                        </button>
+                        <button x-show="tourStep === 5" @click="endTour()" class="btn-primary btn-sm py-1.5 px-4 bg-emerald-600 hover:bg-emerald-700">
+                            Selesai
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     @push('scripts')
@@ -252,8 +494,24 @@
         // Program Studi Distribution Chart
         const prodiData = @json($prodiDistribution);
         if (prodiData.labels.length > 0) {
-            new ApexCharts(document.querySelector('#chart-prodi-distribution'), {
-                chart: { type: 'bar', height: 300, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+            window.prodiChart = new ApexCharts(document.querySelector('#chart-prodi-distribution'), {
+                chart: { 
+                    type: 'bar', 
+                    height: 300, 
+                    toolbar: { 
+                        show: true,
+                        tools: {
+                            download: true,
+                            selection: false,
+                            zoom: false,
+                            zoomin: false,
+                            zoomout: false,
+                            pan: false,
+                            reset: false
+                        }
+                    }, 
+                    fontFamily: 'Inter, sans-serif' 
+                },
                 series: [
                     { name: 'Dosen', data: prodiData.dosen },
                     { name: 'Mahasiswa', data: prodiData.mahasiswa }
@@ -265,7 +523,9 @@
                 legend: { position: 'top' },
                 grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
                 tooltip: { theme: 'light' },
-            }).render();
+                theme: { mode: document.documentElement.classList.contains('dark') ? 'dark' : 'light' }
+            });
+            window.prodiChart.render();
         } else {
             document.querySelector('#chart-prodi-distribution').innerHTML = '<div class="flex items-center justify-center h-full text-gray-400 text-sm">Belum ada data</div>';
         }
@@ -275,20 +535,33 @@
         const mahasiswaEntities = @json($mahasiswaEntities);
         const allEntities = [...dosenEntities, ...mahasiswaEntities];
         if (allEntities.length > 0) {
-            new ApexCharts(document.querySelector('#chart-entity-summary'), {
-                chart: { type: 'donut', height: 300, fontFamily: 'Inter, sans-serif' },
+            window.entityChart = new ApexCharts(document.querySelector('#chart-entity-summary'), {
+                chart: { 
+                    type: 'donut', 
+                    height: 300, 
+                    toolbar: { 
+                        show: true,
+                        tools: {
+                            download: true
+                        }
+                    },
+                    fontFamily: 'Inter, sans-serif' 
+                },
                 series: allEntities.map(e => e.records_count || 0),
                 labels: allEntities.map(e => e.name),
                 colors: pastelPalette,
                 legend: { position: 'bottom', fontSize: '12px' },
                 dataLabels: { enabled: true, style: { fontSize: '11px' } },
                 plotOptions: { pie: { donut: { size: '55%', labels: { show: true, total: { show: true, label: 'Total', fontSize: '14px', fontWeight: 700 } } } } },
-            }).render();
+                theme: { mode: document.documentElement.classList.contains('dark') ? 'dark' : 'light' }
+            });
+            window.entityChart.render();
         } else {
             document.querySelector('#chart-entity-summary').innerHTML = '<div class="flex items-center justify-center h-full text-gray-400 text-sm">Belum ada data</div>';
         }
 
         // Dynamic Charts
+        window.dynamicCharts = [];
         const dynamicCharts = @json($chartData);
         dynamicCharts.forEach(function(chart, index) {
             const el = document.querySelector('#chart-dynamic-' + index);
@@ -300,10 +573,18 @@
                 return;
             }
 
-            let options = {};
+            let options = {
+                theme: { mode: document.documentElement.classList.contains('dark') ? 'dark' : 'light' }
+            };
             if (chart.type === 'donut') {
                 options = {
-                    chart: { type: 'donut', height: 270, fontFamily: 'Inter, sans-serif' },
+                    ...options,
+                    chart: { 
+                        type: 'donut', 
+                        height: 270, 
+                        toolbar: { show: true, tools: { download: true } },
+                        fontFamily: 'Inter, sans-serif' 
+                    },
                     series: data.values,
                     labels: data.labels,
                     colors: emeraldPalette,
@@ -312,7 +593,24 @@
                 };
             } else if (chart.type === 'area') {
                 options = {
-                    chart: { type: 'area', height: 270, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+                    ...options,
+                    chart: { 
+                        type: 'area', 
+                        height: 270, 
+                        toolbar: { 
+                            show: true,
+                            tools: {
+                                download: true,
+                                selection: false,
+                                zoom: false,
+                                zoomin: false,
+                                zoomout: false,
+                                pan: false,
+                                reset: false
+                            }
+                        }, 
+                        fontFamily: 'Inter, sans-serif' 
+                    },
                     series: [{ name: chart.field_name, data: data.values }],
                     xaxis: { categories: data.labels },
                     colors: ['#10b981'],
@@ -323,7 +621,24 @@
                 };
             } else {
                 options = {
-                    chart: { type: 'bar', height: 270, toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
+                    ...options,
+                    chart: { 
+                        type: 'bar', 
+                        height: 270, 
+                        toolbar: { 
+                            show: true,
+                            tools: {
+                                download: true,
+                                selection: false,
+                                zoom: false,
+                                zoomin: false,
+                                zoomout: false,
+                                pan: false,
+                                reset: false
+                            }
+                        }, 
+                        fontFamily: 'Inter, sans-serif' 
+                    },
                     series: [{ name: chart.field_name, data: data.values }],
                     xaxis: { categories: data.labels },
                     colors: ['#10b981'],
@@ -333,7 +648,8 @@
                     grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
                 };
             }
-            new ApexCharts(el, options).render();
+            window.dynamicCharts[index] = new ApexCharts(el, options);
+            window.dynamicCharts[index].render();
         });
     });
     </script>

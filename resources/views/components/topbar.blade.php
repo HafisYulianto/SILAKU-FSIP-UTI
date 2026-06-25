@@ -9,7 +9,7 @@
 
         {{-- Breadcrumb / Page title --}}
         <div>
-            <h2 class="text-lg font-semibold text-gray-900">{{ $title ?? 'Dashboard' }}</h2>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $title ?? 'Dashboard' }}</h2>
         </div>
     </div>
 
@@ -18,13 +18,25 @@
         @php $roleName = auth()->user()->roles->first()?->name ?? 'User'; @endphp
         <span class="badge-primary hidden sm:inline-flex">{{ $roleName }}</span>
 
+        {{-- Theme Toggle --}}
+        <button @click="darkMode = !darkMode" class="btn-icon" aria-label="Toggle Dark Mode" id="theme-toggle">
+            {{-- Sun Icon --}}
+            <svg x-show="!darkMode" class="w-5 h-5 text-gray-500 hover:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.364l-.707-.707M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            {{-- Moon Icon --}}
+            <svg x-show="darkMode" class="w-5 h-5 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+        </button>
+
         {{-- User dropdown --}}
         <div class="relative" x-data="{ open: false }">
-            <button @click="open = !open" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors" id="user-menu-button">
+            <button @click="open = !open" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" id="user-menu-button">
                 <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
                     <span class="text-xs font-bold text-white">{{ auth()->user()->initials }}</span>
                 </div>
-                <span class="hidden sm:block text-sm font-medium text-gray-700">{{ auth()->user()->name }}</span>
+                <span class="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300">{{ auth()->user()->name }}</span>
                 <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                 </svg>
@@ -37,18 +49,18 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 scale-100"
                  x-transition:leave-end="opacity-0 scale-95"
-                 class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-                <div class="px-4 py-3 border-b border-gray-100">
-                    <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
+                 class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 py-2 z-50">
+                <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ auth()->user()->email }}</p>
                     @if(auth()->user()->nip)
-                    <p class="text-xs text-gray-400 mt-1">{{ auth()->user()->identifier_label }}: {{ auth()->user()->nip }}</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ auth()->user()->identifier_label }}: {{ auth()->user()->nip }}</p>
                     @endif
                 </div>
 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2" id="logout-button">
+                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors flex items-center gap-2" id="logout-button">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>

@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Dashboard' }} — SILAKU FSIP</title>
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <meta name="description" content="Sistem Pelaporan IKU - FSIP Universitas Teknokrat Indonesia">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +38,7 @@
             border: 1px solid rgba(255,255,255,0.7) !important;
             box-shadow: 0 25px 60px -12px rgba(0,0,0,0.15),
                         0 0 0 1px rgba(255,255,255,0.5) inset !important;
+            transition: background 0.3s, border-color 0.3s !important;
         }
         .swal2-popup.swal-custom-popup .swal2-title {
             font-size: 1.2rem !important;
@@ -119,6 +127,7 @@
                         0 0 0 1px rgba(255,255,255,0.3) inset !important;
             backdrop-filter: blur(12px) !important;
             -webkit-backdrop-filter: blur(12px) !important;
+            transition: background 0.3s !important;
         }
         .swal2-popup.swal-toast-popup .swal2-title {
             font-size: 0.875rem !important;
@@ -185,9 +194,40 @@
         .swal-toast-error .swal2-timer-progress-bar { background: #ef4444 !important; }
         .swal-toast-info .swal2-timer-progress-bar { background: #3b82f6 !important; }
         .swal-toast-warning .swal2-timer-progress-bar { background: #f59e0b !important; }
+
+        /* Dark mode overrides for SweetAlert2 */
+        .dark .swal2-popup.swal-custom-popup {
+            background: rgba(17, 24, 39, 0.95) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            box-shadow: 0 25px 60px -12px rgba(0,0,0,0.5),
+                        0 0 0 1px rgba(255,255,255,0.05) inset !important;
+        }
+        .dark .swal2-popup.swal-custom-popup .swal2-title {
+            color: #ffffff !important;
+        }
+        .dark .swal2-popup.swal-custom-popup .swal2-html-container {
+            color: #d1d5db !important;
+        }
+        .dark .swal2-popup.swal-custom-popup .swal2-styled.swal2-cancel {
+            background-color: #374151 !important;
+            color: #e5e7eb !important;
+        }
+        .dark .swal2-popup.swal-custom-popup .swal2-styled.swal2-cancel:hover {
+            background-color: #4b5563 !important;
+        }
+        .dark .swal-toast-success {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.95) 0%, rgba(2, 44, 34, 0.95) 100%) !important;
+            border-left: 4px solid #10b981 !important;
+        }
+        .dark .swal-toast-success .swal2-title { color: #ecfdf5 !important; }
+        .dark .swal-toast-error {
+            background: linear-gradient(135deg, rgba(127, 29, 29, 0.95) 0%, rgba(69, 10, 10, 0.95) 100%) !important;
+            border-left: 4px solid #ef4444 !important;
+        }
+        .dark .swal-toast-error .swal2-title { color: #fef2f2 !important; }
     </style>
 </head>
-<body class="h-full bg-gray-50/50" x-data="{ sidebarOpen: true, mobileMenu: false }">
+<body class="h-full bg-gray-50/50" x-data="{ sidebarOpen: true, mobileMenu: false, darkMode: localStorage.getItem('theme') === 'dark' }" x-init="$watch('darkMode', val => { if (val) { document.documentElement.classList.add('dark'); localStorage.setItem('theme', 'dark'); } else { document.documentElement.classList.remove('dark'); localStorage.setItem('theme', 'light'); } })">
 
     {{-- Sidebar --}}
     @include('components.sidebar')

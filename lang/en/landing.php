@@ -15,7 +15,7 @@ return [
     'hero_btn_login' => 'Login to Portal',
     'hero_btn_learn' => 'Learn More',
 
-    'vision_badge' => 'Our Compass',
+    'vision_badge' => 'Vision & Mission',
     'vision_title' => 'Vision & Mission',
     'vision_heading' => 'Vision',
     'vision_text' => '"By 2035, to become an internationally recognized Center of Excellence in literature, language, and education, contributing meaningfully to sustainable national development through the core missions of higher education (Education, Research, and Community Service)"',

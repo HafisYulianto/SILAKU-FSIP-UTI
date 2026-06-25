@@ -15,7 +15,7 @@ return [
     'hero_btn_login' => 'Masuk ke Portal',
     'hero_btn_learn' => 'Pelajari Lebih Lanjut',
 
-    'vision_badge' => 'Kompas Kami',
+    'vision_badge' => 'Visi & Misi',
     'vision_title' => 'Visi & Misi',
     'vision_heading' => 'Visi',
     'vision_text' => '"Pada tahun 2035, menjadi Pusat Keunggulan yang diakui secara internasional dalam bidang sastra, bahasa, dan pendidikan, berkontribusi secara bermakna pada pembangunan nasional berkelanjutan melalui tridharma perguruan tinggi (Pendidikan, Penelitian, dan Pengabdian kepada Masyarakat)"',

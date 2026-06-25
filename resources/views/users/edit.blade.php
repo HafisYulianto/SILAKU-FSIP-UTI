@@ -25,8 +25,8 @@
                             <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required class="form-input">
                         </div>
                         <div>
-                            <label class="form-label" for="nip">NIP</label>
-                            <input type="text" name="nip" id="nip" value="{{ old('nip', $user->nip) }}" class="form-input">
+                            <label class="form-label" for="nip">NIP / NIK / NITK</label>
+                            <input type="text" name="nip" id="nip" value="{{ old('nip', $user->nip) }}" class="form-input" placeholder="Masukkan NIP, NIK, atau NITK">
                         </div>
                     </div>
 

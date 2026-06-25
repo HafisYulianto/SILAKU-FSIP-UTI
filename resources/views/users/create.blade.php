@@ -25,8 +25,8 @@
                         </div>
 
                         <div>
-                            <label class="form-label" for="nip">NIP</label>
-                            <input type="text" name="nip" id="nip" value="{{ old('nip') }}" class="form-input" placeholder="NIP">
+                            <label class="form-label" for="nip">NIP / NIK / NITK</label>
+                            <input type="text" name="nip" id="nip" value="{{ old('nip') }}" class="form-input" placeholder="Masukkan NIP, NIK, atau NITK">
                         </div>
                     </div>
 

@@ -215,15 +215,26 @@
                 transform: translate3d(85px,0,0);
             }
         }
-        @media (max-width: 768px) {
-            .waves {
-                height: 60px;
-                min-height: 60px;
-            }
+        /* ═══ Equalizer Animation ═══ */
+        .eq-bar {
+            width: 2px;
+            height: 3px;
+            background-color: currentColor;
+            animation: bounce 0.8s ease-in-out infinite alternate;
+        }
+        .eq-bar:nth-child(2) { animation-delay: 0.25s; animation-duration: 0.6s; }
+        .eq-bar:nth-child(3) { animation-delay: 0.45s; animation-duration: 0.9s; }
+        
+        @keyframes bounce {
+            0% { height: 3px; }
+            100% { height: 16px; }
         }
     </style>
 </head>
-<body class="font-sans antialiased text-gray-800 bg-white overflow-x-hidden" x-data="{ scrolled: false, mobileNav: false }" @scroll.window="scrolled = (window.pageYOffset > 30)">
+<body class="font-sans antialiased text-gray-800 bg-white overflow-x-hidden" x-data="{ scrolled: false, mobileNav: false, isPlaying: false, toggleMusic() { const audio = document.getElementById('bg-music'); if(audio){ if(this.isPlaying){ audio.pause(); } else { audio.play().catch(e => console.log('Autoplay blocked', e)); } this.isPlaying = !audio.paused; } } }" @scroll.window="scrolled = (window.pageYOffset > 30)">
+
+    <!-- Background Music -->
+    <audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" loop></audio>
 
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 pointer-events-none"
          :class="scrolled ? 'py-4' : 'py-5'">
@@ -254,6 +265,22 @@
 
                 <!-- Right side -->
                 <div class="flex items-center gap-3">
+                    <!-- Music Switcher -->
+                    <button @click="toggleMusic()" 
+                            class="flex items-center justify-center w-8 h-8 text-white/60 hover:text-white rounded-lg hover:bg-white/10 transition-all focus:outline-none relative group mr-1"
+                            title="Putar Musik">
+                        <!-- Equalizer (if playing) -->
+                        <div x-show="isPlaying" class="flex items-end gap-[2px] h-3.5 w-3.5 justify-center" x-cloak>
+                            <span class="eq-bar"></span>
+                            <span class="eq-bar"></span>
+                            <span class="eq-bar"></span>
+                        </div>
+                        <!-- Musical note icon (if paused) -->
+                        <svg x-show="!isPlaying" class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                        </svg>
+                    </button>
+
                     <!-- Language Switcher -->
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" @click.away="open = false"

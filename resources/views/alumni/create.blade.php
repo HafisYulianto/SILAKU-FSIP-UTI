@@ -71,12 +71,19 @@
                         </div>
                     </div>
                     
+                    {{-- Hidden inputs for coordinates --}}
+                    <input type="hidden" name="lat" id="lat" value="{{ old('lat') }}">
+                    <input type="hidden" name="lng" id="lng" value="{{ old('lng') }}">
+                    
                     {{-- Dropdown Suggestion List --}}
                     <div id="autocomplete-suggestions" class="absolute z-50 left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg max-h-60 overflow-y-auto hidden">
                         <!-- Items will be populated by JS -->
                     </div>
 
-                    <p class="text-xs text-gray-400 mt-1">Tulis nama lokasi secara bebas. Pilih saran yang muncul agar koordinat terdeteksi secara otomatis.</p>
+                    <div class="flex items-center justify-between mt-1">
+                        <p class="text-xs text-gray-400">Tulis nama lokasi dan pilih saran agar koordinat terdeteksi.</p>
+                        <span id="coord-status" class="text-xs font-medium text-gray-400">❓ Koordinat belum dideteksi</span>
+                    </div>
                     @error('lokasi')
                         <p class="form-error">{{ $message }}</p>
                     @enderror
@@ -228,6 +235,13 @@
 
         function selectSuggestion(item) {
             input.value = item.display_name;
+            document.getElementById('lat').value = item.lat;
+            document.getElementById('lng').value = item.lng;
+            
+            const statusBadge = document.getElementById('coord-status');
+            statusBadge.innerHTML = '📍 Koordinat otomatis terdeteksi';
+            statusBadge.className = 'text-xs font-medium text-green-600 dark:text-green-400';
+            
             hideSuggestions();
         }
 
@@ -235,6 +249,16 @@
             suggestionsContainer.classList.add('hidden');
             selectedIndex = -1;
         }
+
+        // Reset coordinates if user manually changes input after selecting
+        input.addEventListener('input', function() {
+            document.getElementById('lat').value = '';
+            document.getElementById('lng').value = '';
+            
+            const statusBadge = document.getElementById('coord-status');
+            statusBadge.innerHTML = '❓ Koordinat belum dideteksi';
+            statusBadge.className = 'text-xs font-medium text-gray-400';
+        });
     });
     </script>
     @endpush

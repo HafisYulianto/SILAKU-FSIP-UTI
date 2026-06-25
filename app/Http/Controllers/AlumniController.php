@@ -74,6 +74,8 @@ class AlumniController extends Controller
             'posisi'           => 'required|string|max:255',
             'lokasi'           => 'required|string|max:255',
             'program_studi_id' => 'nullable|exists:program_studi,id',
+            'lat'              => 'nullable|numeric',
+            'lng'              => 'nullable|numeric',
         ]);
 
         $user = auth()->user();
@@ -86,14 +88,18 @@ class AlumniController extends Controller
                 'posisi'           => $request->posisi,
                 'lokasi'           => $request->lokasi,
                 'program_studi_id' => $request->program_studi_id,
+                'lat'              => $request->lat,
+                'lng'              => $request->lng,
                 'created_by'       => $user->id,
             ]);
 
-            // Geocode asynchronously (best-effort)
-            try {
-                app(GeocodingService::class)->geocodeAlumni($alumni);
-            } catch (\Exception $e) {
-                // Geocoding failure is non-critical
+            // Geocode asynchronously (best-effort) only if no coordinate provided
+            if (empty($alumni->lat) || empty($alumni->lng)) {
+                try {
+                    app(GeocodingService::class)->geocodeAlumni($alumni);
+                } catch (\Exception $e) {
+                    // Geocoding failure is non-critical
+                }
             }
 
             ActivityLog::create([
@@ -121,6 +127,8 @@ class AlumniController extends Controller
                 'nama_perusahaan'  => $request->nama_perusahaan,
                 'posisi'           => $request->posisi,
                 'lokasi'           => $request->lokasi,
+                'lat'              => $request->lat,
+                'lng'              => $request->lng,
                 'program_studi_id' => $request->program_studi_id,
                 'created_by'       => $user->id,
             ],
@@ -161,15 +169,30 @@ class AlumniController extends Controller
             'posisi'           => 'required|string|max:255',
             'lokasi'           => 'required|string|max:255',
             'program_studi_id' => 'nullable|exists:program_studi,id',
+            'lat'              => 'nullable|numeric',
+            'lng'              => 'nullable|numeric',
         ]);
 
+        $locationChanged = ($alumni->lokasi !== $request->lokasi);
+        
         $alumni->update([
             'nama'             => $request->nama,
             'nama_perusahaan'  => $request->nama_perusahaan,
             'posisi'           => $request->posisi,
             'lokasi'           => $request->lokasi,
             'program_studi_id' => $request->program_studi_id,
+            'lat'              => $request->lat ?: ($locationChanged ? null : $alumni->lat),
+            'lng'              => $request->lng ?: ($locationChanged ? null : $alumni->lng),
         ]);
+        
+        // Re-geocode if location changed and no manual coord provided
+        if ($locationChanged && (empty($alumni->lat) || empty($alumni->lng))) {
+            try {
+                app(GeocodingService::class)->geocodeAlumni($alumni);
+            } catch (\Exception $e) {
+                // Non-critical
+            }
+        }
 
         ActivityLog::create([
             'user_id'     => auth()->id(),

@@ -368,7 +368,9 @@
                 mapView: 'lampung',
                 setView(view) {
                     this.mapView = view;
+                    window.activeMapView = view;
                     if (window.alumniMap) {
+                        window.alumniMap.closePopup();
                         const views = {
                             lampung:   { center: [-5.40, 105.26], zoom: 8.5 },
                             indonesia: { center: [-2.50, 117.00], zoom: 5 },
@@ -379,7 +381,7 @@
                     }
                 }
              }"
-             x-init="setTimeout(() => isLoading = false, 800)">
+             x-init="window.activeMapView = 'lampung'; setTimeout(() => isLoading = false, 800)">
 
             <!-- Skeleton overlay -->
             <div x-show="isLoading" class="absolute inset-0 bg-white dark:bg-gray-900 z-10 flex flex-col p-6 rounded-2xl">
@@ -933,71 +935,145 @@
                     @endforeach
                 ];
 
-                // Small offset to separate markers at identical coordinates
-                const coordCount = {};
+                // Group markers by coordinate (rounded to 4 decimals to merge identical locations)
+                const locationGroups = {};
                 mapRecordsData.forEach(item => {
                     const key = `${item.lat.toFixed(4)}_${item.lng.toFixed(4)}`;
-                    coordCount[key] = (coordCount[key] || 0) + 1;
-                    item._offsetIndex = coordCount[key] - 1;
-                    item._coordKey   = key;
+                    if (!locationGroups[key]) {
+                        locationGroups[key] = {
+                            lat: item.lat,
+                            lng: item.lng,
+                            lokasi: item.lokasi,
+                            alumni: []
+                        };
+                    }
+                    locationGroups[key].alumni.push(item);
                 });
 
-                const offsets = [
-                    [0, 0], [0.005, 0], [-0.005, 0], [0, 0.005], [0, -0.005],
-                    [0.005, 0.005], [-0.005, -0.005], [0.005, -0.005], [-0.005, 0.005]
-                ];
+                Object.values(locationGroups).forEach(group => {
+                    const count = group.alumni.length;
+                    const primaryAlumni = group.alumni[0];
+                    let markerHtml = '';
+                    let markerSize = [28, 28];
+                    let markerAnchor = [14, 14];
 
-                const createNumberMarker = (no) => `
-                    <div style="
-                        position:relative;
-                        display:flex;align-items:center;justify-content:center;
-                        width:28px;height:28px;
-                    ">
-                        <span style="
-                            position:absolute;
-                            display:inline-flex;width:100%;height:100%;
-                            border-radius:50%;background:#10b981;opacity:0.4;
-                            animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;
-                        "></span>
-                        <span style="
-                            position:relative;display:inline-flex;border-radius:50%;
-                            width:24px;height:24px;background:#10b981;
-                            color:white;font-size:10px;font-weight:700;font-family:sans-serif;
-                            align-items:center;justify-content:center;
-                            border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.25);
-                        ">${no}</span>
-                    </div>
-                `;
-
-                mapRecordsData.forEach(item => {
-                    const off = offsets[item._offsetIndex % offsets.length] || [0, 0];
-                    const lat = item.lat + off[0];
-                    const lng = item.lng + off[1];
-
-                    const popupHtml = `
-                        <div style="padding:8px;min-width:190px;font-family:sans-serif;">
-                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #f3f4f6;">
-                                <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#10b981;color:white;border-radius:50%;font-size:9px;font-weight:700;flex-shrink:0;">
-                                    ${item.no}
-                                </span>
-                                <span style="font-size:12px;font-weight:700;color:#111827;">${item.nama}</span>
+                    if (count === 1) {
+                        // Single alumnus marker
+                        markerHtml = `
+                            <div style="
+                                position:relative;
+                                display:flex;align-items:center;justify-content:center;
+                                width:28px;height:28px;
+                            ">
+                                <span style="
+                                    position:absolute;
+                                    display:inline-flex;width:100%;height:100%;
+                                    border-radius:50%;background:#10b981;opacity:0.4;
+                                    animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;
+                                "></span>
+                                <span style="
+                                    position:relative;display:inline-flex;border-radius:50%;
+                                    width:24px;height:24px;background:#10b981;
+                                    color:white;font-size:10px;font-weight:700;font-family:sans-serif;
+                                    align-items:center;justify-content:center;
+                                    border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.25);
+                                ">${primaryAlumni.no}</span>
                             </div>
-                            <div style="font-size:10px;color:#6b7280;margin-bottom:3px;">📍 ${item.lokasi}</div>
-                            <div style="font-size:10px;font-weight:600;color:#059669;margin-bottom:2px;">${item.instansi}</div>
-                            <div style="font-size:9px;color:#6b7280;">${item.posisi} · ${item.prodi}</div>
-                        </div>
+                        `;
+                    } else {
+                        // Multi-alumni marker: showing all numbers like "1, 2" or "1,2,3"
+                        const numbersStr = group.alumni.map(a => a.no).join(', ');
+                        markerSize = [44, 28];
+                        markerAnchor = [22, 14];
+                        markerHtml = `
+                            <div style="
+                                position:relative;
+                                display:flex;align-items:center;justify-content:center;
+                                width:44px;height:28px;
+                            ">
+                                <span style="
+                                    position:absolute;
+                                    display:inline-flex;width:100%;height:100%;
+                                    border-radius:14px;background:#0284c7;opacity:0.4;
+                                    animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;
+                                "></span>
+                                <span style="
+                                    position:relative;display:inline-flex;border-radius:14px;
+                                    width:40px;height:24px;background:#0284c7;
+                                    color:white;font-size:9px;font-weight:700;font-family:sans-serif;
+                                    align-items:center;justify-content:center;
+                                    border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.25);
+                                    white-space:nowrap;padding:0 4px;
+                                ">${numbersStr}</span>
+                            </div>
+                        `;
+                    }
+
+                    // Build Popup HTML listing all alumni in this group
+                    let popupHtml = `
+                        <div style="padding:4px;min-width:210px;max-width:280px;font-family:sans-serif;max-height:240px;overflow-y:auto;scrollbar-width:thin;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;">
+                                <span style="font-size:11px;font-weight:700;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📍 ${group.lokasi}</span>
+                                ${count > 1 ? `<span style="background:#e0f2fe;color:#0369a1;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;flex-shrink:0;">${count} Alumni</span>` : ''}
+                            </div>
                     `;
 
-                    const icon = L.divIcon({
-                        html: createNumberMarker(item.no),
-                        className: 'custom-leaflet-marker',
-                        iconSize: [28, 28],
-                        iconAnchor: [14, 14],
+                    group.alumni.forEach((alumni, idx) => {
+                        popupHtml += `
+                            <div style="margin-bottom:${idx === count - 1 ? '0' : '8'}px; padding-bottom:${idx === count - 1 ? '0' : '8'}px; border-bottom:${idx === count - 1 ? 'none' : '1px dashed #f3f4f6'};">
+                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+                                    <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:${count > 1 ? '#0284c7' : '#10b981'};color:white;border-radius:50%;font-size:9px;font-weight:700;flex-shrink:0;">
+                                        ${alumni.no}
+                                    </span>
+                                    <span style="font-size:12px;font-weight:700;color:#111827;">${alumni.nama}</span>
+                                </div>
+                                <div style="font-size:10px;font-weight:600;color:${count > 1 ? '#0284c7' : '#059669'};margin-left:24px;margin-bottom:1px;">${alumni.instansi}</div>
+                                <div style="font-size:9px;color:#6b7280;margin-left:24px;">${alumni.posisi} · ${alumni.prodi}</div>
+                            </div>
+                        `;
                     });
 
-                    L.marker([lat, lng], { icon })
-                        .bindPopup(popupHtml, { className: 'premium-leaflet-popup', maxWidth: 240 })
+                    popupHtml += `</div>`;
+
+                    const icon = L.divIcon({
+                        html: markerHtml,
+                        className: 'custom-leaflet-marker',
+                        iconSize: markerSize,
+                        iconAnchor: markerAnchor,
+                    });
+
+                    const marker = L.marker([group.lat, group.lng], { icon })
+                        .bindPopup(popupHtml, { className: 'premium-leaflet-popup', maxWidth: 280 })
                         .addTo(map);
+
+                    // Click to Zoom In smoothly
+                    marker.on('click', function(e) {
+                        map.flyTo(e.target.getLatLng(), 15, { duration: 1.2 });
+                    });
+                });
+
+                // Map popup close event to Zoom Out
+                map.on('popupclose', function(e) {
+                    setTimeout(() => {
+                        // Check if any popup is still open on the map (e.g. user clicked another marker)
+                        let anyOpen = false;
+                        map.eachLayer(function(layer) {
+                            if (layer instanceof L.Popup && map.hasLayer(layer)) {
+                                anyOpen = true;
+                            }
+                        });
+
+                        if (!anyOpen && !map._popup) {
+                            const views = {
+                                lampung:   { center: [-5.40, 105.26], zoom: 8.5 },
+                                indonesia: { center: [-2.50, 117.00], zoom: 5 },
+                                dunia:     { center: [20.0, 0.0],     zoom: 2 }
+                            };
+                            const activeView = window.activeMapView || 'lampung';
+                            const v = views[activeView];
+                            map.flyTo(v.center, v.zoom, { duration: 1.2 });
+                        }
+                    }, 150);
                 });
 
                 // If no markers, show info

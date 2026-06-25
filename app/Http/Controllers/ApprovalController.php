@@ -232,13 +232,17 @@ class ApprovalController extends Controller
                     'posisi'           => $payload['posisi'],
                     'lokasi'           => $payload['lokasi'],
                     'program_studi_id' => $payload['program_studi_id'] ?? null,
+                    'lat'              => $payload['lat'] ?? null,
+                    'lng'              => $payload['lng'] ?? null,
                     'created_by'       => $payload['created_by'],
                 ]);
-                // Geocode the new alumni's location
-                try {
-                    app(GeocodingService::class)->geocodeAlumni($alumni);
-                } catch (\Exception $e) {
-                    // Non-critical
+                // Geocode the new alumni's location if not provided manually
+                if (empty($alumni->lat) || empty($alumni->lng)) {
+                    try {
+                        app(GeocodingService::class)->geocodeAlumni($alumni);
+                    } catch (\Exception $e) {
+                        // Non-critical
+                    }
                 }
             } elseif ($dataRequest->type === 'record' && $dataRequest->entity_id) {
                 $payload = $dataRequest->payload;

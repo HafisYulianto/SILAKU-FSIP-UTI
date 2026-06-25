@@ -12,8 +12,14 @@
     <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-gradient-to-br from-primary-950 via-primary-900 to-emerald-950 flex items-center justify-center p-4 sm:p-6 md:p-10">
-    <div class="w-full max-w-5xl">
+<body class="min-h-screen relative flex items-center justify-center p-4 sm:p-6 md:p-10 overflow-hidden">
+    <!-- Fullscreen Background Image with Blur Overlay -->
+    <div class="absolute inset-0 z-0">
+        <img src="{{ asset('images/hero-bg.jpg') }}" alt="Gedung FSIP UTI" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-950/90 via-primary-900/85 to-emerald-950/90 backdrop-blur-[3px]"></div>
+    </div>
+
+    <div class="w-full max-w-md relative z-10">
         {{ $slot }}
     </div>
 </body>

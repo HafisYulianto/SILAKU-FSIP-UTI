@@ -79,7 +79,7 @@
     <!-- Hero Section -->
     <section class="relative min-h-screen flex items-center overflow-hidden bg-cover bg-center" style="background-image: url('{{ asset('images/hero-bg.jpg') }}')">
         <!-- Overlay mask to ensure content readability -->
-        <div class="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-primary-50/80 backdrop-blur-[1px]"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-white/75 via-white/50 to-primary-50/35"></div>
         <!-- Animated grid background -->
         <div class="absolute inset-0 hero-grid opacity-30"></div>
         <!-- Floating gradient orbs -->

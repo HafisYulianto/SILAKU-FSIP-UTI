@@ -228,17 +228,16 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- NAVIGATION                                  -->
     <!-- ═══════════════════════════════════════════ -->
-    <nav :class="{
-        'bg-primary-900/95 shadow-2xl shadow-primary-900/20 py-2': scrolled,
-        'bg-transparent py-5': !scrolled
-    }" class="fixed w-full z-50 transition-all duration-500 backdrop-blur-xl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+         :class="scrolled ? 'py-2 bg-primary-900/95 shadow-2xl shadow-primary-900/20 border-b border-white/5 backdrop-blur-xl' : 'py-4'">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500"
+             :class="scrolled ? '' : 'bg-primary-950/40 border border-white/10 rounded-2xl py-3 px-6 backdrop-blur-xl shadow-2xl shadow-primary-950/20'">
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <a href="#" class="flex items-center gap-3 group">
                     <div class="relative">
                         <img src="{{ asset('images/002-UTI.png') }}" alt="Logo UTI"
-                             :class="scrolled ? 'h-10' : 'h-14'"
+                             :class="scrolled ? 'h-10' : 'h-12'"
                              class="w-auto object-contain drop-shadow-lg transition-all duration-500 group-hover:scale-105">
                     </div>
                     <div>

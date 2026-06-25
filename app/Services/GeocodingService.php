@@ -70,4 +70,48 @@ class GeocodingService
 
         return false;
     }
+
+    /**
+     * Get autocomplete location suggestions from Nominatim.
+     */
+    public function suggest(string $query): array
+    {
+        if (empty(trim($query))) {
+            return [];
+        }
+
+        $cacheKey = 'geocode_suggest_' . md5(strtolower(trim($query)));
+
+        return Cache::remember($cacheKey, 60 * 60 * 24, function () use ($query) {
+            try {
+                $response = Http::withHeaders([
+                    'User-Agent' => 'SILAKU-FSIP-UTI/1.0 (academic research app)',
+                    'Accept-Language' => 'id,en',
+                ])->timeout(5)->get('https://nominatim.openstreetmap.org/search', [
+                    'q'              => $query,
+                    'format'         => 'json',
+                    'limit'          => 5,
+                    'addressdetails' => 1,
+                ]);
+
+                if ($response->successful()) {
+                    $results = [];
+                    foreach ($response->json() as $item) {
+                        $results[] = [
+                            'display_name' => $item['display_name'],
+                            'name'         => $item['name'] ?? $item['display_name'],
+                            'lat'          => (float) $item['lat'],
+                            'lng'          => (float) $item['lon'],
+                        ];
+                    }
+                    return $results;
+                }
+
+                return [];
+            } catch (\Exception $e) {
+                Log::warning("GeocodingService: Suggest failed for \"{$query}\": " . $e->getMessage());
+                return [];
+            }
+        });
+    }
 }

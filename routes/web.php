@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
 
     // Static Alumni Routes
     Route::get('/alumni', [AlumniController::class, 'index'])->name('alumni.index');
+    Route::get('/alumni/geocode/suggest', [AlumniController::class, 'suggestLocation'])->name('alumni.geocode-suggest');
     Route::get('/alumni/export/excel', [AlumniController::class, 'exportExcel'])->name('alumni.export-excel');
     Route::get('/alumni/export/pdf', [AlumniController::class, 'exportPdf'])->name('alumni.export-pdf');
     Route::get('/alumni/{alumni}', [AlumniController::class, 'show'])->name('alumni.show');

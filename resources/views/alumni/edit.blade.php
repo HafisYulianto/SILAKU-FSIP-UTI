@@ -45,12 +45,26 @@
                     @enderror
                 </div>
 
-                <div>
+                <div class="relative">
                     <label for="lokasi" class="form-label">Lokasi <span class="text-red-500">*</span></label>
-                    <input type="text" name="lokasi" id="lokasi" value="{{ old('lokasi', $alumni->lokasi) }}" required 
-                           class="form-input @error('lokasi') border-red-500 @enderror" 
-                           placeholder="Contoh: Bandar Lampung, Jakarta, Singapore, Tokyo">
-                    <p class="text-xs text-gray-400 mt-1">Tulis nama kabupaten/kota, provinsi, atau negara secara bebas. Sistem akan mendeteksi koordinatnya secara otomatis untuk peta sebaran.</p>
+                    <div class="relative">
+                        <input type="text" name="lokasi" id="lokasi" value="{{ old('lokasi', $alumni->lokasi) }}" required autocomplete="off"
+                               class="form-input pr-10 @error('lokasi') border-red-500 @enderror" 
+                               placeholder="Contoh: Bandar Lampung, Jakarta, Singapore, Tokyo">
+                        <div id="lokasi-loading" class="hidden absolute right-3 top-1/2 -translate-y-1/2">
+                            <svg class="animate-spin h-5 w-5 text-gray-400 dark:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    {{-- Dropdown Suggestion List --}}
+                    <div id="autocomplete-suggestions" class="absolute z-50 left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg max-h-60 overflow-y-auto hidden">
+                        <!-- Items will be populated by JS -->
+                    </div>
+
+                    <p class="text-xs text-gray-400 mt-1">Tulis nama lokasi secara bebas. Pilih saran yang muncul agar koordinat terdeteksi secara otomatis.</p>
                     @error('lokasi')
                         <p class="form-error">{{ $message }}</p>
                     @enderror
@@ -78,4 +92,138 @@
             </form>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('lokasi');
+        const suggestionsContainer = document.getElementById('autocomplete-suggestions');
+        const loadingIcon = document.getElementById('lokasi-loading');
+
+        if (!input || !suggestionsContainer) return;
+
+        let debounceTimer;
+        let selectedIndex = -1;
+        let suggestions = [];
+
+        input.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if (query.length < 3) {
+                hideSuggestions();
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetchSuggestions(query);
+            }, 400);
+        });
+
+        input.addEventListener('keydown', function(e) {
+            const items = suggestionsContainer.querySelectorAll('.suggestion-item');
+            if (!items.length) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                highlightItem(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                highlightItem(items);
+            } else if (e.key === 'Enter') {
+                if (selectedIndex > -1 && items[selectedIndex]) {
+                    e.preventDefault();
+                    selectSuggestion(suggestions[selectedIndex]);
+                }
+            } else if (e.key === 'Escape') {
+                hideSuggestions();
+            }
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                hideSuggestions();
+            }
+        });
+
+        function fetchSuggestions(query) {
+            if (loadingIcon) loadingIcon.classList.remove('hidden');
+
+            fetch(`/alumni/geocode/suggest?q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    suggestions = data;
+                    renderSuggestions();
+                })
+                .catch(err => {
+                    console.error('Error fetching autocomplete suggestions:', err);
+                })
+                .finally(() => {
+                    if (loadingIcon) loadingIcon.classList.add('hidden');
+                });
+        }
+
+        function renderSuggestions() {
+            suggestionsContainer.innerHTML = '';
+            selectedIndex = -1;
+
+            if (!suggestions.length) {
+                const noResult = document.createElement('div');
+                noResult.className = 'p-3 text-sm text-gray-500 dark:text-gray-400 italic';
+                noResult.textContent = 'Lokasi tidak ditemukan. Tetap bisa disimpan, namun mungkin tidak tampil di peta.';
+                suggestionsContainer.appendChild(noResult);
+                suggestionsContainer.classList.remove('hidden');
+                return;
+            }
+
+            suggestions.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item p-3 text-sm hover:bg-gray-100 dark:hover:bg-gray-700/50 cursor-pointer border-b border-gray-100 dark:border-gray-700/30 last:border-b-0 transition-colors flex flex-col gap-0.5';
+                
+                // Highlight match
+                const q = input.value.trim();
+                const regex = new RegExp(`(${q})`, 'gi');
+                const highlightedText = item.display_name.replace(regex, '<strong class="text-primary-600 dark:text-primary-400 font-semibold">$1</strong>');
+                
+                div.innerHTML = `
+                    <div class="font-medium text-gray-800 dark:text-gray-200">${item.name}</div>
+                    <div class="text-xs text-gray-400 dark:text-gray-500">${highlightedText}</div>
+                `;
+
+                div.addEventListener('click', () => {
+                    selectSuggestion(item);
+                });
+
+                suggestionsContainer.appendChild(div);
+            });
+
+            suggestionsContainer.classList.remove('hidden');
+        }
+
+        function highlightItem(items) {
+            items.forEach((item, index) => {
+                if (index === selectedIndex) {
+                    item.classList.add('bg-gray-100', 'dark:bg-gray-700/50');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('bg-gray-100', 'dark:bg-gray-700/50');
+                }
+            });
+        }
+
+        function selectSuggestion(item) {
+            input.value = item.display_name;
+            hideSuggestions();
+        }
+
+        function hideSuggestions() {
+            suggestionsContainer.classList.add('hidden');
+            selectedIndex = -1;
+        }
+    });
+    </script>
+    @endpush
 </x-layouts.app>

@@ -243,4 +243,19 @@ class AlumniController extends Controller
             ->route('alumni.index')
             ->with('info', "Permintaan hapus alumni \"{$nama}\" telah dikirim dan menunggu persetujuan BAAK.");
     }
+
+    /**
+     * Endpoint API for autocomplete search suggestion.
+     */
+    public function suggestLocation(Request $request)
+    {
+        $q = $request->get('q');
+        if (empty($q) || strlen($q) < 3) {
+            return response()->json([]);
+        }
+
+        $suggestions = app(GeocodingService::class)->suggest($q);
+
+        return response()->json($suggestions);
+    }
 }

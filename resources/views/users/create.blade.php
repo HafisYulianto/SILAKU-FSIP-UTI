@@ -8,7 +8,38 @@
             <a href="{{ route('users.index') }}" class="btn-secondary">← Kembali</a>
         </div>
 
-        <form method="POST" action="{{ route('users.store') }}" id="user-form">
+        <form method="POST" action="{{ route('users.store') }}" id="user-form" x-data="{ 
+            password: '',
+            get strength() {
+                let score = 0;
+                if (this.password.length === 0) return 0;
+                if (this.password.length >= 8) score++;
+                if (/[A-Z]/.test(this.password)) score++;
+                if (/[0-9]/.test(this.password)) score++;
+                if (/[^A-Za-z0-9]/.test(this.password)) score++;
+                return score;
+            },
+            get strengthText() {
+                switch(this.strength) {
+                    case 0: return '';
+                    case 1: return 'Sangat Lemah';
+                    case 2: return 'Lemah';
+                    case 3: return 'Sedang';
+                    case 4: return 'Kuat';
+                    default: return '';
+                }
+            },
+            get strengthColor() {
+                switch(this.strength) {
+                    case 0: return 'bg-gray-200';
+                    case 1: return 'bg-red-500';
+                    case 2: return 'bg-amber-500';
+                    case 3: return 'bg-yellow-400';
+                    case 4: return 'bg-emerald-500';
+                    default: return 'bg-gray-200';
+                }
+            }
+        }">
             @csrf
 
             <div class="card p-6">
@@ -33,7 +64,20 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="form-label" for="password">Password <span class="text-red-500">*</span></label>
-                            <input type="password" name="password" id="password" required class="form-input" placeholder="Minimal 8 karakter">
+                            <input type="password" name="password" id="password" x-model="password" required class="form-input" placeholder="Minimal 8 karakter">
+                            
+                            {{-- Strength Meter --}}
+                            <div class="mt-2" x-show="password.length > 0" style="display: none;">
+                                <div class="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                    <div :class="strengthColor" class="h-full transition-all duration-300" :style="`width: ${strength * 25}%`"></div>
+                                </div>
+                                <span class="text-[10px] font-semibold mt-1 block" :class="{
+                                    'text-red-500': strength === 1,
+                                    'text-amber-500': strength === 2,
+                                    'text-yellow-500': strength === 3,
+                                    'text-emerald-500': strength === 4
+                                }" x-text="'Kekuatan: ' + strengthText"></span>
+                            </div>
                         </div>
 
                         <div>

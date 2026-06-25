@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SILAKU — FSIP Universitas Teknokrat Indonesia</title>
     <meta name="description" content="Sistem Pelaporan IKU - Platform digital terpadu untuk pelaporan dan manajemen data FSIP Universitas Teknokrat Indonesia.">
+    <!-- OpenGraph SEO Preview Metadata -->
+    <meta property="og:title" content="SILAKU — FSIP Universitas Teknokrat Indonesia">
+    <meta property="og:description" content="Sistem Pelaporan IKU - Platform digital terpadu untuk pelaporan dan manajemen data Indikator Kinerja Utama FSIP Universitas Teknokrat Indonesia.">
+    <meta property="og:image" content="{{ asset('images/002-UTI.png') }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SILAKU — FSIP Universitas Teknokrat Indonesia">
+    <meta name="twitter:description" content="Sistem Pelaporan IKU - Platform digital terpadu untuk pelaporan dan manajemen data Indikator Kinerja Utama FSIP Universitas Teknokrat Indonesia.">
+    <meta name="twitter:image" content="{{ asset('images/002-UTI.png') }}">
     <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

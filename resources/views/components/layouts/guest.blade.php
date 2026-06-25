@@ -6,6 +6,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Login' }} — SILAKU FSIP</title>
     <meta name="description" content="Sistem Pelaporan IKU - FSIP Universitas Teknokrat Indonesia">
+    <!-- OpenGraph SEO Preview Metadata -->
+    <meta property="og:title" content="{{ $title ?? 'Login' }} — SILAKU FSIP">
+    <meta property="og:description" content="Sistem Pelaporan IKU - Platform digital terpadu untuk pelaporan dan manajemen data Indikator Kinerja Utama FSIP Universitas Teknokrat Indonesia.">
+    <meta property="og:image" content="{{ asset('images/002-UTI.png') }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $title ?? 'Login' }} — SILAKU FSIP">
+    <meta name="twitter:description" content="Sistem Pelaporan IKU - Platform digital terpadu untuk pelaporan dan manajemen data Indikator Kinerja Utama FSIP Universitas Teknokrat Indonesia.">
+    <meta name="twitter:image" content="{{ asset('images/002-UTI.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">

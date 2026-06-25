@@ -239,3 +239,17 @@
         background-color: rgba(4, 120, 87, 0.25);
     }
 }
+
+/* Premium Leaflet Dark Mode Map Customization */
+.dark .leaflet-tile-container {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+.dark .leaflet-container {
+    background: #030712 !important;
+}
+.premium-leaflet-popup .leaflet-popup-content-wrapper {
+    @apply rounded-xl shadow-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-0 overflow-hidden;
+}
+.premium-leaflet-popup .leaflet-popup-tip {
+    @apply bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800;
+}

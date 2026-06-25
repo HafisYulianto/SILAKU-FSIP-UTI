@@ -244,6 +244,37 @@
             </div>
         </div>
 
+        @php
+            $mapEntity = \App\Models\DynamicEntity::where('name', 'Sebaran Alumni & Magang')->first();
+            $mapRecords = $mapEntity ? $mapEntity->records()->with('programStudi')->get() : collect();
+        @endphp
+        {{-- Map Row --}}
+        <div class="card slide-up relative" style="animation-delay: 550ms" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 800)">
+            <!-- Skeleton overlay -->
+            <div x-show="isLoading" class="absolute inset-0 bg-white dark:bg-gray-900 z-10 flex flex-col p-6 rounded-2xl">
+                <div class="skeleton h-6 w-1/3 mb-6 animate-pulse"></div>
+                <div class="skeleton h-80 w-full animate-pulse"></div>
+            </div>
+            
+            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                <div>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">📍 Sebaran Geografis Alumni & Magang</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Pemetaan lokasi mahasiswa magang dan alumni di Wilayah Lampung</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 rounded-full font-medium">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Live Map
+                    </span>
+                </div>
+            </div>
+            
+            <div :class="{ 'opacity-0': isLoading, 'opacity-100 transition-opacity duration-500': !isLoading }" class="p-6">
+                {{-- Map Container --}}
+                <div id="map-alumni-magang" class="h-96 rounded-xl border border-gray-200 dark:border-gray-800 z-0"></div>
+            </div>
+        </div>
+
         {{-- Dynamic Charts from aggregatable fields --}}
         @if(count($chartData) > 0)
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -661,6 +692,139 @@
             window.dynamicCharts[index] = new ApexCharts(el, options);
             window.dynamicCharts[index].render();
         });
+
+        // ═══════════════════════════════════════════
+        // Leaflet.js Geografis Map Initialization
+        // ═══════════════════════════════════════════
+        const mapElement = document.getElementById('map-alumni-magang');
+        if (mapElement) {
+            // Include Leaflet style dynamically to keep document head clean
+            const leafletLink = document.createElement('link');
+            leafletLink.rel = 'stylesheet';
+            leafletLink.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+            document.head.appendChild(leafletLink);
+
+            // Include Leaflet JS dynamically
+            const leafletScript = document.createElement('script');
+            leafletScript.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+            leafletScript.onload = function() {
+                // Initialize map centered in Lampung
+                const map = L.map('map-alumni-magang', {
+                    scrollWheelZoom: false,
+                    zoomControl: true
+                }).setView([-5.15, 105.15], 8.5);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                    subdomains: 'abcd',
+                    maxZoom: 20
+                }).addTo(map);
+
+                // Map data from controller/blade
+                const mapRecordsData = [
+                    @foreach($mapRecords as $record)
+                    {
+                        nama: "{{ $record->getFieldValue('nama_lengkap') }}",
+                        status: "{{ $record->getFieldValue('status') }}",
+                        lokasi: "{{ $record->getFieldValue('lokasi') }}",
+                        instansi: "{{ $record->getFieldValue('instansi') }}",
+                        prodi: "{{ $record->programStudi->name ?? 'FSIP' }}"
+                    },
+                    @endforeach
+                ];
+
+                const coordinates = {
+                    'Bandar Lampung': [-5.4500, 105.2600],
+                    'Metro': [-5.1167, 105.3000],
+                    'Lampung Selatan': [-5.7100, 105.5900],
+                    'Lampung Tengah': [-4.8600, 105.2600],
+                    'Lampung Timur': [-5.1000, 105.6800],
+                    'Lampung Utara': [-4.8100, 104.8900],
+                    'Pringsewu': [-5.3500, 104.9700],
+                    'Tanggamus': [-5.3900, 104.6200],
+                    'Pesawaran': [-5.4200, 105.1700],
+                    'Way Kanan': [-4.4400, 104.5200],
+                    'Tulang Bawang': [-4.4700, 105.6300],
+                    'Mesuji': [-4.0500, 105.4000],
+                    'Lampung Barat': [-5.1500, 104.1900],
+                    'Pesisir Barat': [-5.1900, 103.9500],
+                    'Tulang Bawang Barat': [-4.4700, 105.1500]
+                };
+
+                const locationGroups = {};
+                mapRecordsData.forEach(item => {
+                    if (!locationGroups[item.lokasi]) {
+                        locationGroups[item.lokasi] = [];
+                    }
+                    locationGroups[item.lokasi].push(item);
+                });
+
+                const createMarkerHtml = (count, hasMagang, hasAlumni) => {
+                    let colorClass = 'bg-primary-500';
+                    if (hasMagang && hasAlumni) colorClass = 'bg-teal-500';
+                    else if (hasMagang) colorClass = 'bg-blue-500';
+                    
+                    return `
+                        <div class="relative flex items-center justify-center w-6 h-6">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${colorClass} opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-5 w-5 ${colorClass} text-[9px] font-bold text-white items-center justify-center border border-white dark:border-gray-800 shadow-md">
+                                ${count}
+                            </span>
+                        </div>
+                    `;
+                };
+
+                for (const [locName, items] of Object.entries(locationGroups)) {
+                    const coord = coordinates[locName];
+                    if (!coord) continue;
+
+                    const hasMagang = items.some(i => i.status === 'Magang');
+                    const hasAlumni = items.some(i => i.status === 'Alumni');
+
+                    let popupHtml = `
+                        <div class="p-2 min-w-[200px] font-sans">
+                            <h4 class="text-xs font-bold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1.5 flex items-center justify-between">
+                                <span>📍 ${locName}</span>
+                                <span class="bg-primary-100 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 rounded-full px-1.5 py-0.5 text-[9px]">${items.length} Data</span>
+                            </h4>
+                            <div class="space-y-1.5 max-h-36 overflow-y-auto">
+                    `;
+
+                    items.forEach(item => {
+                        const badgeClass = item.status === 'Alumni' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400' : 'bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400';
+                        popupHtml += `
+                            <div class="text-[10px] leading-relaxed border-b border-gray-100 dark:border-gray-800 pb-1 last:border-b-0">
+                                <div class="flex items-center justify-between gap-1 mb-0.5">
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">${item.nama}</span>
+                                    <span class="text-[7px] font-extrabold uppercase rounded px-1 py-0.2 ${badgeClass}">${item.status}</span>
+                                </div>
+                                <div class="text-gray-500 dark:text-gray-400 text-[9px]">${item.prodi}</div>
+                                <div class="text-primary-600 dark:text-primary-400 font-medium text-[9px]">${item.instansi}</div>
+                            </div>
+                        `;
+                    });
+
+                    popupHtml += `
+                            </div>
+                        </div>
+                    `;
+
+                    const customIcon = L.divIcon({
+                        html: createMarkerHtml(items.length, hasMagang, hasAlumni),
+                        className: 'custom-leaflet-marker',
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 12]
+                    });
+
+                    L.marker(coord, { icon: customIcon })
+                        .bindPopup(popupHtml, {
+                            className: 'premium-leaflet-popup'
+                        })
+                        .addTo(map);
+                }
+            };
+            document.head.appendChild(leafletScript);
+        }
     });
     </script>
     @endpush

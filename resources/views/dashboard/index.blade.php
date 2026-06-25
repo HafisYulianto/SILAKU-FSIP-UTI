@@ -371,8 +371,8 @@
             
             <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                 <div>
-                    <h3 class="font-semibold text-gray-900 dark:text-white">📍 Sebaran Geografis Alumni & Magang</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Pemetaan lokasi mahasiswa magang dan alumni di Wilayah Lampung</p>
+                    <h3 class="font-semibold text-gray-900 dark:text-white">📍 Sebaran Geografis Alumni Bekerja</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Pemetaan lokasi Alumni</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 rounded-full font-medium">

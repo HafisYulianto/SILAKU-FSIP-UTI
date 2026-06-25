@@ -109,6 +109,9 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                         </svg>
                                     </a>
+
+                                    @role('BAAK')
+                                    {{-- BAAK: langsung hapus --}}
                                     <form method="POST" action="{{ route('alumni.destroy', $alumni) }}" onsubmit="return confirm('Hapus data alumni &quot;{{ $alumni->nama }}&quot;?')" class="inline">
                                         @csrf
                                         @method('DELETE')
@@ -118,6 +121,25 @@
                                             </svg>
                                         </button>
                                     </form>
+                                    @else
+                                    {{-- Kaprodi / Dosen: minta izin hapus --}}
+                                    @if(in_array($alumni->id, $pendingDeleteIds))
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-amber-50 text-amber-600 border border-amber-200" title="Menunggu persetujuan BAAK">
+                                        <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v4m0 8v4M4 12h4m8 0h4"/></svg>
+                                        Pending...
+                                    </span>
+                                    @else
+                                    <form method="POST" action="{{ route('alumni.destroy', $alumni) }}" onsubmit="return confirm('Kirim permintaan hapus alumni &quot;{{ $alumni->nama }}&quot; ke BAAK?')" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-icon text-gray-400 hover:text-amber-600" title="Minta Hapus (perlu persetujuan BAAK)">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                    @endif
+                                    @endrole
                                 </div>
                             </td>
                             @endhasanyrole

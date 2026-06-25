@@ -8,6 +8,7 @@ use App\Models\DynamicRecord;
 use App\Models\DynamicFileUpload;
 use App\Models\ProgramStudi;
 use App\Models\ActivityLog;
+use App\Models\DataApprovalRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -55,23 +56,53 @@ class DynamicRecordController extends Controller
             $data[$field->slug] = $request->input($fieldKey);
         }
 
+        $user = auth()->user();
+        $role = $user->roles->first()?->name ?? 'User';
+
+        // Kaprodi / Dosen — ajukan permintaan approval
+        if ($user->hasAnyRole(['Kaprodi', 'Dosen'])) {
+            DataApprovalRequest::create([
+                'type'           => 'record',
+                'action'         => 'create',
+                'status'         => 'pending',
+                'entity_id'      => $entity->id,
+                'payload'        => array_merge($data, [
+                    '_program_studi_id' => $request->program_studi_id,
+                    '_created_by'       => $user->id,
+                ]),
+                'requester_id'   => $user->id,
+                'requester_name' => $user->name,
+                'requester_role' => $role,
+            ]);
+
+            ActivityLog::create([
+                'user_id'     => $user->id,
+                'actor_name'  => $user->name,
+                'actor_role'  => $role,
+                'action'      => 'request_create_record',
+                'description' => "Mengajukan permintaan tambah data pada kategori \"{$entity->name}\" — menunggu persetujuan BAAK",
+            ]);
+
+            return redirect()
+                ->route('entities.view', $entity)
+                ->with('info', "Permintaan tambah data pada kategori \"{$entity->name}\" telah dikirim. Menunggu persetujuan BAAK.");
+        }
+
+        // BAAK — langsung simpan
         $record = DynamicRecord::create([
-            'entity_id' => $entity->id,
-            'data' => $data,
-            'created_by' => auth()->id(),
+            'entity_id'        => $entity->id,
+            'data'             => $data,
+            'created_by'       => $user->id,
             'program_studi_id' => $request->program_studi_id,
         ]);
 
-        if (auth()->user()->hasAnyRole(['Kaprodi', 'Dosen'])) {
-            $role = auth()->user()->hasRole('Kaprodi') ? 'Kaprodi' : 'Dosen';
-            ActivityLog::create([
-                'user_id' => auth()->id(),
-                'actor_name' => auth()->user()->name,
-                'actor_role' => $role,
-                'action' => 'create_record',
-                'description' => "Mengisi data pada kategori \"{$entity->name}\"",
-            ]);
-        }
+        ActivityLog::create([
+            'user_id'     => $user->id,
+            'actor_name'  => $user->name,
+            'actor_role'  => $role,
+            'action'      => 'create_record',
+            'description' => "Mengisi data pada kategori \"{$entity->name}\"",
+        ]);
 
         // Handle file uploads
         foreach ($entity->fields as $field) {
@@ -82,15 +113,14 @@ class DynamicRecordController extends Controller
                     $path = $file->store('uploads/' . $entity->slug, 'public');
 
                     DynamicFileUpload::create([
-                        'record_id' => $record->id,
-                        'field_id' => $field->id,
+                        'record_id'     => $record->id,
+                        'field_id'      => $field->id,
                         'original_name' => $file->getClientOriginalName(),
-                        'stored_path' => $path,
-                        'mime_type' => $file->getMimeType(),
-                        'file_size' => $file->getSize(),
+                        'stored_path'   => $path,
+                        'mime_type'     => $file->getMimeType(),
+                        'file_size'     => $file->getSize(),
                     ]);
 
-                    // Store file reference in data
                     $recordData = $record->data;
                     $recordData[$field->slug] = $path;
                     $record->update(['data' => $recordData]);
@@ -187,15 +217,63 @@ class DynamicRecordController extends Controller
 
     public function destroy(DynamicEntity $entity, DynamicRecord $record)
     {
-        // Delete associated files
-        foreach ($record->fileUploads as $fileUpload) {
-            Storage::disk('public')->delete($fileUpload->stored_path);
+        $user = auth()->user();
+        $role = $user->roles->first()?->name ?? 'User';
+
+        // BAAK langsung hapus
+        if ($user->hasRole('BAAK')) {
+            foreach ($record->fileUploads as $fileUpload) {
+                Storage::disk('public')->delete($fileUpload->stored_path);
+            }
+            $record->delete();
+
+            ActivityLog::create([
+                'user_id'     => $user->id,
+                'actor_name'  => $user->name,
+                'actor_role'  => $role,
+                'action'      => 'delete_record',
+                'description' => "Menghapus data pada kategori \"{$entity->name}\"",
+            ]);
+
+            return redirect()
+                ->route('entities.view', $entity)
+                ->with('success', 'Data berhasil dihapus.');
         }
 
-        $record->delete();
+        // Kaprodi / Dosen — cek apakah sudah ada permintaan pending
+        $existing = DataApprovalRequest::where('type', 'record')
+            ->where('action', 'delete')
+            ->where('status', 'pending')
+            ->where('record_id', $record->id)
+            ->first();
+
+        if ($existing) {
+            return redirect()
+                ->route('entities.view', $entity)
+                ->with('info', 'Permintaan hapus data ini sudah ada dan sedang menunggu persetujuan BAAK.');
+        }
+
+        DataApprovalRequest::create([
+            'type'           => 'record',
+            'action'         => 'delete',
+            'status'         => 'pending',
+            'entity_id'      => $entity->id,
+            'record_id'      => $record->id,
+            'requester_id'   => $user->id,
+            'requester_name' => $user->name,
+            'requester_role' => $role,
+        ]);
+
+        ActivityLog::create([
+            'user_id'     => $user->id,
+            'actor_name'  => $user->name,
+            'actor_role'  => $role,
+            'action'      => 'request_delete_record',
+            'description' => "Mengajukan permintaan hapus data pada kategori \"{$entity->name}\" — menunggu persetujuan BAAK",
+        ]);
 
         return redirect()
             ->route('entities.view', $entity)
-            ->with('success', 'Data berhasil dihapus.');
+            ->with('info', "Permintaan hapus data pada kategori \"{$entity->name}\" telah dikirim. Menunggu persetujuan BAAK.");
     }
 }

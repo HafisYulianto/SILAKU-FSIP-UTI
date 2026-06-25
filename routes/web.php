@@ -56,6 +56,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/approvals', [ApprovalController::class, 'index'])->name('approvals.index');
         Route::post('/approvals/{entity}/approve', [ApprovalController::class, 'approve'])->name('approvals.approve');
         Route::post('/approvals/{entity}/reject', [ApprovalController::class, 'reject'])->name('approvals.reject');
+
+        // Data approval bulk actions (Alumni / Records)
+        Route::post('/approvals/data/bulk-approve', [ApprovalController::class, 'bulkApprove'])->name('approvals.data.bulk-approve');
+        Route::post('/approvals/data/bulk-reject', [ApprovalController::class, 'bulkReject'])->name('approvals.data.bulk-reject');
     });
 
     // Pimpinan & Wakil Dekan read-only: browse all entities by category

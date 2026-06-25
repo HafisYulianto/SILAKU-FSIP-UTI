@@ -466,17 +466,27 @@
 
                 {{-- Tour Actions --}}
                 <div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-4 mt-2">
-                    <button @click="endTour()" class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-white underline">
-                        Lewati Panduan
+                    <button @click="endTour()" class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-white underline focus:outline-none">
+                        Lewati
                     </button>
+                    
+                    {{-- Progress Dots --}}
+                    <div class="flex items-center gap-1.5 select-none">
+                        <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 1 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
+                        <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 2 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
+                        <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 3 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
+                        <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 4 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
+                        <span class="h-1.5 rounded-full transition-all duration-300" :class="tourStep === 5 ? 'bg-primary-600 dark:bg-primary-400 w-3.5' : 'bg-gray-200 dark:bg-gray-700 w-1.5'"></span>
+                    </div>
+
                     <div class="flex items-center gap-2">
-                        <button x-show="tourStep > 1" @click="prevStep()" class="btn-secondary btn-sm py-1.5 px-3">
-                            Sebelumnya
+                        <button x-show="tourStep > 1" @click="prevStep()" class="btn-secondary btn-sm py-1 px-2.5 text-xs">
+                            Mundur
                         </button>
-                        <button x-show="tourStep < 5" @click="nextStep()" class="btn-primary btn-sm py-1.5 px-4">
+                        <button x-show="tourStep < 5" @click="nextStep()" class="btn-primary btn-sm py-1 px-3 text-xs">
                             Lanjut
                         </button>
-                        <button x-show="tourStep === 5" @click="endTour()" class="btn-primary btn-sm py-1.5 px-4 bg-emerald-600 hover:bg-emerald-700">
+                        <button x-show="tourStep === 5" @click="endTour()" class="btn-primary btn-sm py-1 px-3 text-xs bg-emerald-600 hover:bg-emerald-700">
                             Selesai
                         </button>
                     </div>

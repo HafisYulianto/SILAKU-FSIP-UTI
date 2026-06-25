@@ -82,11 +82,6 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            @role('BAAK')
-                            <th class="w-12 text-center">
-                                <input type="checkbox" id="check-all" class="form-checkbox h-4 w-4 text-red-600 rounded border-gray-300 transition-colors focus:ring-red-500 cursor-pointer">
-                            </th>
-                            @endrole
                             <th class="w-12 text-center">No</th>
                             <th>Nama</th>
                             <th>Nama Perusahaan</th>
@@ -95,18 +90,22 @@
                             <th>Program Studi</th>
                             <th>Diinput Oleh</th>
                             @hasanyrole('BAAK|Kaprodi|Dosen')
-                            <th class="w-24 text-center">Aksi</th>
+                            <th class="w-32 text-center">
+                                @role('BAAK')
+                                <div class="flex items-center justify-center gap-2">
+                                    <input type="checkbox" id="check-all" class="form-checkbox h-4 w-4 text-red-600 rounded border-gray-300 transition-colors focus:ring-red-500 cursor-pointer" title="Pilih Semua">
+                                    <span>Aksi</span>
+                                </div>
+                                @else
+                                Aksi
+                                @endrole
+                            </th>
                             @endhasanyrole
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($alumnis as $index => $alumni)
                         <tr>
-                            @role('BAAK')
-                            <td class="text-center">
-                                <input type="checkbox" name="alumni_ids[]" value="{{ $alumni->id }}" class="alumni-checkbox form-checkbox h-4 w-4 text-red-600 rounded border-gray-300 transition-colors focus:ring-red-500 cursor-pointer">
-                            </td>
-                            @endrole
                             <td class="text-center font-medium text-gray-400">{{ $alumnis->firstItem() + $index }}</td>
                             <td class="font-semibold text-gray-900 dark:text-white">{{ $alumni->nama }}</td>
                             <td>{{ $alumni->nama_perusahaan }}</td>
@@ -136,6 +135,10 @@
                             @hasanyrole('BAAK|Kaprodi|Dosen')
                             <td class="text-center">
                                 <div class="flex items-center justify-center gap-2">
+                                    @role('BAAK')
+                                    <input type="checkbox" name="alumni_ids[]" value="{{ $alumni->id }}" class="alumni-checkbox form-checkbox h-4 w-4 text-red-600 rounded border-gray-300 transition-colors focus:ring-red-500 cursor-pointer mr-1">
+                                    @endrole
+
                                     <a href="{{ route('alumni.edit', $alumni) }}" class="btn-icon text-gray-400 hover:text-primary-600" title="Edit">
                                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>

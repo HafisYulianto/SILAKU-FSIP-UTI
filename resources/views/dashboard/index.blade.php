@@ -1,7 +1,7 @@
 <x-layouts.app :title="'Dashboard Akreditasi'">
     <div class="space-y-8 fade-in" x-data="{
-        tourActive: !localStorage.getItem('tour_completed'),
-        tourStep: localStorage.getItem('tour_completed') ? 0 : 1,
+        tourActive: {{ (auth()->user()->hasRole('Pimpinan') || auth()->user()->hasRole('Wakil Dekan')) ? 'false' : '!localStorage.getItem(\'tour_completed\')' }},
+        tourStep: {{ (auth()->user()->hasRole('Pimpinan') || auth()->user()->hasRole('Wakil Dekan')) ? '0' : '(localStorage.getItem(\'tour_completed\') ? 0 : 1)' }},
         tourPositionStyle: 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 28rem; max-width: 90vw;',
         startTour() {
             this.tourStep = 1;
@@ -146,12 +146,14 @@
                 <p class="page-subtitle">Ringkasan data FSIP Universitas Teknokrat Indonesia</p>
             </div>
             <div class="flex items-center gap-3">
+                @unless(auth()->user()->hasRole('Pimpinan') || auth()->user()->hasRole('Wakil Dekan'))
                 <button @click="startTour()" class="btn-secondary btn-sm flex items-center gap-1.5 transition-all duration-300 hover:scale-105" id="start-tour-btn">
                     <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <span>Panduan Portal</span>
                 </button>
+                @endunless
                 <div class="flex items-center gap-2">
                     <span class="text-xs text-gray-400">Terakhir diperbarui:</span>
                     <span class="text-xs font-medium text-gray-600 dark:text-gray-400">{{ now()->translatedFormat('d F Y, H:i') }}</span>

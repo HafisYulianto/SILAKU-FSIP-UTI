@@ -86,7 +86,7 @@
         </div>
 
         <!-- Right: Photo/Visual section -->
-        <div class="hidden md:col-span-5 relative overflow-hidden group">
+        <div class="hidden md:block md:col-span-5 relative overflow-hidden group">
             <!-- Background Image -->
             <img src="{{ asset('images/hero-bg.jpg') }}" alt="Gedung FSIP UTI" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[10s] group-hover:scale-105">
             <!-- Overlay gradients -->

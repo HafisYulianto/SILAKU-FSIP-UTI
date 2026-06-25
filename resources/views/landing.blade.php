@@ -421,7 +421,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section header -->
             <div class="text-center mb-20 reveal">
-                <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-[0.2em] mb-4 border border-emerald-100">{{ __('landing.vision_badge') ?? 'Visi & Misi' }}</span>
                 <h2 class="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">{{ __('landing.vision_title') }}</h2>
             </div>
 
@@ -474,7 +473,6 @@
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-20 reveal">
-                <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-[0.2em] mb-4 border border-emerald-100">{{ __('landing.goals_badge') }}</span>
                 <h2 class="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">{{ __('landing.goals_title') }}</h2>
             </div>
 
@@ -522,7 +520,6 @@
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-20 reveal">
-                <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-[0.2em] mb-4 border border-emerald-100">{{ __('landing.programs_badge') }}</span>
                 <h2 class="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">{{ __('landing.programs_title') }}</h2>
             </div>
 

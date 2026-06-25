@@ -23,6 +23,30 @@ class AlumniController extends Controller
         return view('alumni.index', compact('alumnis', 'programStudis', 'prodiId'));
     }
 
+    public function exportExcel(Request $request, \App\Services\ExportService $exportService)
+    {
+        $prodiId = $request->get('program_studi_id');
+
+        $alumnis = Alumni::with(['programStudi', 'creator'])
+            ->when($prodiId, fn($q) => $q->where('program_studi_id', $prodiId))
+            ->latest()
+            ->get();
+
+        return $exportService->exportAlumniToExcel($alumnis);
+    }
+
+    public function exportPdf(Request $request, \App\Services\ExportService $exportService)
+    {
+        $prodiId = $request->get('program_studi_id');
+
+        $alumnis = Alumni::with(['programStudi', 'creator'])
+            ->when($prodiId, fn($q) => $q->where('program_studi_id', $prodiId))
+            ->latest()
+            ->get();
+
+        return $exportService->exportAlumniToPdf($alumnis);
+    }
+
     public function create()
     {
         $programStudis = ProgramStudi::where('is_active', true)->get();

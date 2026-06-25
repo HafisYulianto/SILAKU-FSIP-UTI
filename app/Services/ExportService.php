@@ -359,4 +359,202 @@ class ExportService
             default => 'bar',
         };
     }
+
+    /**
+     * Export Alumni records to Excel file (.xlsx).
+     */
+    public function exportAlumniToExcel($alumnis, string $fileName = null)
+    {
+        $fileName = $fileName ?? "alumni_" . date('Y-m-d_His') . '.xlsx';
+
+        // Create spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Data Alumni');
+
+        $totalColumns = 8;
+        $lastColumnLetter = 'H';
+
+        // 1. Center & Merge Category Name as Title
+        $sheet->getRowDimension('2')->setRowHeight(35);
+        $sheet->mergeCells("A2:{$lastColumnLetter}2");
+        $sheet->setCellValue('A2', 'DATA ALUMNI');
+        $sheet->getStyle('A2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 16,
+                'color' => ['rgb' => '1E5A4A']
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+        
+        // Bottom border under title as a horizontal rule line
+        $sheet->getStyle("A2:{$lastColumnLetter}2")->applyFromArray([
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_MEDIUM,
+                    'color' => ['rgb' => '1E5A4A'],
+                ],
+            ],
+        ]);
+
+        // 2. Metadata Info
+        // Kategori
+        $sheet->setCellValue('A4', 'Kategori:');
+        $sheet->getStyle('A4')->getFont()->setBold(true);
+        $sheet->setCellValue('B4', 'Alumni');
+        
+        // Total Records
+        $sheet->setCellValue('A5', 'Total Records:');
+        $sheet->getStyle('A5')->getFont()->setBold(true);
+        $sheet->setCellValue('B5', $alumnis->count());
+        
+        // Tanggal Export
+        $sheet->setCellValue('A6', 'Tanggal Export:');
+        $sheet->getStyle('A6')->getFont()->setBold(true);
+        $sheet->setCellValue('B6', now()->timezone('Asia/Jakarta')->format('d M Y H:i:s'));
+
+        // 3. Set Table Headers (Row 8)
+        $headerRow = 8;
+        $sheet->getRowDimension($headerRow)->setRowHeight(25);
+        
+        $headers = [
+            'No',
+            'Nama',
+            'Nama Perusahaan',
+            'Posisi',
+            'Lokasi',
+            'Program Studi',
+            'Diinput Oleh',
+            'Tanggal Dibuat'
+        ];
+
+        foreach ($headers as $index => $header) {
+            $colLetter = $this->getColumnLetter($index + 1);
+            $sheet->setCellValue($colLetter . $headerRow, $header);
+        }
+
+        // Style the headers (Dark Green, White Text, Left/Center Aligned, Bold)
+        $headerRange = "A{$headerRow}:{$lastColumnLetter}{$headerRow}";
+        $sheet->getStyle($headerRange)->applyFromArray([
+            'font' => [
+                'bold' => true, 
+                'color' => ['rgb' => 'FFFFFF']
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID, 
+                'startColor' => ['rgb' => '1E5A4A']
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+        
+        // Specific alignment for table headers
+        $sheet->getStyle("A{$headerRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        for ($c = 2; $c <= $totalColumns; $c++) {
+            $sheet->getStyle($this->getColumnLetter($c) . $headerRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        }
+
+        // 4. Fill Data Rows (Row 9 onwards)
+        $dataRow = 9;
+        foreach ($alumnis as $index => $alumni) {
+            $sheet->getRowDimension($dataRow)->setRowHeight(20);
+            
+            $sheet->setCellValue('A' . $dataRow, $index + 1);
+            $sheet->setCellValue('B' . $dataRow, $alumni->nama);
+            $sheet->setCellValue('C' . $dataRow, $alumni->nama_perusahaan);
+            $sheet->setCellValue('D' . $dataRow, $alumni->posisi);
+            $sheet->setCellValue('E' . $dataRow, $alumni->lokasi);
+            $sheet->setCellValue('F' . $dataRow, $alumni->programStudi?->name ?? 'Umum');
+            $sheet->setCellValue('G' . $dataRow, $alumni->creator?->name ?? '-');
+            $sheet->setCellValue('H' . $dataRow, $alumni->created_at->timezone('Asia/Jakarta')->format('d/m/Y H:i'));
+
+            // Alternating background colors & thin borders
+            $rowRange = "A{$dataRow}:{$lastColumnLetter}{$dataRow}";
+            if (($index % 2) !== 0) {
+                $sheet->getStyle($rowRange)->applyFromArray([
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'F9F9F9'],
+                    ],
+                ]);
+            }
+            
+            // Add thin borders to the row cells
+            $sheet->getStyle($rowRange)->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => 'DDDDDD'],
+                    ],
+                ],
+            ]);
+            
+            // Alignments
+            $sheet->getStyle("A{$dataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            for ($c = 2; $c <= $totalColumns; $c++) {
+                $sheet->getStyle($this->getColumnLetter($c) . $dataRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            }
+
+            $dataRow++;
+        }
+
+        // 5. Add Footer
+        $footerRow = $dataRow + 1;
+        $sheet->getRowDimension($footerRow)->setRowHeight(30);
+        $sheet->mergeCells("A{$footerRow}:{$lastColumnLetter}{$footerRow}");
+        $sheet->setCellValue("A{$footerRow}", 'Dokumen ini dihasilkan oleh SILAKU FSIP - Sistem Pelaporan IKU');
+        $sheet->getStyle("A{$footerRow}")->applyFromArray([
+            'font' => [
+                'italic' => true,
+                'size' => 10,
+                'color' => ['rgb' => '999999']
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'top' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => 'DDDDDD'],
+                ],
+            ],
+        ]);
+
+        // Auto-fit columns
+        foreach ($sheet->getColumnIterator() as $col) {
+            $sheet->getColumnDimension($col->getColumnIndex())->setAutoSize(true);
+        }
+
+        // Write file
+        $writer = new Xlsx($spreadsheet);
+        
+        ob_start();
+        $writer->save('php://output');
+        $xlsxContent = ob_get_clean();
+
+        return response($xlsxContent, 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+
+    /**
+     * Export Alumni records to PDF file.
+     */
+    public function exportAlumniToPdf($alumnis, string $fileName = null)
+    {
+        $fileName = $fileName ?? "alumni_" . date('Y-m-d_His') . '.pdf';
+        
+        $pdf = Pdf::loadView('exports.alumni-pdf', [
+            'alumnis' => $alumnis,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download($fileName);
+    }
 }

@@ -42,7 +42,7 @@
                     <p class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</p>
                     <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
                     @if(auth()->user()->nip)
-                    <p class="text-xs text-gray-400 mt-1">NIP: {{ auth()->user()->nip }}</p>
+                    <p class="text-xs text-gray-400 mt-1">{{ auth()->user()->identifier_label }}: {{ auth()->user()->nip }}</p>
                     @endif
                 </div>
 

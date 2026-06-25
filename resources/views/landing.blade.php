@@ -77,9 +77,11 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary-50/30">
+    <section class="relative min-h-screen flex items-center overflow-hidden bg-cover bg-center" style="background-image: url('{{ asset('images/hero-bg.jpg') }}')">
+        <!-- Overlay mask to ensure content readability -->
+        <div class="absolute inset-0 bg-gradient-to-br from-white/95 via-white/90 to-primary-50/80 backdrop-blur-[1px]"></div>
         <!-- Animated grid background -->
-        <div class="absolute inset-0 hero-grid opacity-60"></div>
+        <div class="absolute inset-0 hero-grid opacity-30"></div>
         <!-- Floating gradient orbs -->
         <div class="absolute top-20 right-[10%] w-[500px] h-[500px] bg-gradient-to-br from-primary-400/20 to-teal-300/20 rounded-full blur-3xl float-slow glow-pulse"></div>
         <div class="absolute bottom-20 left-[5%] w-[400px] h-[400px] bg-gradient-to-tr from-emerald-400/15 to-cyan-300/15 rounded-full blur-3xl float-med"></div>

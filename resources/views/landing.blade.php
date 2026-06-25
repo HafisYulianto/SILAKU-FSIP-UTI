@@ -336,14 +336,6 @@
 
                 <!-- Left: Content -->
                 <div class="lg:col-span-7 text-left space-y-8">
-                    <!-- Badge -->
-                    <div class="hero-animate-1">
-                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-primary-100 text-sm font-semibold backdrop-blur-sm">
-                            <span class="w-2 h-2 bg-primary-300 rounded-full animate-pulse"></span>
-                            {{ __('landing.hero_badge') }}
-                        </span>
-                    </div>
-
                     <!-- Title -->
                     <h1 class="hero-animate-2 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.05]">
                         {{ __('landing.hero_title_1') }} <br>

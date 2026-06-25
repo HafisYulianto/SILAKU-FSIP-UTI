@@ -303,7 +303,14 @@ class AlumniController extends Controller
         }
 
         $count = Alumni::count();
+        
+        // Hapus juga request approval yang berelasi agar tidak bentrok foreign key
+        \App\Models\DataApprovalRequest::where('type', 'alumni')->delete();
+
+        // Nonaktifkan sementara pengecekan foreign key untuk melakukan truncate
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
         Alumni::truncate();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
         ActivityLog::create([
             'user_id'     => $user->id,

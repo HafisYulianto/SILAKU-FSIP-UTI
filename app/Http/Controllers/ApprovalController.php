@@ -54,14 +54,6 @@ class ApprovalController extends Controller
                 'rejection_reason' => null,
             ]);
 
-            ActivityLog::create([
-                'user_id'     => auth()->id(),
-                'actor_name'  => auth()->user()->name,
-                'actor_role'  => 'BAAK',
-                'action'      => 'approve_category',
-                'description' => "Menyetujui pembuatan kategori \"{$entity->name}\" yang diajukan oleh {$entity->creator->name}",
-            ]);
-
             return redirect()
                 ->route('approvals.index')
                 ->with('success', "Kategori \"{$entity->name}\" berhasil disetujui dan sekarang aktif.");
@@ -70,14 +62,6 @@ class ApprovalController extends Controller
         if ($entity->approval_status === 'pending_delete') {
             $name        = $entity->name;
             $creatorName = $entity->creator->name;
-
-            ActivityLog::create([
-                'user_id'     => auth()->id(),
-                'actor_name'  => auth()->user()->name,
-                'actor_role'  => 'BAAK',
-                'action'      => 'approve_delete_category',
-                'description' => "Menyetujui penghapusan kategori \"{$name}\" yang diajukan oleh {$creatorName}",
-            ]);
 
             $entity->delete();
 
@@ -108,14 +92,6 @@ class ApprovalController extends Controller
                 'rejection_reason' => $request->rejection_reason,
             ]);
 
-            ActivityLog::create([
-                'user_id'     => auth()->id(),
-                'actor_name'  => auth()->user()->name,
-                'actor_role'  => 'BAAK',
-                'action'      => 'reject_category',
-                'description' => "Menolak pembuatan kategori \"{$entity->name}\" — Alasan: {$request->rejection_reason}",
-            ]);
-
             return redirect()
                 ->route('approvals.index')
                 ->with('success', "Pembuatan kategori \"{$entity->name}\" berhasil ditolak.");
@@ -125,14 +101,6 @@ class ApprovalController extends Controller
             $entity->update([
                 'approval_status'  => 'approved',
                 'rejection_reason' => null,
-            ]);
-
-            ActivityLog::create([
-                'user_id'     => auth()->id(),
-                'actor_name'  => auth()->user()->name,
-                'actor_role'  => 'BAAK',
-                'action'      => 'reject_delete_category',
-                'description' => "Menolak penghapusan kategori \"{$entity->name}\" — Alasan: {$request->rejection_reason}",
             ]);
 
             return redirect()
@@ -167,14 +135,6 @@ class ApprovalController extends Controller
             $approved++;
         }
 
-        ActivityLog::create([
-            'user_id'     => auth()->id(),
-            'actor_name'  => auth()->user()->name,
-            'actor_role'  => 'BAAK',
-            'action'      => 'bulk_approve_data',
-            'description' => "Menyetujui {$approved} permintaan data sekaligus",
-        ]);
-
         return redirect()
             ->route('approvals.index')
             ->with('success', "{$approved} permintaan data berhasil disetujui.");
@@ -204,14 +164,6 @@ class ApprovalController extends Controller
             ]);
             $rejected++;
         }
-
-        ActivityLog::create([
-            'user_id'     => auth()->id(),
-            'actor_name'  => auth()->user()->name,
-            'actor_role'  => 'BAAK',
-            'action'      => 'bulk_reject_data',
-            'description' => "Menolak {$rejected} permintaan data — Alasan: {$request->rejection_reason}",
-        ]);
 
         return redirect()
             ->route('approvals.index')

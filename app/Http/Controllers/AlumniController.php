@@ -102,14 +102,6 @@ class AlumniController extends Controller
                 }
             }
 
-            ActivityLog::create([
-                'user_id'     => $user->id,
-                'actor_name'  => $user->name,
-                'actor_role'  => 'BAAK',
-                'action'      => 'create_alumni',
-                'description' => "Menambahkan data alumni baru \"{$alumni->nama}\" di \"{$alumni->nama_perusahaan}\"",
-            ]);
-
             return redirect()
                 ->route('alumni.index')
                 ->with('success', "Data alumni \"{$alumni->nama}\" berhasil ditambahkan.");
@@ -194,13 +186,17 @@ class AlumniController extends Controller
             }
         }
 
-        ActivityLog::create([
-            'user_id'     => auth()->id(),
-            'actor_name'  => auth()->user()->name,
-            'actor_role'  => auth()->user()->roles->first()->name ?? 'User',
-            'action'      => 'update_alumni',
-            'description' => "Memperbarui data alumni \"{$alumni->nama}\"",
-        ]);
+        $role = auth()->user()->roles->first()?->name ?? 'User';
+        // Log hanya untuk Kaprodi/Dosen
+        if (in_array($role, ['Kaprodi', 'Dosen'])) {
+            ActivityLog::create([
+                'user_id'     => auth()->id(),
+                'actor_name'  => auth()->user()->name,
+                'actor_role'  => $role,
+                'action'      => 'update_alumni',
+                'description' => "Memperbarui data alumni \"{$alumni->nama}\"",
+            ]);
+        }
 
         return redirect()
             ->route('alumni.index')
@@ -212,17 +208,9 @@ class AlumniController extends Controller
         $user = auth()->user();
         $nama = $alumni->nama;
 
-        // BAAK langsung hapus
+        // BAAK langsung hapus — tidak perlu log
         if ($user->hasRole('BAAK')) {
             $alumni->delete();
-
-            ActivityLog::create([
-                'user_id'     => $user->id,
-                'actor_name'  => $user->name,
-                'actor_role'  => 'BAAK',
-                'action'      => 'delete_alumni',
-                'description' => "Menghapus data alumni \"{$nama}\"",
-            ]);
 
             return redirect()
                 ->route('alumni.index')
@@ -282,14 +270,6 @@ class AlumniController extends Controller
         $count = count($request->alumni_ids);
         Alumni::whereIn('id', $request->alumni_ids)->delete();
 
-        ActivityLog::create([
-            'user_id'     => $user->id,
-            'actor_name'  => $user->name,
-            'actor_role'  => 'BAAK',
-            'action'      => 'bulk_delete_alumni',
-            'description' => "Menghapus {$count} data alumni secara massal",
-        ]);
-
         return redirect()
             ->route('alumni.index')
             ->with('success', "{$count} data alumni berhasil dihapus secara massal.");
@@ -309,14 +289,6 @@ class AlumniController extends Controller
 
         // Kemudian hapus semua alumni
         Alumni::query()->delete();
-
-        ActivityLog::create([
-            'user_id'     => $user->id,
-            'actor_name'  => $user->name,
-            'actor_role'  => 'BAAK',
-            'action'      => 'delete_all_alumni',
-            'description' => "Menghapus seluruh data alumni ({$count} data).",
-        ]);
 
         return redirect()
             ->route('alumni.index')

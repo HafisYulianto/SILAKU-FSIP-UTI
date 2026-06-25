@@ -88,7 +88,7 @@ class DynamicRecordController extends Controller
                 ->with('info', "Permintaan tambah data pada kategori \"{$entity->name}\" telah dikirim. Menunggu persetujuan BAAK.");
         }
 
-        // BAAK — langsung simpan
+        // BAAK — langsung simpan, tidak perlu log
         $record = DynamicRecord::create([
             'entity_id'        => $entity->id,
             'data'             => $data,
@@ -220,20 +220,12 @@ class DynamicRecordController extends Controller
         $user = auth()->user();
         $role = $user->roles->first()?->name ?? 'User';
 
-        // BAAK langsung hapus
+        // BAAK langsung hapus — tidak perlu log
         if ($user->hasRole('BAAK')) {
             foreach ($record->fileUploads as $fileUpload) {
                 Storage::disk('public')->delete($fileUpload->stored_path);
             }
             $record->delete();
-
-            ActivityLog::create([
-                'user_id'     => $user->id,
-                'actor_name'  => $user->name,
-                'actor_role'  => $role,
-                'action'      => 'delete_record',
-                'description' => "Menghapus data pada kategori \"{$entity->name}\"",
-            ]);
 
             return redirect()
                 ->route('entities.view', $entity)

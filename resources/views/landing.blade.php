@@ -87,14 +87,6 @@
                 
                 <!-- Left Column: Content -->
                 <div class="lg:col-span-7 text-left space-y-6">
-                    <div class="inline-flex items-center px-5 py-2.5 rounded-full bg-white border border-primary-100 text-primary-700 text-sm font-semibold shadow-md shadow-primary-500/5 fade-in">
-                        <span class="relative flex h-2.5 w-2.5 mr-3">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-500"></span>
-                        </span>
-                        {{ __('landing.hero_badge') }}
-                    </div>
-                    
                     <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-gray-900 leading-[1.1] fade-in" style="animation-delay: 100ms;">
                         {{ __('landing.hero_title_1') }} <br>
                         <span class="text-gradient">{{ __('landing.hero_title_2') }}</span>

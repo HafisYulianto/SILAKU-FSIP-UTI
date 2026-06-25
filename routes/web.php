@@ -93,6 +93,11 @@ Route::middleware('auth')->group(function () {
         Route::put('/alumni/{alumni}', [AlumniController::class, 'update'])->name('alumni.update');
         Route::delete('/alumni/{alumni}', [AlumniController::class, 'destroy'])->name('alumni.destroy');
     });
+    
+    Route::middleware('role:BAAK')->group(function () {
+        Route::post('/alumni/bulk-destroy', [AlumniController::class, 'bulkDestroy'])->name('alumni.bulk-destroy');
+        Route::post('/alumni/destroy-all', [AlumniController::class, 'destroyAll'])->name('alumni.destroy-all');
+    });
 
     // View entity details & record detail - all authenticated roles
     Route::get('/entities/{entity}/view', [DynamicEntityController::class, 'show'])

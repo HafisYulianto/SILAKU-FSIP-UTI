@@ -1011,8 +1011,8 @@
 
                     // Build Popup HTML listing all alumni in this group
                     let popupHtml = `
-                        <div style="padding:4px;min-width:210px;max-width:280px;font-family:sans-serif;max-height:240px;overflow-y:auto;scrollbar-width:thin;">
-                            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;">
+                        <div style="padding:12px;min-width:210px;max-width:280px;font-family:sans-serif;max-height:240px;overflow-y:auto;scrollbar-width:thin;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e5e7eb;padding-right:20px;">
                                 <span style="font-size:11px;font-weight:700;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📍 ${group.lokasi}</span>
                                 ${count > 1 ? `<span style="background:#e0f2fe;color:#0369a1;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;flex-shrink:0;">${count} Alumni</span>` : ''}
                             </div>

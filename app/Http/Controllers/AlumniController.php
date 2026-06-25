@@ -267,6 +267,57 @@ class AlumniController extends Controller
             ->with('info', "Permintaan hapus alumni \"{$nama}\" telah dikirim dan menunggu persetujuan BAAK.");
     }
 
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'alumni_ids'   => 'required|array|min:1',
+            'alumni_ids.*' => 'integer|exists:alumnis,id',
+        ]);
+
+        $user = auth()->user();
+        if (!$user->hasRole('BAAK')) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menghapus data massal.');
+        }
+
+        $count = count($request->alumni_ids);
+        Alumni::whereIn('id', $request->alumni_ids)->delete();
+
+        ActivityLog::create([
+            'user_id'     => $user->id,
+            'actor_name'  => $user->name,
+            'actor_role'  => 'BAAK',
+            'action'      => 'bulk_delete_alumni',
+            'description' => "Menghapus {$count} data alumni secara massal",
+        ]);
+
+        return redirect()
+            ->route('alumni.index')
+            ->with('success', "{$count} data alumni berhasil dihapus secara massal.");
+    }
+
+    public function destroyAll()
+    {
+        $user = auth()->user();
+        if (!$user->hasRole('BAAK')) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menghapus semua data.');
+        }
+
+        $count = Alumni::count();
+        Alumni::truncate();
+
+        ActivityLog::create([
+            'user_id'     => $user->id,
+            'actor_name'  => $user->name,
+            'actor_role'  => 'BAAK',
+            'action'      => 'delete_all_alumni',
+            'description' => "Menghapus seluruh data alumni ({$count} data) beserta reset ID.",
+        ]);
+
+        return redirect()
+            ->route('alumni.index')
+            ->with('success', "Seluruh data alumni berhasil dihapus.");
+    }
+
     /**
      * Endpoint API for autocomplete search suggestion.
      */

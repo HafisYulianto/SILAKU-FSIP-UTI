@@ -20,6 +20,24 @@
                     </svg>
                     <span>PDF</span>
                 </a>
+                
+                @role('BAAK')
+                <button type="button" onclick="document.getElementById('bulk-delete-form').submit()" class="btn-danger flex items-center gap-1.5 transition-all duration-300 hover:scale-105 hidden" id="bulk-delete-btn">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    <span>Hapus Terpilih</span>
+                </button>
+                <form action="{{ route('alumni.destroy-all') }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus SELURUH data alumni? Aksi ini tidak dapat dibatalkan.')">
+                    @csrf
+                    <button type="submit" class="btn-danger flex items-center gap-1.5 transition-all duration-300 hover:scale-105 bg-red-700 hover:bg-red-800">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                        <span>Hapus Semua</span>
+                    </button>
+                </form>
+                @endrole
                 @endif
 
                 @hasanyrole('BAAK|Kaprodi|Dosen')
@@ -56,10 +74,19 @@
         {{-- Data Table Card --}}
         <div class="card overflow-hidden">
             @if($alumnis->count() > 0)
+            @role('BAAK')
+            <form method="POST" action="{{ route('alumni.bulk-destroy') }}" id="bulk-delete-form">
+                @csrf
+            @endrole
             <div class="overflow-x-auto">
                 <table class="data-table">
                     <thead>
                         <tr>
+                            @role('BAAK')
+                            <th class="w-12 text-center">
+                                <input type="checkbox" id="check-all" class="form-checkbox h-4 w-4 text-red-600 rounded border-gray-300 transition-colors focus:ring-red-500 cursor-pointer">
+                            </th>
+                            @endrole
                             <th class="w-12 text-center">No</th>
                             <th>Nama</th>
                             <th>Nama Perusahaan</th>
@@ -75,6 +102,11 @@
                     <tbody>
                         @foreach($alumnis as $index => $alumni)
                         <tr>
+                            @role('BAAK')
+                            <td class="text-center">
+                                <input type="checkbox" name="alumni_ids[]" value="{{ $alumni->id }}" class="alumni-checkbox form-checkbox h-4 w-4 text-red-600 rounded border-gray-300 transition-colors focus:ring-red-500 cursor-pointer">
+                            </td>
+                            @endrole
                             <td class="text-center font-medium text-gray-400">{{ $alumnis->firstItem() + $index }}</td>
                             <td class="font-semibold text-gray-900 dark:text-white">{{ $alumni->nama }}</td>
                             <td>{{ $alumni->nama_perusahaan }}</td>
@@ -151,6 +183,9 @@
             <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-800">
                 {{ $alumnis->appends(request()->query())->links() }}
             </div>
+            @role('BAAK')
+            </form>
+            @endrole
             @else
             <div class="empty-state py-16">
                 <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -165,4 +200,46 @@
             @endif
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkAll = document.getElementById('check-all');
+            const checkboxes = document.querySelectorAll('.alumni-checkbox');
+            const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+            
+            if (checkAll && checkboxes.length > 0) {
+                checkAll.addEventListener('change', function () {
+                    checkboxes.forEach(cb => {
+                        cb.checked = this.checked;
+                    });
+                    toggleBulkDeleteBtn();
+                });
+
+                checkboxes.forEach(cb => {
+                    cb.addEventListener('change', function () {
+                        // Update check-all state
+                        const allChecked = Array.from(checkboxes).every(c => c.checked);
+                        const someChecked = Array.from(checkboxes).some(c => c.checked);
+                        
+                        checkAll.checked = allChecked;
+                        checkAll.indeterminate = someChecked && !allChecked;
+                        
+                        toggleBulkDeleteBtn();
+                    });
+                });
+                
+                function toggleBulkDeleteBtn() {
+                    const checkedCount = document.querySelectorAll('.alumni-checkbox:checked').length;
+                    if (checkedCount > 0) {
+                        bulkDeleteBtn.classList.remove('hidden');
+                        bulkDeleteBtn.querySelector('span').innerText = `Hapus Terpilih (${checkedCount})`;
+                    } else {
+                        bulkDeleteBtn.classList.add('hidden');
+                    }
+                }
+            }
+        });
+    </script>
+    @endpush
 </x-layouts.app>

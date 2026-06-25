@@ -63,7 +63,7 @@
                     </div>
                     <div class="px-6 py-4 flex justify-between items-center">
                         <div>
-                            <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">NIP</p>
+                            <p class="text-xs font-medium text-gray-400 uppercase tracking-wider">{{ $user->identifier_label }}</p>
                             <p class="text-sm font-semibold text-gray-900 mt-1">{{ $user->nip ?? '—' }}</p>
                         </div>
                         <svg class="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">

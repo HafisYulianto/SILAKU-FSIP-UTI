@@ -38,7 +38,7 @@
                         <tr>
                             <th>#</th>
                             <th>Pengguna</th>
-                            <th>NIP</th>
+                            <th>NIP / NIK / NITK</th>
                             <th>Role</th>
                             <th>Program Studi</th>
                             <th>Status</th>

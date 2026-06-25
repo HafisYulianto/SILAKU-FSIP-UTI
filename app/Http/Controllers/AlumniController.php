@@ -303,21 +303,19 @@ class AlumniController extends Controller
         }
 
         $count = Alumni::count();
-        
-        // Hapus juga request approval yang berelasi agar tidak bentrok foreign key
+
+        // Hapus dulu data persetujuan yang berelasi dengan alumni (FK constraint)
         \App\Models\DataApprovalRequest::where('type', 'alumni')->delete();
 
-        // Nonaktifkan sementara pengecekan foreign key untuk melakukan truncate
-        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
-        Alumni::truncate();
-        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+        // Kemudian hapus semua alumni
+        Alumni::query()->delete();
 
         ActivityLog::create([
             'user_id'     => $user->id,
             'actor_name'  => $user->name,
             'actor_role'  => 'BAAK',
             'action'      => 'delete_all_alumni',
-            'description' => "Menghapus seluruh data alumni ({$count} data) beserta reset ID.",
+            'description' => "Menghapus seluruh data alumni ({$count} data).",
         ]);
 
         return redirect()

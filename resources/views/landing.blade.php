@@ -165,7 +165,7 @@
             transform: translateX(-50%);
             width: 0;
             height: 2px;
-            background: #34d399;
+            background: #fff;
             border-radius: 999px;
             transition: width 0.3s ease;
         }
@@ -185,7 +185,7 @@
     <!-- NAVIGATION                                  -->
     <!-- ═══════════════════════════════════════════ -->
     <nav :class="{
-        'bg-gray-900/90 shadow-2xl shadow-black/20 py-2 border-b border-white/5': scrolled,
+        'bg-primary-900/95 shadow-2xl shadow-primary-900/20 py-2': scrolled,
         'bg-transparent py-5': !scrolled
     }" class="fixed w-full z-50 transition-all duration-500 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -199,7 +199,7 @@
                     </div>
                     <div>
                         <h1 class="text-xl font-black text-white leading-tight tracking-tight">SILAKU</h1>
-                        <p class="text-[11px] text-emerald-300/80 font-medium tracking-wide">Sistem Pelaporan IKU</p>
+                        <p class="text-[11px] text-primary-200 font-medium tracking-wide">Sistem Pelaporan IKU</p>
                     </div>
                 </a>
 
@@ -221,7 +221,7 @@
                             <svg class="w-3 h-3 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div x-show="open" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150"
-                             class="absolute right-0 mt-2 w-36 bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-100 py-1.5 z-50">
+                             class="absolute right-0 mt-2 w-36 bg-white backdrop-blur-xl rounded-xl shadow-2xl border border-gray-100 py-1.5 z-50">
                             <a href="{{ route('lang.switch', 'id') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors rounded-lg mx-1">🇮🇩 Indonesia</a>
                             <a href="{{ route('lang.switch', 'en') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors rounded-lg mx-1">🇬🇧 English</a>
                         </div>
@@ -229,12 +229,12 @@
 
                     <!-- CTA Button -->
                     @auth
-                        <a href="{{ route('dashboard') }}" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-gray-900 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full hover:from-emerald-300 hover:to-teal-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-400/40 transition-all hover:scale-105 active:scale-95">
+                        <a href="{{ route('dashboard') }}" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-primary-800 bg-white rounded-full hover:bg-primary-50 shadow-lg shadow-black/10 hover:shadow-xl transition-all hover:scale-105 active:scale-95">
                             {{ __('landing.nav_dashboard') }}
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-gray-900 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full hover:from-emerald-300 hover:to-teal-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-400/40 transition-all hover:scale-105 active:scale-95">
+                        <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-primary-800 bg-white rounded-full hover:bg-primary-50 shadow-lg shadow-black/10 hover:shadow-xl transition-all hover:scale-105 active:scale-95">
                             {{ __('landing.nav_login') }}
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                         </a>
@@ -255,9 +255,9 @@
                 <a href="#vision" @click="mobileNav = false" class="block px-4 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all">{{ __('landing.nav_vision') }}</a>
                 <a href="#programs" @click="mobileNav = false" class="block px-4 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all">{{ __('landing.nav_programs') }}</a>
                 @auth
-                    <a href="{{ route('dashboard') }}" class="block px-4 py-2.5 text-sm font-bold text-emerald-400 hover:bg-white/10 rounded-lg transition-all">{{ __('landing.nav_dashboard') }} →</a>
+                    <a href="{{ route('dashboard') }}" class="block px-4 py-2.5 text-sm font-bold text-primary-200 hover:bg-white/10 rounded-lg transition-all">{{ __('landing.nav_dashboard') }} →</a>
                 @else
-                    <a href="{{ route('login') }}" class="block px-4 py-2.5 text-sm font-bold text-emerald-400 hover:bg-white/10 rounded-lg transition-all">{{ __('landing.nav_login') }} →</a>
+                    <a href="{{ route('login') }}" class="block px-4 py-2.5 text-sm font-bold text-primary-200 hover:bg-white/10 rounded-lg transition-all">{{ __('landing.nav_login') }} →</a>
                 @endauth
             </div>
         </div>
@@ -266,7 +266,7 @@
     <!-- ═══════════════════════════════════════════ -->
     <!-- HERO SECTION                                -->
     <!-- ═══════════════════════════════════════════ -->
-    <section class="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-emerald-950">
+    <section class="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-emerald-900">
         <!-- Particle canvas -->
         <canvas id="particles-canvas"></canvas>
 
@@ -274,17 +274,17 @@
         <div class="absolute inset-0 hero-grid opacity-30"></div>
 
         <!-- Gradient orbs -->
-        <div class="absolute top-10 right-[5%] w-[600px] h-[600px] bg-gradient-to-br from-emerald-500/20 to-teal-400/10 rounded-full blur-[100px] float-slow glow-pulse"></div>
-        <div class="absolute bottom-10 left-[5%] w-[500px] h-[500px] bg-gradient-to-tr from-emerald-600/15 to-cyan-500/10 rounded-full blur-[80px] float-rev"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-emerald-500/5 to-transparent rounded-full blur-[120px]"></div>
+        <div class="absolute top-10 right-[5%] w-[600px] h-[600px] bg-gradient-to-br from-white/10 to-teal-300/10 rounded-full blur-[100px] float-slow glow-pulse"></div>
+        <div class="absolute bottom-10 left-[5%] w-[500px] h-[500px] bg-gradient-to-tr from-emerald-300/10 to-cyan-300/8 rounded-full blur-[80px] float-rev"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-white/5 to-transparent rounded-full blur-[120px]"></div>
 
         <!-- Morphing decorative blob -->
-        <div class="absolute top-20 left-[15%] w-48 h-48 bg-emerald-500/8 morph-blob float-med hidden lg:block"></div>
+        <div class="absolute top-20 left-[15%] w-48 h-48 bg-white/5 morph-blob float-med hidden lg:block"></div>
 
         <!-- Spinning ring decoration -->
         <div class="absolute bottom-32 right-[10%] w-64 h-64 hidden lg:block">
-            <div class="w-full h-full border border-emerald-500/10 rounded-full spin-slow"></div>
-            <div class="absolute inset-4 border border-dashed border-emerald-400/8 rounded-full spin-slow" style="animation-direction: reverse;"></div>
+            <div class="w-full h-full border border-white/10 rounded-full spin-slow"></div>
+            <div class="absolute inset-4 border border-dashed border-white/5 rounded-full spin-slow" style="animation-direction: reverse;"></div>
         </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-32 pb-20 w-full">
@@ -294,8 +294,8 @@
                 <div class="lg:col-span-7 text-left space-y-8">
                     <!-- Badge -->
                     <div class="hero-animate-1">
-                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm font-semibold backdrop-blur-sm">
-                            <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-primary-100 text-sm font-semibold backdrop-blur-sm">
+                            <span class="w-2 h-2 bg-primary-300 rounded-full animate-pulse"></span>
                             {{ __('landing.hero_badge') }}
                         </span>
                     </div>
@@ -307,24 +307,24 @@
                     </h1>
 
                     <!-- Description -->
-                    <p class="hero-animate-3 text-lg md:text-xl text-gray-400 leading-relaxed max-w-2xl">
+                    <p class="hero-animate-3 text-lg md:text-xl text-primary-100/80 leading-relaxed max-w-2xl">
                         {{ __('landing.hero_desc') }}
                     </p>
 
                     <!-- CTA Buttons -->
                     <div class="hero-animate-3 flex flex-col sm:flex-row gap-4">
                         @auth
-                            <a href="{{ route('dashboard') }}" class="group px-8 py-4 text-base font-bold text-gray-900 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full hover:from-emerald-300 hover:to-teal-300 transition-all shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-400/50 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                            <a href="{{ route('dashboard') }}" class="group px-8 py-4 text-base font-bold text-primary-800 bg-white rounded-full hover:bg-primary-50 transition-all shadow-2xl shadow-black/15 hover:shadow-black/25 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
                                 {{ __('landing.hero_btn_dashboard') }}
                                 <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                             </a>
                         @else
-                            <a href="{{ route('login') }}" class="group px-8 py-4 text-base font-bold text-gray-900 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full hover:from-emerald-300 hover:to-teal-300 transition-all shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-400/50 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                            <a href="{{ route('login') }}" class="group px-8 py-4 text-base font-bold text-primary-800 bg-white rounded-full hover:bg-primary-50 transition-all shadow-2xl shadow-black/15 hover:shadow-black/25 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
                                 {{ __('landing.hero_btn_login') }}
                                 <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                             </a>
                         @endauth
-                        <a href="#about" class="group px-8 py-4 text-base font-semibold text-white/80 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:border-emerald-500/30 hover:text-white transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
+                        <a href="#about" class="group px-8 py-4 text-base font-semibold text-white/90 bg-white/10 border border-white/20 rounded-full hover:bg-white/15 hover:border-white/30 hover:text-white transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
                             {{ __('landing.hero_btn_learn') }}
                             <svg class="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                         </a>
@@ -334,28 +334,28 @@
                 <!-- Right: Image showcase -->
                 <div class="lg:col-span-5 relative hero-animate-4">
                     <!-- Outer glow ring -->
-                    <div class="absolute -inset-6 bg-gradient-to-tr from-emerald-500/20 via-teal-500/10 to-cyan-500/20 rounded-[3rem] blur-2xl glow-pulse"></div>
+                    <div class="absolute -inset-6 bg-gradient-to-tr from-white/15 via-primary-300/10 to-teal-300/15 rounded-[3rem] blur-2xl glow-pulse"></div>
 
                     <!-- Main image container -->
-                    <div class="relative bg-gradient-to-br from-white/10 to-white/5 p-3 rounded-[2.5rem] shadow-2xl shadow-black/30 border border-white/10 backdrop-blur-sm group">
+                    <div class="relative bg-white/15 p-3 rounded-[2.5rem] shadow-2xl shadow-black/20 border border-white/20 backdrop-blur-sm group">
                         <div class="rounded-[2rem] overflow-hidden aspect-[4/3] relative">
                             <img src="{{ asset('images/hero-bg.jpg') }}" alt="Gedung FSIP UTI" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                             <!-- Dark gradient overlay -->
-                            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-transparent to-transparent"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-primary-900/60 via-transparent to-transparent"></div>
 
                             <!-- Glass info tag -->
                             <div class="absolute bottom-4 left-4 right-4 glass-dark rounded-2xl p-4 flex items-center justify-between">
                                 <div>
                                     <h4 class="text-sm font-bold text-white">Gedung FSIP</h4>
-                                    <p class="text-xs text-emerald-300/80">Universitas Teknokrat Indonesia</p>
+                                    <p class="text-xs text-primary-200">Universitas Teknokrat Indonesia</p>
                                 </div>
-                                <span class="text-xs bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold px-3.5 py-1.5 rounded-full shadow-lg shadow-emerald-500/30">Teknokrat</span>
+                                <span class="text-xs bg-white text-primary-800 font-bold px-3.5 py-1.5 rounded-full shadow-lg">Teknokrat</span>
                             </div>
                         </div>
 
                         <!-- Floating mini badge -->
-                        <div class="absolute -top-3 -right-3 w-14 h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-500/30 rotate-12 group-hover:rotate-0 transition-transform duration-500">
-                            <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                        <div class="absolute -top-3 -right-3 w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-xl shadow-primary-900/20 rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                            <svg class="w-6 h-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                         </div>
                     </div>
                 </div>
@@ -363,29 +363,29 @@
 
             <!-- Stats Bar -->
             <div class="mt-20 hero-animate-5">
-                <div class="glass-dark rounded-3xl p-8 shadow-2xl shadow-black/20 max-w-4xl mx-auto border border-white/10">
+                <div class="glass rounded-3xl p-8 shadow-2xl shadow-primary-900/20 max-w-4xl mx-auto">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
                         <div class="text-center group" x-data="{ count: 0 }" x-init="
                             let target = 5;
                             let interval = setInterval(() => { if(count < target) count++; else clearInterval(interval); }, 200);
                         ">
-                            <p class="text-4xl font-black text-emerald-400 counter-num group-hover:scale-110 transition-transform" x-text="count"></p>
-                            <p class="text-xs font-semibold text-gray-400 mt-2 uppercase tracking-[0.15em]">Program Studi</p>
+                            <p class="text-4xl font-black text-primary-700 counter-num group-hover:scale-110 transition-transform" x-text="count"></p>
+                            <p class="text-xs font-semibold text-primary-800/60 mt-2 uppercase tracking-[0.15em]">Program Studi</p>
                         </div>
                         <div class="text-center group" x-data="{ count: 2000 }" x-init="
                             let target = 2035; let step = 1;
                             let interval = setInterval(() => { if(count < target) { count += step; if(count > target) count = target; } else clearInterval(interval); }, 30);
                         ">
-                            <p class="text-4xl font-black text-emerald-400 counter-num group-hover:scale-110 transition-transform" x-text="count"></p>
-                            <p class="text-xs font-semibold text-gray-400 mt-2 uppercase tracking-[0.15em]">Target Visi</p>
+                            <p class="text-4xl font-black text-primary-700 counter-num group-hover:scale-110 transition-transform" x-text="count"></p>
+                            <p class="text-xs font-semibold text-primary-800/60 mt-2 uppercase tracking-[0.15em]">Target Visi</p>
                         </div>
                         <div class="text-center group">
-                            <p class="text-4xl font-black text-emerald-400 counter-num group-hover:scale-110 transition-transform">OBE</p>
-                            <p class="text-xs font-semibold text-gray-400 mt-2 uppercase tracking-[0.15em]">Kurikulum</p>
+                            <p class="text-4xl font-black text-primary-700 counter-num group-hover:scale-110 transition-transform">OBE</p>
+                            <p class="text-xs font-semibold text-primary-800/60 mt-2 uppercase tracking-[0.15em]">Kurikulum</p>
                         </div>
                         <div class="text-center group">
-                            <p class="text-4xl font-black text-emerald-400 counter-num group-hover:scale-110 transition-transform">A</p>
-                            <p class="text-xs font-semibold text-gray-400 mt-2 uppercase tracking-[0.15em]">Akreditasi</p>
+                            <p class="text-4xl font-black text-primary-700 counter-num group-hover:scale-110 transition-transform">A</p>
+                            <p class="text-xs font-semibold text-primary-800/60 mt-2 uppercase tracking-[0.15em]">Akreditasi</p>
                         </div>
                     </div>
                 </div>
@@ -659,7 +659,7 @@
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(52, 211, 153, ${this.opacity})`;
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
                 ctx.fill();
             }
         }
@@ -676,7 +676,7 @@
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < 120) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(52, 211, 153, ${0.06 * (1 - dist / 120)})`;
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.06 * (1 - dist / 120)})`;
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);

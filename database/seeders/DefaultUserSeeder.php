@@ -31,5 +31,32 @@ class DefaultUserSeeder extends Seeder
         ]);
         $pimpinan->assignRole('Pimpinan');
 
+        // Seed mock activity logs for notification center
+        \App\Models\ActivityLog::create([
+            'user_id' => $baak->id,
+            'actor_name' => 'Mohammad Aminudin',
+            'actor_role' => 'BAAK',
+            'action' => 'create',
+            'description' => 'menambahkan kategori data "Penelitian Dosen Hibah Nasional"',
+            'created_at' => now()->subMinutes(12),
+        ]);
+
+        \App\Models\ActivityLog::create([
+            'user_id' => $baak->id,
+            'actor_name' => 'Mohammad Aminudin',
+            'actor_role' => 'BAAK',
+            'action' => 'approve',
+            'description' => 'menyetujui kategori data baru yang diajukan oleh Kaprodi Sastra Inggris',
+            'created_at' => now()->subHours(2),
+        ]);
+
+        \App\Models\ActivityLog::create([
+            'user_id' => $pimpinan->id,
+            'actor_name' => 'Dr. Heri Kuswoyo, S.S., M.Hum.',
+            'actor_role' => 'Pimpinan',
+            'action' => 'view',
+            'description' => 'mengunduh visualisasi grafik Laporan Kinerja Dosen Semester Ganjil',
+            'created_at' => now()->subDays(1),
+        ]);
     }
 }

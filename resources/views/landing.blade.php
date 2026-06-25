@@ -225,24 +225,23 @@
 </head>
 <body class="font-sans antialiased text-gray-800 bg-white overflow-x-hidden" x-data="{ scrolled: false, mobileNav: false }" @scroll.window="scrolled = (window.pageYOffset > 30)">
 
-    <!-- ═══════════════════════════════════════════ -->
-    <!-- NAVIGATION                                  -->
-    <!-- ═══════════════════════════════════════════ -->
-    <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
-         :class="scrolled ? 'py-2 bg-primary-900/95 shadow-2xl shadow-primary-900/20 border-b border-white/5 backdrop-blur-xl' : 'py-4'">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500"
-             :class="scrolled ? '' : 'bg-primary-950/40 border border-white/10 rounded-2xl py-3 px-6 backdrop-blur-xl shadow-2xl shadow-primary-950/20'">
+    <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 pointer-events-none"
+         :class="scrolled ? 'py-4' : 'py-5'">
+        <div class="mx-auto transition-all duration-500 pointer-events-auto"
+             :class="scrolled
+                ? (mobileNav ? 'max-w-4xl w-[92%] bg-primary-950/95 backdrop-blur-xl border border-white/15 rounded-3xl py-3 px-6 shadow-2xl shadow-black/40' : 'max-w-4xl w-[92%] bg-primary-950/85 backdrop-blur-xl border border-white/15 rounded-full py-2.5 px-6 shadow-2xl shadow-black/40')
+                : 'max-w-7xl w-full px-4 sm:px-6 lg:px-8 bg-transparent py-2 border-b border-white/5 backdrop-blur-none'">
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <a href="#" class="flex items-center gap-3 group">
                     <div class="relative">
                         <img src="{{ asset('images/002-UTI.png') }}" alt="Logo UTI"
-                             :class="scrolled ? 'h-10' : 'h-12'"
+                             :class="scrolled ? 'h-8' : 'h-12'"
                              class="w-auto object-contain drop-shadow-lg transition-all duration-500 group-hover:scale-105">
                     </div>
-                    <div>
-                        <h1 class="text-xl font-black text-white leading-tight tracking-tight">SILAKU</h1>
-                        <p class="text-[11px] text-primary-200 font-medium tracking-wide">Sistem Pelaporan IKU</p>
+                    <div class="transition-all duration-500">
+                        <h1 :class="scrolled ? 'text-lg' : 'text-xl'" class="font-black text-white leading-tight tracking-tight transition-all duration-500">SILAKU</h1>
+                        <p :class="scrolled ? 'text-[9px]' : 'text-[11px]'" class="text-primary-200 font-medium tracking-wide transition-all duration-500">Sistem Pelaporan IKU</p>
                     </div>
                 </a>
 

@@ -2,7 +2,6 @@
     $entities = \App\Models\DynamicEntity::active()->with('children')->rootOnly()->orderBy('root_category')->orderBy('sort_order')->get();
     $dosenEntities = $entities->where('root_category', 'dosen');
     $mahasiswaEntities = $entities->where('root_category', 'mahasiswa');
-    $alumniEntities = $entities->where('root_category', 'alumni');
     $pendingApprovalCount = \App\Models\DynamicEntity::pending()->count();
 @endphp
 
@@ -136,48 +135,20 @@
         </div>
         @endif
 
-        {{-- Alumni Category --}}
-        @if($alumniEntities->count() > 0)
-        @php
-            $alumniActive = request()->is('pimpinan/data/alumni') || request()->is('entities/alumni/*');
-            foreach($alumniEntities as $entity) {
-                if (request()->is('entities/' . $entity->id . '*')) {
-                    $alumniActive = true;
-                    break;
-                }
-            }
-        @endphp
-        <div class="pt-2" x-data="{ open: {{ $alumniActive ? 'true' : 'false' }} }">
-            <div @click="open = !open" class="flex items-center justify-between px-4 py-2 cursor-pointer group select-none hover:bg-white/5 rounded-lg mx-2 transition-colors">
-                <span class="text-xs font-bold uppercase tracking-wider text-primary-300/80 group-hover:text-white transition-colors flex items-center gap-1.5">
-                    💼 Data Alumni
-                </span>
-                <span class="text-primary-300/80 group-hover:text-white transition-colors text-[10px]" x-text="open ? '▲' : '▼'"></span>
-            </div>
-            
-            <div x-show="open" x-transition.opacity class="mt-1 space-y-1">
-                @hasanyrole('Pimpinan|Wakil Dekan')
-                <a href="{{ route('pimpinan.browse', 'alumni') }}"
-                   class="sidebar-link {{ request()->is('pimpinan/data/alumni') ? 'active' : '' }}">
-                    <svg class="w-5 h-5 flex-shrink-0 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-                    </svg>
-                    <span class="truncate">Lihat Semua Data Alumni</span>
-                </a>
-                @endhasanyrole
-                @foreach($alumniEntities as $entity)
-                <a href="{{ route('entities.view', $entity) }}"
-                   class="sidebar-link {{ request()->is('entities/' . $entity->id . '*') ? 'active' : '' }}">
-                    <svg class="w-5 h-5 flex-shrink-0 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    <span class="truncate">{{ $entity->name }}</span>
-                    <span class="ml-auto text-xs bg-white/10 rounded-full px-2 py-0.5">{{ $entity->records_count ?? $entity->records()->count() }}</span>
-                </a>
-                @endforeach
-            </div>
+        {{-- Alumni Link --}}
+        <div class="pt-2">
+            <a href="{{ route('alumni.index') }}"
+               class="sidebar-link {{ request()->routeIs('alumni.*') ? 'active' : '' }}">
+                <svg class="w-5 h-5 flex-shrink-0 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                <span>Data Alumni</span>
+                @php $alumniCount = \App\Models\Alumni::count(); @endphp
+                @if($alumniCount > 0)
+                <span class="ml-auto text-xs bg-white/10 rounded-full px-2 py-0.5">{{ $alumniCount }}</span>
+                @endif
+            </a>
         </div>
-        @endif
 
         @hasanyrole('BAAK|Pimpinan|Wakil Dekan')
         {{-- Log Aktivitas --}}

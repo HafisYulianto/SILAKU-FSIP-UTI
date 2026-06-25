@@ -217,7 +217,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-1 mt-3">
-                    <span class="text-xs text-teal-600 dark:text-teal-400 font-medium">{{ $alumniEntities->count() }} kategori</span>
+                    <span class="text-xs text-teal-600 dark:text-teal-400 font-medium">Data Terpusat</span>
                 </div>
             </div>
 
@@ -256,7 +256,7 @@
 
         {{-- Pimpinan & Wakil Dekan Quick Access Portal --}}
         @hasanyrole('Pimpinan|Wakil Dekan')
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 slide-up" style="animation-delay: 350ms">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 slide-up" style="animation-delay: 350ms">
             <a href="{{ route('pimpinan.browse', 'dosen') }}" class="group relative block overflow-hidden rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 p-8 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
                 <div class="absolute right-8 bottom-8 w-20 h-20 bg-white/5 rounded-full blur-xl"></div>
@@ -287,6 +287,23 @@
                     <h3 class="text-2xl font-bold mb-2">🎓 Lihat Data Mahasiswa</h3>
                     <p class="text-blue-100 text-sm">Akses seluruh kategori dan record data mahasiswa yang telah diinput oleh BAAK, Kaprodi, dan Dosen.</p>
                     <div class="mt-6 flex items-center gap-2 text-sm font-medium text-blue-200 group-hover:text-white transition-colors">
+                        <span>Buka Halaman</span>
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </div>
+                </div>
+            </a>
+            <a href="{{ route('alumni.index') }}" class="group relative block overflow-hidden rounded-2xl bg-gradient-to-br from-teal-600 to-teal-800 p-8 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="absolute right-8 bottom-8 w-20 h-20 bg-white/5 rounded-full blur-xl"></div>
+                <div class="relative">
+                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm border border-white/20 group-hover:bg-white/30 transition-colors">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">💼 Lihat Data Alumni</h3>
+                    <p class="text-teal-100 text-sm">Akses data instansi, posisi, dan sebaran lokasi kerja alumni Fakultas Sastra dan Ilmu Pendidikan.</p>
+                    <div class="mt-6 flex items-center gap-2 text-sm font-medium text-teal-200 group-hover:text-white transition-colors">
                         <span>Buka Halaman</span>
                         <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </div>
@@ -342,8 +359,7 @@
         </div>
 
         @php
-            $mapEntity = \App\Models\DynamicEntity::where('name', 'Sebaran Alumni & Magang')->first();
-            $mapRecords = $mapEntity ? $mapEntity->records()->with('programStudi')->get() : collect();
+            $mapRecords = \App\Models\Alumni::with('programStudi')->get();
         @endphp
         {{-- Map Row --}}
         <div class="card slide-up relative" style="animation-delay: 550ms" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 800)">
@@ -416,7 +432,7 @@
         @endif
 
         {{-- Entity Overview Table --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tour-categories">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="tour-categories">
             {{-- Dosen Entities --}}
             <div class="card slide-up relative" style="animation-delay: 700ms" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 800)">
                 <!-- Skeleton overlay -->
@@ -476,38 +492,6 @@
                     @empty
                     <div class="px-6 py-8 text-center">
                         <p class="text-sm text-gray-400">Belum ada kategori mahasiswa</p>
-                    </div>
-                    @endforelse
-                </div>
-            </div>
-
-            {{-- Alumni Entities --}}
-            <div class="card slide-up relative" style="animation-delay: 800ms" x-data="{ isLoading: true }" x-init="setTimeout(() => isLoading = false, 800)">
-                <!-- Skeleton overlay -->
-                <div x-show="isLoading" class="absolute inset-0 bg-white dark:bg-gray-900 z-10 flex flex-col p-6 rounded-2xl">
-                    <div class="skeleton h-6 w-1/3 mb-6"></div>
-                    <div class="space-y-3">
-                        <div class="skeleton h-10 w-full animate-pulse"></div>
-                        <div class="skeleton h-10 w-full animate-pulse"></div>
-                        <div class="skeleton h-10 w-full animate-pulse"></div>
-                    </div>
-                </div>
-                
-                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                    <h3 class="font-semibold text-gray-900 dark:text-white">💼 Kategori Alumni</h3>
-                    @role('BAAK')
-                    <a href="{{ route('entities.create') }}" class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 font-medium">+ Tambah</a>
-                    @endrole
-                </div>
-                <div class="divide-y divide-gray-100 dark:divide-gray-800">
-                    @forelse($alumniEntities as $entity)
-                    <a href="{{ route('entities.view', $entity) }}" class="flex items-center justify-between px-6 py-3 hover:bg-teal-50/50 dark:hover:bg-teal-950/20 transition-colors">
-                        <span class="text-sm text-gray-700 dark:text-gray-300">{{ $entity->name }}</span>
-                        <span class="badge-success">{{ $entity->records_count }} data</span>
-                    </a>
-                    @empty
-                    <div class="px-6 py-8 text-center">
-                        <p class="text-sm text-gray-400">Belum ada kategori alumni</p>
                     </div>
                     @endforelse
                 </div>
@@ -726,11 +710,10 @@
         }
 
         // Entity Summary Donut
-        const dosenEntities = @json($dosenEntities);
-        const mahasiswaEntities = @json($mahasiswaEntities);
-        const alumniEntities = @json($alumniEntities);
-        const allEntities = [...dosenEntities, ...mahasiswaEntities, ...alumniEntities];
-        if (allEntities.length > 0) {
+        const totalDosen = {{ $stats['total_dosen'] }};
+        const totalMahasiswa = {{ $stats['total_mahasiswa'] }};
+        const totalAlumni = {{ $stats['total_alumni'] }};
+        if (totalDosen > 0 || totalMahasiswa > 0 || totalAlumni > 0) {
             window.entityChart = new ApexCharts(document.querySelector('#chart-entity-summary'), {
                 chart: { 
                     type: 'donut', 
@@ -743,9 +726,9 @@
                     },
                     fontFamily: 'Inter, sans-serif' 
                 },
-                series: allEntities.map(e => e.records_count || 0),
-                labels: allEntities.map(e => e.name),
-                colors: pastelPalette,
+                series: [totalDosen, totalMahasiswa, totalAlumni],
+                labels: ['Dosen', 'Mahasiswa', 'Alumni'],
+                colors: ['#10b981', '#3b82f6', '#14b8a6'],
                 legend: { position: 'bottom', fontSize: '12px' },
                 dataLabels: { enabled: true, style: { fontSize: '11px' } },
                 plotOptions: { pie: { donut: { size: '55%', labels: { show: true, total: { show: true, label: 'Total', fontSize: '14px', fontWeight: 700 } } } } },
@@ -879,10 +862,10 @@
                 const mapRecordsData = [
                     @foreach($mapRecords as $record)
                     {
-                        nama: "{{ $record->getFieldValue('nama_lengkap') }}",
-                        status: "{{ $record->getFieldValue('status') }}",
-                        lokasi: "{{ $record->getFieldValue('lokasi') }}",
-                        instansi: "{{ $record->getFieldValue('instansi') }}",
+                        nama: "{{ $record->nama }}",
+                        status: "Alumni",
+                        lokasi: "{{ $record->lokasi }}",
+                        instansi: "{{ $record->nama_perusahaan }}",
                         prodi: "{{ $record->programStudi->name ?? 'FSIP' }}"
                     },
                     @endforeach

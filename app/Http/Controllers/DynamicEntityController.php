@@ -48,7 +48,7 @@ class DynamicEntityController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'root_category' => ['required', Rule::in(['dosen', 'mahasiswa', 'alumni'])],
+            'root_category' => ['required', Rule::in(['dosen', 'mahasiswa'])],
             'parent_id' => 'prohibited',
             'icon' => 'nullable|string|max:50',
             'fields' => 'required|array|min:1',
@@ -151,7 +151,7 @@ class DynamicEntityController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'root_category' => ['required', Rule::in(['dosen', 'mahasiswa', 'alumni'])],
+            'root_category' => ['required', Rule::in(['dosen', 'mahasiswa'])],
             'icon' => 'nullable|string|max:50',
             'is_active' => 'boolean',
         ]);

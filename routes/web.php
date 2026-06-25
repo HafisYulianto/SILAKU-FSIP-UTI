@@ -7,6 +7,7 @@ use App\Http\Controllers\DynamicRecordController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ApprovalController;
+use App\Http\Controllers\AlumniController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -73,6 +74,17 @@ Route::middleware('auth')->group(function () {
             Route::delete('/activities/{activity}', [ActivityLogController::class, 'destroy'])->name('activities.destroy');
             Route::post('/activities/clear', [ActivityLogController::class, 'clear'])->name('activities.clear');
         });
+    });
+
+    // Static Alumni Routes
+    Route::get('/alumni', [AlumniController::class, 'index'])->name('alumni.index');
+    Route::get('/alumni/{alumni}', [AlumniController::class, 'show'])->name('alumni.show');
+    Route::middleware('role:BAAK|Kaprodi|Dosen')->group(function () {
+        Route::get('/alumni/create/form', [AlumniController::class, 'create'])->name('alumni.create');
+        Route::post('/alumni', [AlumniController::class, 'store'])->name('alumni.store');
+        Route::get('/alumni/{alumni}/edit', [AlumniController::class, 'edit'])->name('alumni.edit');
+        Route::put('/alumni/{alumni}', [AlumniController::class, 'update'])->name('alumni.update');
+        Route::delete('/alumni/{alumni}', [AlumniController::class, 'destroy'])->name('alumni.destroy');
     });
 
     // View entity details & record detail - all authenticated roles

@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             ProgramStudiSeeder::class,
             RolePermissionSeeder::class,
             DefaultUserSeeder::class,
+            AlumniSeeder::class,
         ]);
     }
 }

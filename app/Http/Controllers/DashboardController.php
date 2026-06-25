@@ -26,7 +26,7 @@ class DashboardController extends Controller
         $stats = [
             'total_dosen' => DynamicRecord::whereHas('entity', fn($q) => $q->where('root_category', 'dosen'))->count(),
             'total_mahasiswa' => DynamicRecord::whereHas('entity', fn($q) => $q->where('root_category', 'mahasiswa'))->count(),
-            'total_alumni' => DynamicRecord::whereHas('entity', fn($q) => $q->where('root_category', 'alumni'))->count(),
+            'total_alumni' => \App\Models\Alumni::count(),
             'total_entities' => DynamicEntity::active()->count(),
             'total_prodi' => ProgramStudi::where('is_active', true)->count(),
         ];
@@ -44,11 +44,7 @@ class DashboardController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        $alumniEntities = DynamicEntity::active()
-            ->byCategory('alumni')
-            ->withCount('records')
-            ->orderBy('sort_order')
-            ->get();
+        $alumniEntities = \App\Models\Alumni::with('programStudi')->latest()->get();
 
         // Get aggregation data for charts
         $chartData = $this->aggregationService->getChartData();

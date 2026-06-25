@@ -135,9 +135,7 @@ class DashboardAggregationService
                 ->whereHas('entity', fn($q) => $q->where('root_category', 'mahasiswa'))
                 ->count();
 
-            $alumniCounts[] = DynamicRecord::where('program_studi_id', $prodi->id)
-                ->whereHas('entity', fn($q) => $q->where('root_category', 'alumni'))
-                ->count();
+            $alumniCounts[] = \App\Models\Alumni::where('program_studi_id', $prodi->id)->count();
         }
 
         return [

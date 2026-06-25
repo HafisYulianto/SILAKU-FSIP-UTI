@@ -28,10 +28,6 @@
                class="px-4 py-2 text-sm font-medium rounded-lg transition-colors {{ $category === 'mahasiswa' ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100' }}">
                 🎓 Mahasiswa
             </a>
-            <a href="{{ route('entities.index', ['category' => 'alumni']) }}"
-               class="px-4 py-2 text-sm font-medium rounded-lg transition-colors {{ $category === 'alumni' ? 'bg-primary-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100' }}">
-                💼 Alumni
-            </a>
         </div>
 
         {{-- Pending/Rejected Entities Section (Kaprodi only) --}}

@@ -24,7 +24,6 @@
                         <select name="root_category" id="root_category" class="form-select" required>
                             <option value="dosen" {{ $entity->root_category === 'dosen' ? 'selected' : '' }}>📚 Dosen</option>
                             <option value="mahasiswa" {{ $entity->root_category === 'mahasiswa' ? 'selected' : '' }}>🎓 Mahasiswa</option>
-                            <option value="alumni" {{ $entity->root_category === 'alumni' ? 'selected' : '' }}>💼 Alumni</option>
                         </select>
                     </div>
 

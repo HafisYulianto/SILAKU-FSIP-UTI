@@ -4,13 +4,15 @@
         {{-- Header --}}
         <div class="page-header">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 {{ $entity->root_category === 'dosen' ? 'bg-primary-100' : 'bg-blue-100' }} rounded-xl flex items-center justify-center">
-                    <span class="text-xl">{{ $entity->root_category === 'dosen' ? '📚' : '🎓' }}</span>
+                <div class="w-12 h-12 {{ $entity->root_category === 'dosen' ? 'bg-primary-100' : ($entity->root_category === 'mahasiswa' ? 'bg-blue-100' : 'bg-teal-100') }} rounded-xl flex items-center justify-center">
+                    <span class="text-xl">
+                        @if($entity->root_category === 'dosen') 📚 @elseif($entity->root_category === 'mahasiswa') 🎓 @else 💼 @endif
+                    </span>
                 </div>
                 <div>
                     <h1 class="page-title">{{ $entity->name }}</h1>
                     <div class="flex items-center gap-2 mt-1">
-                        <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : 'badge-info' }}">{{ ucfirst($entity->root_category) }}</span>
+                        <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : ($entity->root_category === 'mahasiswa' ? 'badge-info' : 'badge-success') }}">{{ ucfirst($entity->root_category) }}</span>
                         @if($entity->description)
                         <span class="text-sm text-gray-400">— {{ $entity->description }}</span>
                         @endif

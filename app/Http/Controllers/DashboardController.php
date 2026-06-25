@@ -26,6 +26,7 @@ class DashboardController extends Controller
         $stats = [
             'total_dosen' => DynamicRecord::whereHas('entity', fn($q) => $q->where('root_category', 'dosen'))->count(),
             'total_mahasiswa' => DynamicRecord::whereHas('entity', fn($q) => $q->where('root_category', 'mahasiswa'))->count(),
+            'total_alumni' => DynamicRecord::whereHas('entity', fn($q) => $q->where('root_category', 'alumni'))->count(),
             'total_entities' => DynamicEntity::active()->count(),
             'total_prodi' => ProgramStudi::where('is_active', true)->count(),
         ];
@@ -39,6 +40,12 @@ class DashboardController extends Controller
 
         $mahasiswaEntities = DynamicEntity::active()
             ->byCategory('mahasiswa')
+            ->withCount('records')
+            ->orderBy('sort_order')
+            ->get();
+
+        $alumniEntities = DynamicEntity::active()
+            ->byCategory('alumni')
             ->withCount('records')
             ->orderBy('sort_order')
             ->get();
@@ -59,6 +66,7 @@ class DashboardController extends Controller
             'stats',
             'dosenEntities',
             'mahasiswaEntities',
+            'alumniEntities',
             'chartData',
             'recentRecords',
             'prodiDistribution'

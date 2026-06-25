@@ -37,8 +37,8 @@
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1 flex-wrap">
                                     <h3 class="font-semibold text-gray-900">{{ $entity->name }}</h3>
-                                    <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : 'badge-info' }}">
-                                        {{ $entity->root_category === 'dosen' ? '📚' : '🎓' }} {{ ucfirst($entity->root_category) }}
+                                    <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : ($entity->root_category === 'mahasiswa' ? 'badge-info' : 'badge-success') }}">
+                                        @if($entity->root_category === 'dosen') 📚 @elseif($entity->root_category === 'mahasiswa') 🎓 @else 💼 @endif {{ ucfirst($entity->root_category) }}
                                     </span>
                                     @if($entity->approval_status === 'pending')
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
@@ -160,7 +160,7 @@
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-1 flex-wrap">
                                     <h3 class="font-semibold text-gray-700">{{ $entity->name }}</h3>
-                                    <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : 'badge-info' }}">{{ ucfirst($entity->root_category) }}</span>
+                                    <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : ($entity->root_category === 'mahasiswa' ? 'badge-info' : 'badge-success') }}">{{ ucfirst($entity->root_category) }}</span>
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Ditolak</span>
                                 </div>
                                 @if($entity->rejection_reason)

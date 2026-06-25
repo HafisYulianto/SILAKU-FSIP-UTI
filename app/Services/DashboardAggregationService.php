@@ -122,6 +122,7 @@ class DashboardAggregationService
         $labels = [];
         $dosenCounts = [];
         $mahasiswaCounts = [];
+        $alumniCounts = [];
 
         foreach ($prodiList as $prodi) {
             $labels[] = $prodi->code;
@@ -133,12 +134,17 @@ class DashboardAggregationService
             $mahasiswaCounts[] = DynamicRecord::where('program_studi_id', $prodi->id)
                 ->whereHas('entity', fn($q) => $q->where('root_category', 'mahasiswa'))
                 ->count();
+
+            $alumniCounts[] = DynamicRecord::where('program_studi_id', $prodi->id)
+                ->whereHas('entity', fn($q) => $q->where('root_category', 'alumni'))
+                ->count();
         }
 
         return [
             'labels' => $labels,
             'dosen' => $dosenCounts,
             'mahasiswa' => $mahasiswaCounts,
+            'alumni' => $alumniCounts,
         ];
     }
 }

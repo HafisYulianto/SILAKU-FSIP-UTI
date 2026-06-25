@@ -516,8 +516,7 @@
         </div>
 
         <!-- SVG Spotlight Overlay -->
-        <svg class="fixed inset-0 w-full h-full pointer-events-none transition-all duration-300" 
-             style="z-index: 45;" 
+        <svg class="fixed inset-0 w-full h-full pointer-events-none transition-all duration-300 z-[45]" 
              x-show="tourActive && tourStep > 1" 
              x-cloak>
             <defs>
@@ -535,15 +534,15 @@
         <!-- General dark backdrop for Step 1 (Welcome) -->
         <div x-show="tourActive && tourStep === 1" 
              x-cloak 
-             class="fixed inset-0 bg-slate-900/65 z-45 backdrop-blur-xs transition-opacity duration-300"></div>
+             class="fixed inset-0 bg-slate-900/65 z-[45] backdrop-blur-xs transition-opacity duration-300"></div>
 
         <!-- Guided Tour Overlay / Card -->
         <div x-show="tourActive" 
              x-cloak 
              id="tour-bubble"
              :style="tourPositionStyle"
-             class="fixed bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800/80 p-6 flex flex-col gap-4 transition-all duration-300 ease-out"
-             style="z-index: 50; display: none;">
+             class="fixed z-[50] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800/80 p-6 flex flex-col gap-4 transition-all duration-300 ease-out"
+             style="display: none;">
             
             {{-- Tour Header --}}
             <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">

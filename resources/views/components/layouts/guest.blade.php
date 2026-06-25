@@ -13,10 +13,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen relative flex items-center justify-center p-4 sm:p-6 md:p-10 overflow-hidden">
-    <!-- Fullscreen Background Image with Blur Overlay -->
+    <!-- Fullscreen Background Image (Sharp and Clear) -->
     <div class="absolute inset-0 z-0">
         <img src="{{ asset('images/hero-bg.jpg') }}" alt="Gedung FSIP UTI" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-br from-primary-950/90 via-primary-900/85 to-emerald-950/90 backdrop-blur-[3px]"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-950/75 via-primary-900/60 to-emerald-950/75"></div>
     </div>
 
     <div class="w-full max-w-md relative z-10">

@@ -11,22 +11,22 @@ class DefaultUserSeeder extends Seeder
     {
         // BAAK Super Admin
         $baak = User::create([
-            'name' => 'Admin BAAK',
-            'email' => 'baak@teknokrat.ac.id',
-            'password' => 'password',
-            'plain_password' => 'password',
-            'nip' => '198001012000121001',
+            'name' => 'Mohammad Aminudin',
+            'email' => 'aminudin@teknokrat.ac.id',
+            'password' => 'amin123',
+            'plain_password' => 'amin123',
+            'nip' => '7700011292',
             'is_active' => true,
         ]);
         $baak->assignRole('BAAK');
 
         // Pimpinan
         $pimpinan = User::create([
-            'name' => 'Dekan FSIP',
-            'email' => 'pimpinan@teknokrat.ac.id',
-            'password' => 'password',
-            'plain_password' => 'password',
-            'nip' => '197501012000121002',
+            'name' => 'Dr. Heri Kuswoyo, S.S., M.Hum.',
+            'email' => 'hery@teknokrat.ac.id',
+            'password' => 'heri123',
+            'plain_password' => 'heri123',
+            'nip' => '023080701',
             'is_active' => true,
         ]);
         $pimpinan->assignRole('Pimpinan');

@@ -234,7 +234,7 @@
 <body class="font-sans antialiased text-gray-800 bg-white overflow-x-hidden" x-data="{ scrolled: false, mobileNav: false, isPlaying: false, toggleMusic() { const audio = document.getElementById('bg-music'); if(audio){ if(this.isPlaying){ audio.pause(); } else { audio.play().catch(e => console.log('Autoplay blocked', e)); } this.isPlaying = !audio.paused; } } }" @scroll.window="scrolled = (window.pageYOffset > 30)">
 
     <!-- Background Music -->
-    <audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" loop></audio>
+    <audio id="bg-music" src="{{ asset('musik/MARS UNIVERSITAS TEKNOKRAT INDONESIA.mp3') }}" loop></audio>
 
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 pointer-events-none"
          :class="scrolled ? 'py-4' : 'py-5'">

@@ -861,5 +861,9 @@
     });
     </script>
 
+    @guest
+        <x-chatbot.public-faq-chatbot />
+    @endguest
+
 </body>
 </html>

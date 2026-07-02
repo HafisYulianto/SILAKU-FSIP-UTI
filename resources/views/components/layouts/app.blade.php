@@ -486,5 +486,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css">
 
     @stack('scripts')
+
+    @if(auth()->check() && (auth()->user()->hasRole('BAAK') || auth()->user()->hasRole('Kaprodi') || auth()->user()->hasRole('Dosen')))
+        <x-chatbot.public-faq-chatbot />
+    @endif
 </body>
 </html>

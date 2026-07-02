@@ -451,10 +451,81 @@
     </section>
 
     <!-- ═══════════════════════════════════════════ -->
-    <!-- ABOUT / VISION & MISSION                    -->
+    <!-- ABOUT SECTION                               -->
     <!-- ═══════════════════════════════════════════ -->
-    <section id="about"></section>
-    <section id="vision" class="py-28 bg-white relative section-accent">
+    <section id="about" class="py-28 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden section-accent">
+        <!-- Decorative background elements -->
+        <div class="absolute top-1/4 left-0 w-80 h-80 bg-emerald-100/30 rounded-full blur-3xl -translate-x-1/2"></div>
+        <div class="absolute bottom-1/4 right-0 w-96 h-96 bg-teal-100/20 rounded-full blur-3xl translate-x-1/2"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Column: Text & Intro -->
+                <div class="lg:col-span-6 flex flex-col reveal-left">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/50 w-fit mb-6 shadow-sm">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+                        {{ __('landing.about_badge') }}
+                    </span>
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-4">
+                        {{ __('landing.about_title') }}
+                    </h2>
+                    <h3 class="text-lg font-semibold text-emerald-600 mb-6">
+                        {{ __('landing.about_subtitle') }}
+                    </h3>
+                    <p class="text-gray-600 text-lg leading-relaxed">
+                        {{ __('landing.about_desc') }}
+                    </p>
+                </div>
+
+                <!-- Right Column: Interactive Feature Cards -->
+                <div class="lg:col-span-6 flex flex-col gap-6 reveal-right">
+                    
+                    <!-- Feature Card 1 -->
+                    <div class="card-3d bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-100 shadow-xl shadow-gray-100/40 flex gap-5 hover:border-emerald-200/50 transition-all duration-300">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/10">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-900 mb-1.5">{{ __('landing.about_feature_1_title') }}</h4>
+                            <p class="text-gray-500 text-sm leading-relaxed">{{ __('landing.about_feature_1_desc') }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature Card 2 -->
+                    <div class="card-3d bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-100 shadow-xl shadow-gray-100/40 flex gap-5 hover:border-emerald-200/50 transition-all duration-300">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/10">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-900 mb-1.5">{{ __('landing.about_feature_2_title') }}</h4>
+                            <p class="text-gray-500 text-sm leading-relaxed">{{ __('landing.about_feature_2_desc') }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature Card 3 -->
+                    <div class="card-3d bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-100 shadow-xl shadow-gray-100/40 flex gap-5 hover:border-emerald-200/50 transition-all duration-300">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/10">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-900 mb-1.5">{{ __('landing.about_feature_3_title') }}</h4>
+                            <p class="text-gray-500 text-sm leading-relaxed">{{ __('landing.about_feature_3_desc') }}</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <section id="vision" class="py-28 bg-white relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section header -->
             <div class="text-center mb-20 reveal">

@@ -107,4 +107,10 @@ class DashboardController extends Controller
             'tableFields'
         ));
     }
+
+    public function alumniMap(Request $request)
+    {
+        $mapRecords = \App\Models\Alumni::with('programStudi')->orderBy('nama', 'asc')->get();
+        return view('dashboard.map', compact('mapRecords'));
+    }
 }

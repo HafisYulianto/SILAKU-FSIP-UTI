@@ -49,7 +49,19 @@ window.SILAKU_FAQ_DATA = {
             'negativeKeywords' => ['dosen', 'mahasiswa'],
             'answer' => 'Untuk menginput data Alumni, klik menu "Data Alumni" di sidebar kiri, kemudian tekan tombol "Tambah Alumni". Masukkan informasi alumni, seperti Nama, Instansi, Posisi, beserta Lokasi Kerja. Untuk Lokasi Kerja, mulailah mengetik untuk melihat saran wilayah otomatis yang disediakan sistem (didukung auto-complete alamat). Setelah selesai, simpan data tersebut.',
             'links' => [],
-            'suggestions' => ['data_approval_workflow', 'export_data_howto']
+            'suggestions' => ['alumni_map_info', 'export_data_howto']
+        ],
+        [
+            'id' => 'alumni_map_info',
+            'category' => 'map',
+            'questions' => ['Di mana saya bisa melihat peta sebaran geografis alumni?', 'Peta sebaran alumni', 'Peta sebaran alumni bekerja', 'Lokasi peta alumni'],
+            'exactPhrases' => ['di mana saya bisa melihat peta sebaran geografis alumni', 'peta sebaran alumni', 'peta sebaran alumni bekerja', 'lokasi peta alumni', 'peta alumni'],
+            'keywords' => ['peta', 'sebaran', 'geografis', 'alumni', 'bekerja', 'lokasi', 'map', 'leaflet'],
+            'priorityKeywords' => ['peta sebaran', 'sebaran alumni', 'peta alumni'],
+            'negativeKeywords' => ['input', 'tambah', 'excel'],
+            'answer' => 'Peta sebaran geografis alumni bekerja telah dipindahkan ke halaman khusus. Anda dapat mengaksesnya dengan mengklik menu "Peta Sebaran Alumni" pada sidebar kiri. Di halaman tersebut, Anda dapat memfilter tampilan peta berdasarkan Lampung, Indonesia, atau seluruh Dunia.',
+            'links' => [['label' => 'Buka Peta Sebaran', 'url' => route('dashboard.map')]],
+            'suggestions' => ['input_alumni', 'export_data_howto']
         ],
         [
             'id' => 'export_data_howto',
@@ -400,7 +412,19 @@ window.SILAKU_FAQ_DATA = {
             'negativeKeywords' => ['lecturer', 'student'],
             'answer' => 'To input Alumni data, click the "Data Alumni" menu on the left sidebar, then click the "Tambah Alumni" button. Enter the alumni\'s information, including Name, Institution, Position, and Work Location. For the Work Location, start typing to see automatic region suggestions (supported by address auto-complete). Save when finished.',
             'links' => [],
-            'suggestions' => ['data_approval_workflow', 'export_data_howto']
+            'suggestions' => ['alumni_map_info', 'export_data_howto']
+        ],
+        [
+            'id' => 'alumni_map_info',
+            'category' => 'map',
+            'questions' => ['Where can I see the alumni geographical distribution map?', 'Alumni sebaran map', 'Alumni geographical map', 'Where is alumni map'],
+            'exactPhrases' => ['where can i see the alumni geographical distribution map', 'alumni sebaran map', 'alumni geographical map', 'where is alumni map', 'alumni map'],
+            'keywords' => ['map', 'geographical', 'distribution', 'alumni', 'location', 'sebaran', 'leaflet'],
+            'priorityKeywords' => ['geographical map', 'alumni map', 'distribution map'],
+            'negativeKeywords' => ['input', 'add', 'excel'],
+            'answer' => 'The alumni geographical distribution map has been moved to a dedicated page. You can access it by clicking the "Peta Sebaran Alumni" menu on the left sidebar. On that page, you can filter locations by Lampung, Indonesia, or World.',
+            'links' => [['label' => 'Open Sebaran Map', 'url' => route('dashboard.map')]],
+            'suggestions' => ['input_alumni', 'export_data_howto']
         ],
         [
             'id' => 'export_data_howto',

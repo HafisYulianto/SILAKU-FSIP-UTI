@@ -1,5 +1,7 @@
+@props(['isDashboard' => false])
+
 {{-- Include the static bilingual FAQ dataset --}}
-<x-chatbot.public-faq-data />
+<x-chatbot.public-faq-data :is-dashboard="$isDashboard" />
 
 <div x-data="publicFaqChatbot" class="relative">
     <!-- ═══════════════════════════════════════════ -->
@@ -202,6 +204,8 @@ document.addEventListener('alpine:init', () => {
         userInput: '',
         locale: 'id',
         isTyping: false,
+        isDashboard: false,
+        storagePrefix: 'silaku_public_faq',
 
         // List of sensitive words that should trigger account security warning
         sensitiveKeywords: [
@@ -216,11 +220,15 @@ document.addEventListener('alpine:init', () => {
             // Read document language from Laravel locale
             this.locale = '{{ app()->getLocale() }}';
 
+            // Set dashboard flag and storage prefix
+            this.isDashboard = {{ $isDashboard ? 'true' : 'false' }};
+            this.storagePrefix = this.isDashboard ? 'silaku_dashboard_faq' : 'silaku_public_faq';
+
             // Check if widget should open from past session
-            this.isOpen = localStorage.getItem('silaku_public_faq_open') === 'true';
+            this.isOpen = localStorage.getItem(this.storagePrefix + '_open') === 'true';
 
             // Load message history from localStorage
-            const savedHistory = localStorage.getItem('silaku_public_faq_history');
+            const savedHistory = localStorage.getItem(this.storagePrefix + '_history');
             if (savedHistory) {
                 try {
                     this.messages = JSON.parse(savedHistory);
@@ -238,25 +246,48 @@ document.addEventListener('alpine:init', () => {
         },
 
         addGreetingMessage() {
-            const welcomeText = this.locale === 'en'
-                ? "Hello! I am SILA, the SILAKU Information Assistant. I can help explain SILAKU, account access, and login issues. What would you like to know?"
-                : "Halo! Saya SILA, Asisten Informasi SILAKU. Saya dapat membantu menjelaskan SILAKU, akses akun, dan kendala login. Apa yang ingin Anda ketahui?";
+            let welcomeText, initialSuggestions;
+            if (this.isDashboard) {
+                welcomeText = this.locale === 'en'
+                    ? "Hello! I am SILA. As an authenticated user on the SILAKU dashboard, I am ready to guide you on data input, BAAK approval workflows, exporting reports, and managing data categories. What would you like to ask?"
+                    : "Halo! Saya SILA. Sebagai pengguna terautentikasi di dashboard SILAKU, saya siap membantu memandu Anda mengenai cara input data, alur persetujuan BAAK, ekspor laporan, dan manajemen kategori data. Apa yang ingin Anda tanyakan?";
 
-            const initialSuggestions = this.locale === 'en'
-                ? [
-                    { label: "What is SILAKU?", id: "about_silaku" },
-                    { label: "How to log in", id: "login_howto" },
-                    { label: "I do not have an account", id: "no_account" },
-                    { label: "I cannot log in", id: "login_failed" },
-                    { label: "Contact administrator", id: "contact_admin" }
-                  ]
-                : [
-                    { label: "Apa itu SILAKU?", id: "about_silaku" },
-                    { label: "Cara login", id: "login_howto" },
-                    { label: "Saya belum punya akun", id: "no_account" },
-                    { label: "Saya tidak bisa login", id: "login_failed" },
-                    { label: "Hubungi admin", id: "contact_admin" }
-                  ];
+                initialSuggestions = this.locale === 'en'
+                    ? [
+                        { label: "Data approval workflow", id: "data_approval_workflow" },
+                        { label: "Input Lecturer/Student", id: "input_dosen_mahasiswa" },
+                        { label: "Input Alumni", id: "input_alumni" },
+                        { label: "Export Excel/PDF", id: "export_data_howto" },
+                        { label: "Create new category", id: "create_category_howto" }
+                      ]
+                    : [
+                        { label: "Alur persetujuan data", id: "data_approval_workflow" },
+                        { label: "Input Dosen/Mahasiswa", id: "input_dosen_mahasiswa" },
+                        { label: "Input Alumni", id: "input_alumni" },
+                        { label: "Ekspor Excel/PDF", id: "export_data_howto" },
+                        { label: "Buat kategori baru", id: "create_category_howto" }
+                      ];
+            } else {
+                welcomeText = this.locale === 'en'
+                    ? "Hello! I am SILA, the SILAKU Information Assistant. I can help explain SILAKU, account access, and login issues. What would you like to know?"
+                    : "Halo! Saya SILA, Asisten Informasi SILAKU. Saya dapat membantu menjelaskan SILAKU, akses akun, dan kendala login. Apa yang ingin Anda ketahui?";
+
+                initialSuggestions = this.locale === 'en'
+                    ? [
+                        { label: "What is SILAKU?", id: "about_silaku" },
+                        { label: "How to log in", id: "login_howto" },
+                        { label: "I do not have an account", id: "no_account" },
+                        { label: "I cannot log in", id: "login_failed" },
+                        { label: "Contact administrator", id: "contact_admin" }
+                      ]
+                    : [
+                        { label: "Apa itu SILAKU?", id: "about_silaku" },
+                        { label: "Cara login", id: "login_howto" },
+                        { label: "Saya belum punya akun", id: "no_account" },
+                        { label: "Saya tidak bisa login", id: "login_failed" },
+                        { label: "Hubungi admin", id: "contact_admin" }
+                      ];
+            }
 
             this.messages.push({
                 id: 'welcome',
@@ -461,18 +492,28 @@ document.addEventListener('alpine:init', () => {
 
             // 4. Fallback if no match
             const fallbackFaq = dataset.find(faq => faq.id === 'unknown');
-            return fallbackFaq || {
-                answer: this.locale === 'en'
-                    ? 'Sorry, I could not understand that question. I can help with information about SILAKU, login access, account creation, password issues, and contacting the administrator.'
-                    : 'Maaf, saya belum memahami pertanyaan tersebut. Saya dapat membantu menjelaskan SILAKU, cara login, pembuatan akun, kendala password, dan cara menghubungi pengelola.',
-                links: [],
-                suggestions: ['about_silaku', 'login_howto', 'forgot_password', 'contact_admin']
-            };
+            if (fallbackFaq) return fallbackFaq;
+
+            return this.isDashboard
+                ? {
+                    answer: this.locale === 'en'
+                        ? 'Sorry, I could not understand that question. In this dashboard, I can guide you on inputting Lecturers/Students/Alumni, exporting Excel/PDF, BAAK approvals, category creation requests, and activity logs.'
+                        : 'Maaf, saya belum memahami pertanyaan tersebut. Di dalam dashboard ini, saya dapat memandu Anda tentang cara input Dosen/Mahasiswa/Alumni, ekspor Excel/PDF, alur persetujuan BAAK, pengajuan kategori baru, dan menu log aktivitas.',
+                    links: [],
+                    suggestions: ['data_approval_workflow', 'input_dosen_mahasiswa', 'input_alumni', 'export_data_howto']
+                  }
+                : {
+                    answer: this.locale === 'en'
+                        ? 'Sorry, I could not understand that question. I can help with information about SILAKU, login access, account creation, password issues, and contacting the administrator.'
+                        : 'Maaf, saya belum memahami pertanyaan tersebut. Saya dapat membantu menjelaskan SILAKU, cara login, pembuatan akun, kendala password, dan cara menghubungi pengelola.',
+                    links: [],
+                    suggestions: ['about_silaku', 'login_howto', 'forgot_password', 'contact_admin']
+                  };
         },
 
         toggleChat() {
             this.isOpen = !this.isOpen;
-            localStorage.setItem('silaku_public_faq_open', this.isOpen);
+            localStorage.setItem(this.storagePrefix + '_open', this.isOpen);
             if (!this.isOpen) {
                 this.isTyping = false;
             } else {
@@ -483,7 +524,7 @@ document.addEventListener('alpine:init', () => {
         clearChat() {
             this.isTyping = false;
             this.messages = [];
-            localStorage.removeItem('silaku_public_faq_history');
+            localStorage.removeItem(this.storagePrefix + '_history');
             this.addGreetingMessage();
             this.scrollToBottom();
         },
@@ -502,7 +543,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         saveHistory() {
-            localStorage.setItem('silaku_public_faq_history', JSON.stringify(this.messages));
+            localStorage.setItem(this.storagePrefix + '_history', JSON.stringify(this.messages));
         },
 
         scrollToBottom() {

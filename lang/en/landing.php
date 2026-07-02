@@ -79,4 +79,15 @@ return [
     'prog_modal_focus' => 'Key Focus & Competencies',
     'prog_modal_website' => 'Visit Official Website',
     'prog_modal_close' => 'Close',
+
+    'about_badge' => 'About the Application',
+    'about_title' => 'Getting to Know SILAKU',
+    'about_subtitle' => 'Key Performance Indicator (IKU) Reporting Information System',
+    'about_desc' => 'SILAKU (Sistem Pelaporan IKU) is an integrated digital platform specifically designed to facilitate the management, reporting, and verification of Key Performance Indicator (IKU) data within the Faculty of Arts and Education (FSIP) Universitas Teknokrat Indonesia. With a dynamic data architecture, this system supports high flexibility in meeting the evolving data accreditation needs of the faculty.',
+    'about_feature_1_title' => 'Dynamic Data Architecture',
+    'about_feature_1_desc' => 'Allows the management of new data categories along with their fields instantly directly from the user interface without requiring code changes.',
+    'about_feature_2_title' => 'Validated Approval Workflow',
+    'about_feature_2_desc' => 'Provides a reliable data approval workflow to verify all data additions and deletions before being published to the system.',
+    'about_feature_3_title' => 'Alumni Map Visualization',
+    'about_feature_3_desc' => 'Equipped with an interactive map to monitor the geographical distribution of alumni workplaces at regional (Lampung), national, and global levels.',
 ];

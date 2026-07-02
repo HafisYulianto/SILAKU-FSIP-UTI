@@ -79,4 +79,15 @@ return [
     'prog_modal_focus' => 'Fokus & Kompetensi Utama',
     'prog_modal_website' => 'Kunjungi Website Resmi',
     'prog_modal_close' => 'Tutup',
+
+    'about_badge' => 'Tentang Aplikasi',
+    'about_title' => 'Mengenal Lebih Dekat SILAKU',
+    'about_subtitle' => 'Sistem Informasi Pelaporan Indikator Kinerja Utama (IKU)',
+    'about_desc' => 'SILAKU (Sistem Pelaporan IKU) adalah platform digital terintegrasi yang dirancang khusus untuk mempermudah manajemen, pelaporan, dan verifikasi data Indikator Kinerja Utama (IKU) di lingkungan Fakultas Sastra dan Ilmu Pendidikan (FSIP) Universitas Teknokrat Indonesia. Dengan arsitektur data dinamis, sistem ini mendukung fleksibilitas tinggi dalam menghadapi perkembangan kebutuhan data akreditasi fakultas.',
+    'about_feature_1_title' => 'Arsitektur Data Dinamis',
+    'about_feature_1_desc' => 'Memungkinkan pengelolaan kategori data baru beserta kolom-kolomnya (fields) secara instan langsung dari antarmuka pengguna tanpa memerlukan perubahan kode program.',
+    'about_feature_2_title' => 'Alur Persetujuan Valid',
+    'about_feature_2_desc' => 'Menyediakan workflow persetujuan data yang andal untuk memverifikasi setiap penambahan dan penghapusan data sebelum dipublikasikan ke sistem.',
+    'about_feature_3_title' => 'Visualisasi Peta Alumni',
+    'about_feature_3_desc' => 'Dilengkapi peta interaktif untuk memantau sebaran geografis tempat kerja alumni di tingkat daerah (Lampung), nasional, maupun global.',
 ];

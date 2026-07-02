@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     // Dashboard - accessible by all roles
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/map', [DashboardController::class, 'alumniMap'])->name('dashboard.map');
+    Route::get('/dashboard/print', [DashboardController::class, 'print'])->name('dashboard.print');
 
     // Entity management - BAAK & Kaprodi can create/edit categories
     Route::middleware('role:BAAK|Kaprodi')->group(function () {

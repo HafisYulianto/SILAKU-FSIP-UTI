@@ -113,4 +113,53 @@ class DashboardController extends Controller
         $mapRecords = \App\Models\Alumni::with('programStudi')->orderBy('nama', 'asc')->get();
         return view('dashboard.map', compact('mapRecords'));
     }
+
+    public function print(Request $request)
+    {
+        // Core stats
+        $stats = [
+            'total_dosen' => DynamicRecord::whereHas('entity', fn($q) => $q->where('root_category', 'dosen'))->count(),
+            'total_mahasiswa' => DynamicRecord::whereHas('entity', fn($q) => $q->where('root_category', 'mahasiswa'))->count(),
+            'total_alumni' => \App\Models\Alumni::count(),
+            'total_entities' => DynamicEntity::active()->count(),
+            'total_prodi' => ProgramStudi::where('is_active', true)->count(),
+        ];
+
+        // Get all active entities grouped by category
+        $dosenEntities = DynamicEntity::active()
+            ->byCategory('dosen')
+            ->withCount('records')
+            ->orderBy('sort_order')
+            ->get();
+
+        $mahasiswaEntities = DynamicEntity::active()
+            ->byCategory('mahasiswa')
+            ->withCount('records')
+            ->orderBy('sort_order')
+            ->get();
+
+        $alumniEntities = \App\Models\Alumni::with('programStudi')->latest()->get();
+
+        // Get aggregation data for charts
+        $chartData = $this->aggregationService->getChartData();
+
+        // Recent records
+        $recentRecords = DynamicRecord::with(['entity', 'creator', 'programStudi'])
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        // Program Studi distribution
+        $prodiDistribution = $this->aggregationService->getProdiDistribution();
+
+        return view('dashboard.print', compact(
+            'stats',
+            'dosenEntities',
+            'mahasiswaEntities',
+            'alumniEntities',
+            'chartData',
+            'recentRecords',
+            'prodiDistribution'
+        ));
+    }
 }

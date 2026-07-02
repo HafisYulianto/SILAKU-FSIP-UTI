@@ -488,7 +488,7 @@
     @stack('scripts')
 
     @if(auth()->check() && (auth()->user()->hasRole('BAAK') || auth()->user()->hasRole('Kaprodi') || auth()->user()->hasRole('Dosen')))
-        <x-chatbot.public-faq-chatbot />
+        <x-chatbot.public-faq-chatbot :is-dashboard="true" />
     @endif
 </body>
 </html>

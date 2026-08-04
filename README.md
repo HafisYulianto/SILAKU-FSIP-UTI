@@ -36,13 +36,27 @@
 
 ### 👥 Role-Based Access Control (RBAC)
 
-| Role | Hak Akses |
-|------|-----------|
-| **BAAK** | Full access — Kelola semua kategori (Dosen, Mahasiswa, Fakultas) & data langsung tanpa approval |
-| **Kaprodi** | CRUD kategori Dosen/Mahasiswa/Fakultas & data Alumni — perlu persetujuan BAAK |
-| **Dosen** | Tambah/edit/hapus data Dosen/Mahasiswa/Fakultas & Alumni — perlu persetujuan BAAK |
-| **Pimpinan / Dekan** | Read-only — Lihat seluruh data Dosen, Mahasiswa, Fakultas, dan Alumni; unduh laporan PDF/Excel |
-| **Wakil Dekan** | Read-only — Lihat seluruh data Dosen, Mahasiswa, Fakultas, dan Alumni; unduh laporan PDF/Excel |
+#### 📊 Matriks Hak Akses per Kategori Data
+
+| Kategori Data | Role BAAK | Role Kaprodi | Role Dosen | Role Dekan & Wadek |
+| :--- | :--- | :--- | :--- | :--- |
+| 📚 **Data Dosen** *(Dinamis)* | **Full Access**: Buat/edit/hapus kategori & langsung isi data | **Request Kategori** + Langsung isi & kelola data | **Langsung isi & kelola data** (Tanpa buat kategori) | **Read-Only**: Penelusuran data eksekutif & cetak laporan |
+| 🎓 **Data Mahasiswa** *(Dinamis)* | **Full Access**: Buat/edit/hapus kategori & langsung isi data | **Request Kategori** + Langsung isi & kelola data | **Langsung isi & kelola data** (Tanpa buat kategori) | **Read-Only**: Penelusuran data eksekutif & cetak laporan |
+| 🏢 **Data Fakultas** *(Dinamis)* | **Eksklusif**: Hanya BAAK yang dapat membuat/kelola kategori | **Langsung isi & kelola data** (Opsi buat kategori dikunci) | **Langsung isi & kelola data** (Opsi buat kategori dikunci) | **Read-Only**: Penelusuran data eksekutif & cetak laporan |
+| 💼 **Data Alumni** *(Statis)* | **Full Access**: Isi data + Bulk Delete & Reset Database | **Langsung isi & kelola data** alumni | **Langsung isi & kelola data** alumni | **Read-Only**: Peta Sebaran Geografis & ekspor data |
+
+#### 🔑 Matriks Fitur & Otoritas Spesifik
+
+| Fitur / Modul Sistem | BAAK | Kaprodi | Dosen | Dekan & Wadek |
+| :--- | :---: | :---: | :---: | :---: |
+| **Buat Kategori (Dosen & Mahasiswa)** | ✅ Langsung | ⏳ Request (Perlu Approval BAAK) | ❌ | ❌ |
+| **Buat Kategori (Fakultas)** | ✅ Langsung | ❌ *(Eksklusif BAAK)* | ❌ *(Eksklusif BAAK)* | ❌ |
+| **Mengisi / Edit / Hapus Data Record** | ✅ Langsung | ✅ Langsung *(Tanpa Approval)* | ✅ Langsung *(Tanpa Approval)* | ❌ *(Read-Only)* |
+| **Persetujuan (Bulk Approve & Reject)** | ✅ Full Control | ❌ | ❌ | ❌ |
+| **Peta Sebaran Alumni Interaktif** | ✅ | ✅ | ✅ | ✅ |
+| **Cetak Laporan PDF Resmi (Kop & TTD)** | ✅ | ✅ | ✅ | ✅ |
+| **Manajemen Pengguna & Reset Pass** | ✅ Full Control | ❌ | ❌ | ❌ |
+| **Monitoring Log Aktivitas** | ✅ Kelola & Hapus | 📝 Log Otomatis | 📝 Log Otomatis | 👁️ Monitoring Log |
 
 ### ✅ Sistem Persetujuan (Approval Workflow)
 - Kaprodi & Dosen **tidak bisa langsung** menambah, mengedit, atau menghapus data — semua masuk antrian persetujuan BAAK

@@ -48,14 +48,14 @@
                      style="animation-delay: {{ $loop->index * 50 }}ms">
                     <div class="flex items-start justify-between mb-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 {{ $entity->root_category === 'dosen' ? 'bg-primary-100' : ($entity->root_category === 'mahasiswa' ? 'bg-blue-100' : 'bg-teal-100') }} rounded-xl flex items-center justify-center">
+                            <div class="w-10 h-10 {{ $entity->root_category === 'dosen' ? 'bg-primary-100' : ($entity->root_category === 'mahasiswa' ? 'bg-blue-100' : ($entity->root_category === 'fakultas' ? 'bg-purple-100' : 'bg-teal-100')) }} rounded-xl flex items-center justify-center">
                                 <span class="text-lg">
-                                    @if($entity->root_category === 'dosen') 📚 @elseif($entity->root_category === 'mahasiswa') 🎓 @else 💼 @endif
+                                    @if($entity->root_category === 'dosen') 📚 @elseif($entity->root_category === 'mahasiswa') 🎓 @elseif($entity->root_category === 'fakultas') 🏢 @else 💼 @endif
                                 </span>
                             </div>
                             <div>
                                 <h3 class="font-semibold text-gray-900">{{ $entity->name }}</h3>
-                                <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : ($entity->root_category === 'mahasiswa' ? 'badge-info' : 'badge-success') }}">{{ ucfirst($entity->root_category) }}</span>
+                                <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : ($entity->root_category === 'mahasiswa' ? 'badge-info' : ($entity->root_category === 'fakultas' ? 'badge-secondary' : 'badge-success')) }}">{{ ucfirst($entity->root_category) }}</span>
                             </div>
                         </div>
 
@@ -116,14 +116,14 @@
             <div class="card p-6 slide-up" style="animation-delay: {{ $loop->index * 50 }}ms">
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 {{ $entity->root_category === 'dosen' ? 'bg-primary-100' : ($entity->root_category === 'mahasiswa' ? 'bg-blue-100' : 'bg-teal-100') }} rounded-xl flex items-center justify-center">
+                        <div class="w-10 h-10 {{ $entity->root_category === 'dosen' ? 'bg-primary-100' : ($entity->root_category === 'mahasiswa' ? 'bg-blue-100' : ($entity->root_category === 'fakultas' ? 'bg-purple-100' : 'bg-teal-100')) }} rounded-xl flex items-center justify-center">
                             <span class="text-lg">
-                                @if($entity->root_category === 'dosen') 📚 @elseif($entity->root_category === 'mahasiswa') 🎓 @else 💼 @endif
+                                @if($entity->root_category === 'dosen') 📚 @elseif($entity->root_category === 'mahasiswa') 🎓 @elseif($entity->root_category === 'fakultas') 🏢 @else 💼 @endif
                             </span>
                         </div>
                         <div>
                             <h3 class="font-semibold text-gray-900">{{ $entity->name }}</h3>
-                            <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : ($entity->root_category === 'mahasiswa' ? 'badge-info' : 'badge-success') }}">{{ ucfirst($entity->root_category) }}</span>
+                            <span class="badge {{ $entity->root_category === 'dosen' ? 'badge-primary' : ($entity->root_category === 'mahasiswa' ? 'badge-info' : ($entity->root_category === 'fakultas' ? 'badge-secondary' : 'badge-success')) }}">{{ ucfirst($entity->root_category) }}</span>
                         </div>
                     </div>
                     <div class="relative" x-data="{ open: false }">

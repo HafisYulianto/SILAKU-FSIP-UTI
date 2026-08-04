@@ -48,7 +48,7 @@
         </div>
 
         {{-- Stat Cards --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5" id="tour-stats">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="tour-stats">
             {{-- Total Dosen --}}
             <div class="stat-card slide-up" style="animation-delay: 0ms">
                 <div class="absolute top-0 right-0 w-24 h-24 bg-primary-500 rounded-full opacity-10 -translate-y-6 translate-x-6"></div>
@@ -85,6 +85,25 @@
                 </div>
                 <div class="flex items-center gap-1 mt-3">
                     <span class="text-xs text-blue-600 dark:text-blue-400 font-medium">{{ $mahasiswaEntities->count() }} kategori</span>
+                </div>
+            </div>
+
+            {{-- Total Fakultas --}}
+            <div class="stat-card slide-up" style="animation-delay: 75ms">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500 rounded-full opacity-10 -translate-y-6 translate-x-6"></div>
+                <div class="flex items-start justify-between relative">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Data Fakultas</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ number_format($stats['total_fakultas']) }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-950/30 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1 mt-3">
+                    <span class="text-xs text-purple-600 dark:text-purple-400 font-medium">{{ $fakultasEntities->count() }} kategori</span>
                 </div>
             </div>
 
@@ -439,10 +458,11 @@
                 series: [
                     { name: 'Dosen', data: prodiData.dosen },
                     { name: 'Mahasiswa', data: prodiData.mahasiswa },
+                    { name: 'Fakultas', data: prodiData.fakultas || [] },
                     { name: 'Alumni', data: prodiData.alumni }
                 ],
                 xaxis: { categories: prodiData.labels },
-                colors: ['#10b981', '#3b82f6', '#14b8a6'],
+                colors: ['#10b981', '#3b82f6', '#8b5cf6', '#14b8a6'],
                 plotOptions: { bar: { borderRadius: 8, columnWidth: '60%' } },
                 dataLabels: { enabled: false },
                 legend: { position: 'top' },
@@ -458,8 +478,9 @@
         // Entity Summary Donut
         const totalDosen = {{ $stats['total_dosen'] }};
         const totalMahasiswa = {{ $stats['total_mahasiswa'] }};
+        const totalFakultas = {{ $stats['total_fakultas'] }};
         const totalAlumni = {{ $stats['total_alumni'] }};
-        if (totalDosen > 0 || totalMahasiswa > 0 || totalAlumni > 0) {
+        if (totalDosen > 0 || totalMahasiswa > 0 || totalFakultas > 0 || totalAlumni > 0) {
             window.entityChart = new ApexCharts(document.querySelector('#chart-entity-summary'), {
                 chart: { 
                     type: 'donut', 
@@ -472,9 +493,9 @@
                     },
                     fontFamily: 'Inter, sans-serif' 
                 },
-                series: [totalDosen, totalMahasiswa, totalAlumni],
-                labels: ['Dosen', 'Mahasiswa', 'Alumni'],
-                colors: ['#10b981', '#3b82f6', '#14b8a6'],
+                series: [totalDosen, totalMahasiswa, totalFakultas, totalAlumni],
+                labels: ['Dosen', 'Mahasiswa', 'Fakultas', 'Alumni'],
+                colors: ['#10b981', '#3b82f6', '#8b5cf6', '#14b8a6'],
                 legend: { position: 'bottom', fontSize: '12px' },
                 dataLabels: { enabled: true, style: { fontSize: '11px' } },
                 plotOptions: { pie: { donut: { size: '55%', labels: { show: true, total: { show: true, label: 'Total', fontSize: '14px', fontWeight: 700 } } } } },

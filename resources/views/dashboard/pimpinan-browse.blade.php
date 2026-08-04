@@ -1,13 +1,13 @@
-<x-layouts.app :title="$category === 'dosen' ? 'Data Dosen' : 'Data Mahasiswa'">
+<x-layouts.app :title="$category === 'dosen' ? 'Data Dosen' : ($category === 'mahasiswa' ? 'Data Mahasiswa' : 'Data Fakultas')">
     <div class="space-y-6 fade-in">
         {{-- Page Header --}}
         <div class="page-header">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 {{ $category === 'dosen' ? 'bg-primary-100' : 'bg-blue-100' }} rounded-xl flex items-center justify-center">
-                    <span class="text-xl">{{ $category === 'dosen' ? '📚' : '🎓' }}</span>
+                <div class="w-12 h-12 {{ $category === 'dosen' ? 'bg-primary-100' : ($category === 'mahasiswa' ? 'bg-blue-100' : 'bg-purple-100') }} rounded-xl flex items-center justify-center">
+                    <span class="text-xl">{{ $category === 'dosen' ? '📚' : ($category === 'mahasiswa' ? '🎓' : '🏢') }}</span>
                 </div>
                 <div>
-                    <h1 class="page-title">{{ $category === 'dosen' ? 'Data Dosen' : 'Data Mahasiswa' }}</h1>
+                    <h1 class="page-title">{{ $category === 'dosen' ? 'Data Dosen' : ($category === 'mahasiswa' ? 'Data Mahasiswa' : 'Data Fakultas') }}</h1>
                     <p class="page-subtitle">
                         {{ $totalRecords }} total record &bull; {{ $entities->count() }} kategori
                     </p>
@@ -20,16 +20,16 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             @forelse($entities as $entity)
             <a href="{{ route('pimpinan.browse', ['category' => $category, 'entity_id' => $entity->id]) }}"
-               class="group card p-6 hover:shadow-lg hover:border-{{ $category === 'dosen' ? 'primary' : 'blue' }}-200 hover:-translate-y-0.5 transition-all duration-300 {{ $selectedEntity && $selectedEntity->id === $entity->id ? 'ring-2 ring-' . ($category === 'dosen' ? 'primary' : 'blue') . '-500 border-' . ($category === 'dosen' ? 'primary' : 'blue') . '-200' : '' }}">
+               class="group card p-6 hover:shadow-lg hover:border-{{ $category === 'dosen' ? 'primary' : ($category === 'mahasiswa' ? 'blue' : 'purple') }}-200 hover:-translate-y-0.5 transition-all duration-300 {{ $selectedEntity && $selectedEntity->id === $entity->id ? 'ring-2 ring-' . ($category === 'dosen' ? 'primary' : ($category === 'mahasiswa' ? 'blue' : 'purple')) . '-500 border-' . ($category === 'dosen' ? 'primary' : ($category === 'mahasiswa' ? 'blue' : 'purple')) . '-200' : '' }}">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="w-11 h-11 {{ $category === 'dosen' ? 'bg-primary-50 group-hover:bg-primary-100' : 'bg-blue-50 group-hover:bg-blue-100' }} rounded-xl flex items-center justify-center transition-colors">
-                        <svg class="w-5 h-5 {{ $category === 'dosen' ? 'text-primary-600' : 'text-blue-600' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div class="w-11 h-11 {{ $category === 'dosen' ? 'bg-primary-50 group-hover:bg-primary-100' : ($category === 'mahasiswa' ? 'bg-blue-50 group-hover:bg-blue-100' : 'bg-purple-50 group-hover:bg-purple-100') }} rounded-xl flex items-center justify-center transition-colors">
+                        <svg class="w-5 h-5 {{ $category === 'dosen' ? 'text-primary-600' : ($category === 'mahasiswa' ? 'text-blue-600' : 'text-purple-600') }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
                     </div>
-                    <span class="text-2xl font-bold {{ $category === 'dosen' ? 'text-primary-600' : 'text-blue-600' }}">{{ $entity->records_count }}</span>
+                    <span class="text-2xl font-bold {{ $category === 'dosen' ? 'text-primary-600' : ($category === 'mahasiswa' ? 'text-blue-600' : 'text-purple-600') }}">{{ $entity->records_count }}</span>
                 </div>
-                <h3 class="font-semibold text-gray-900 group-hover:text-{{ $category === 'dosen' ? 'primary' : 'blue' }}-700 transition-colors">{{ $entity->name }}</h3>
+                <h3 class="font-semibold text-gray-900 group-hover:text-{{ $category === 'dosen' ? 'primary' : ($category === 'mahasiswa' ? 'blue' : 'purple') }}-700 transition-colors">{{ $entity->name }}</h3>
                 @if($entity->description)
                 <p class="text-xs text-gray-400 mt-1 line-clamp-2">{{ $entity->description }}</p>
                 @endif

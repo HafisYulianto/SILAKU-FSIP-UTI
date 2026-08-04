@@ -95,7 +95,7 @@
     </div>
 
     {{-- STATS GRID --}}
-    <div class="grid grid-cols-5 gap-4 mb-8 text-center">
+    <div class="grid grid-cols-6 gap-3 mb-8 text-center">
         <div class="p-3 border border-gray-200 rounded-lg bg-gray-50/50">
             <p class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Total Dosen</p>
             <p class="text-xl font-bold text-gray-900 mt-1">{{ number_format($stats['total_dosen']) }}</p>
@@ -103,6 +103,10 @@
         <div class="p-3 border border-gray-200 rounded-lg bg-gray-50/50">
             <p class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Total Mahasiswa</p>
             <p class="text-xl font-bold text-gray-900 mt-1">{{ number_format($stats['total_mahasiswa']) }}</p>
+        </div>
+        <div class="p-3 border border-gray-200 rounded-lg bg-gray-50/50">
+            <p class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Total Fakultas</p>
+            <p class="text-xl font-bold text-gray-900 mt-1">{{ number_format($stats['total_fakultas']) }}</p>
         </div>
         <div class="p-3 border border-gray-200 rounded-lg bg-gray-50/50">
             <p class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Total Alumni</p>
@@ -198,10 +202,11 @@
                 series: [
                     { name: 'Dosen', data: prodiData.dosen },
                     { name: 'Mahasiswa', data: prodiData.mahasiswa },
+                    { name: 'Fakultas', data: prodiData.fakultas || [] },
                     { name: 'Alumni', data: prodiData.alumni }
                 ],
                 xaxis: { categories: prodiData.labels },
-                colors: ['#10b981', '#3b82f6', '#14b8a6'],
+                colors: ['#10b981', '#3b82f6', '#8b5cf6', '#14b8a6'],
                 plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } },
                 dataLabels: { enabled: false },
                 legend: { position: 'top', fontSize: '10px' },
@@ -215,8 +220,9 @@
         // Entity Summary Donut
         const totalDosen = {{ $stats['total_dosen'] }};
         const totalMahasiswa = {{ $stats['total_mahasiswa'] }};
+        const totalFakultas = {{ $stats['total_fakultas'] }};
         const totalAlumni = {{ $stats['total_alumni'] }};
-        if (totalDosen > 0 || totalMahasiswa > 0 || totalAlumni > 0) {
+        if (totalDosen > 0 || totalMahasiswa > 0 || totalFakultas > 0 || totalAlumni > 0) {
             const entityChart = new ApexCharts(document.querySelector('#chart-entity-summary'), {
                 chart: { 
                     type: 'donut', 
@@ -224,9 +230,9 @@
                     toolbar: { show: false },
                     fontFamily: 'Outfit, sans-serif' 
                 },
-                series: [totalDosen, totalMahasiswa, totalAlumni],
-                labels: ['Dosen', 'Mahasiswa', 'Alumni'],
-                colors: ['#10b981', '#3b82f6', '#14b8a6'],
+                series: [totalDosen, totalMahasiswa, totalFakultas, totalAlumni],
+                labels: ['Dosen', 'Mahasiswa', 'Fakultas', 'Alumni'],
+                colors: ['#10b981', '#3b82f6', '#8b5cf6', '#14b8a6'],
                 legend: { position: 'bottom', fontSize: '10px' },
                 dataLabels: { enabled: true, style: { fontSize: '10px' } },
                 plotOptions: { pie: { donut: { size: '55%', labels: { show: true, total: { show: true, label: 'Total Data', fontSize: '12px', fontWeight: 700 } } } } }

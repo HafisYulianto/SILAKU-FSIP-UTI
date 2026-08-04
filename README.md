@@ -20,9 +20,9 @@
 
 ## 📖 Tentang
 
-**SILAKU** adalah platform manajemen data akreditasi fakultas berbasis web yang dibangun untuk Fakultas Sastra dan Ilmu Pendidikan (FSIP), Universitas Teknokrat Indonesia. Sistem ini memungkinkan pengelolaan data **Dosen**, **Mahasiswa**, dan **Alumni** secara dinamis, terintegrasi, dan terpusat dalam satu platform — dilengkapi alur persetujuan (approval), peta sebaran alumni, dan ekspor data.
+**SILAKU** adalah platform manajemen data akreditasi fakultas berbasis web yang dibangun untuk Fakultas Sastra dan Ilmu Pendidikan (FSIP), Universitas Teknokrat Indonesia. Sistem ini memungkinkan pengelolaan data **Dosen**, **Mahasiswa**, **Fakultas**, dan **Alumni** secara dinamis, terintegrasi, dan terpusat dalam satu platform — dilengkapi alur persetujuan (approval), peta sebaran alumni, dan ekspor data.
 
-> Dibangun dengan arsitektur **Dynamic Entity** — BAAK dapat membuat kategori data baru beserta field-nya secara fleksibel tanpa perlu mengubah kode sumber.
+> Dibangun dengan arsitektur **Dynamic Entity** — BAAK dan Kaprodi dapat membuat kategori data baru beserta field-nya secara fleksibel tanpa perlu mengubah kode sumber.
 
 ---
 
@@ -32,23 +32,23 @@
 - **Dynamic Entity Builder** — Buat kategori data baru (tabel) secara dinamis dari UI tanpa coding
 - **Custom Fields** — Mendukung tipe field: Text, Textarea, Number, Date, Select, File, Email, Phone, URL
 - **Field Configuration** — Setiap field bisa dikonfigurasi: required, filterable, aggregatable, show in table
-- **Root Category** — Kategori dapat diarahkan ke Dosen atau Mahasiswa
+- **Root Category** — Kategori dapat diarahkan ke Dosen, Mahasiswa, atau Fakultas
 
 ### 👥 Role-Based Access Control (RBAC)
 
 | Role | Hak Akses |
 |------|-----------|
-| **BAAK** | Full access — Kelola semua kategori & data langsung tanpa approval |
-| **Kaprodi** | CRUD kategori Dosen/Mahasiswa & data Alumni — perlu persetujuan BAAK |
-| **Dosen** | Tambah/edit/hapus data Dosen/Mahasiswa & Alumni — perlu persetujuan BAAK |
-| **Pimpinan / Dekan** | Read-only — Lihat seluruh data, unduh laporan |
-| **Wakil Dekan** | Read-only — Lihat seluruh data, unduh laporan |
+| **BAAK** | Full access — Kelola semua kategori (Dosen, Mahasiswa, Fakultas) & data langsung tanpa approval |
+| **Kaprodi** | CRUD kategori Dosen/Mahasiswa/Fakultas & data Alumni — perlu persetujuan BAAK |
+| **Dosen** | Tambah/edit/hapus data Dosen/Mahasiswa/Fakultas & Alumni — perlu persetujuan BAAK |
+| **Pimpinan / Dekan** | Read-only — Lihat seluruh data Dosen, Mahasiswa, Fakultas, dan Alumni; unduh laporan PDF/Excel |
+| **Wakil Dekan** | Read-only — Lihat seluruh data Dosen, Mahasiswa, Fakultas, dan Alumni; unduh laporan PDF/Excel |
 
 ### ✅ Sistem Persetujuan (Approval Workflow)
 - Kaprodi & Dosen **tidak bisa langsung** menambah, mengedit, atau menghapus data — semua masuk antrian persetujuan BAAK
 - BAAK bisa **memilih lebih dari satu permintaan** (multi-select/centang) lalu menyetujui atau menolak sekaligus (bulk approve/reject)
 - Status permintaan ditampilkan di tabel: pending (kuning berputar), disetujui, atau ditolak
-- Berlaku untuk: kategori Dosen/Mahasiswa, data Dosen/Mahasiswa, dan data Alumni
+- Berlaku untuk: kategori Dosen/Mahasiswa/Fakultas, data Dosen/Mahasiswa/Fakultas, dan data Alumni
 
 ### 🎓 Manajemen Data Alumni
 - Formulir alumni dengan field: Nama, Nama Perusahaan, Posisi, Lokasi, Program Studi
@@ -67,13 +67,13 @@
 - Perintah geocoding: `php artisan alumni:geocode`
 
 ### 📤 Ekspor Data
-- **Export Excel (.xlsx)** — Alumni, Dosen, Mahasiswa dengan header berformat rapi, metadata, warna baris bergantian, dan footer
-- **Export PDF** — Tampilan landscape profesional untuk semua kategori
+- **Export Excel (.xlsx)** — Alumni, Dosen, Mahasiswa, Fakultas dengan header berformat rapi, metadata, warna baris bergantian, dan footer
+- **Export PDF** — Tampilan landscape profesional untuk semua kategori dan laporan cetak resmi IKU FSIP
 - Filter per Program Studi sebelum mengekspor
 
 ### 📊 Dashboard & Analytics
-- Statistik real-time: Total Dosen, Mahasiswa, Alumni, Kategori, Program Studi
-- **Donut chart** distribusi data antar Program Studi
+- Statistik real-time: Total Dosen, Mahasiswa, Fakultas, Alumni, Kategori, Program Studi
+- **Donut chart** distribusi data antar Program Studi dan sebaran kategori data
 - **Bar/Line/Donut chart dinamis** dari aggregatable fields tiap kategori
 - Aktivitas terbaru — hanya aksi Kaprodi & Dosen yang ditampilkan (BAAK tidak di-log)
 - Notifikasi bell real-time untuk permintaan yang masuk

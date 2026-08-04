@@ -65,6 +65,10 @@ class DynamicEntityController extends Controller
             'fields.*.options.max' => 'nullable|numeric',
         ]);
 
+        if ($request->root_category === 'fakultas' && !auth()->user()->hasRole('BAAK')) {
+            return back()->withInput()->withErrors(['root_category' => 'Hanya BAAK yang berhak membuat kategori data Fakultas.']);
+        }
+
         $entity = DynamicEntity::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),

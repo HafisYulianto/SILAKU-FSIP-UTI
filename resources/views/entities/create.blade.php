@@ -31,7 +31,9 @@
                             <option value="">— Pilih Kategori —</option>
                             <option value="dosen" {{ old('root_category') === 'dosen' ? 'selected' : '' }}>📚 Dosen</option>
                             <option value="mahasiswa" {{ old('root_category') === 'mahasiswa' ? 'selected' : '' }}>🎓 Mahasiswa</option>
+                            @hasrole('BAAK')
                             <option value="fakultas" {{ old('root_category') === 'fakultas' ? 'selected' : '' }}>🏢 Fakultas</option>
+                            @endhasrole
                         </select>
                     </div>
 

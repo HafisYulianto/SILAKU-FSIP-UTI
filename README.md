@@ -55,7 +55,7 @@
 | **Persetujuan (Bulk Approve & Reject)** | ✅ Full Control | ❌ | ❌ | ❌ |
 | **Peta Sebaran Alumni Interaktif** | ✅ | ✅ | ✅ | ✅ |
 | **Cetak Laporan PDF Resmi (Kop & TTD)** | ✅ | ✅ | ✅ | ✅ |
-| **Manajemen Pengguna & Reset Pass** | ✅ Full Control | ❌ | ❌ | ❌ |
+| **Manajemen Pengguna & Reset Pass** | ✅ *(BAAK Utama)* / ❌ *(Staff BAAK)* | ❌ | ❌ | ❌ |
 | **Monitoring Log Aktivitas** | ✅ Kelola & Hapus | 📝 Log Otomatis | 📝 Log Otomatis | 👁️ Monitoring Log |
 
 ### ✅ Sistem Persetujuan (Approval Workflow)

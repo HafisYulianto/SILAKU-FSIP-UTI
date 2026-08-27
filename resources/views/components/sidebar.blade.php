@@ -238,6 +238,7 @@
             @endif
         </a>
 
+        @if(auth()->user()->canCreateUsers())
         <a href="{{ route('users.index') }}"
            class="sidebar-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -245,6 +246,7 @@
             </svg>
             <span>Manajemen Pengguna</span>
         </a>
+        @endif
         @endrole
     </nav>
 </aside>

@@ -20,6 +20,7 @@ class User extends Authenticatable
         'nip_type',
         'program_studi_id',
         'is_active',
+        'can_create_users',
     ];
 
     protected $hidden = [
@@ -34,7 +35,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'can_create_users' => 'boolean',
         ];
+    }
+
+    public function canCreateUsers(): bool
+    {
+        return (bool) ($this->can_create_users || $this->email === 'aminudin@teknokrat.ac.id' || $this->id === 1);
     }
 
     public function programStudi()

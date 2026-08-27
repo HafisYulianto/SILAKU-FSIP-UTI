@@ -11,8 +11,17 @@ use Spatie\Permission\Models\Role;
 
 class UserManagementController extends Controller
 {
+    private function authorizeUserManagement(): void
+    {
+        if (!auth()->user() || !auth()->user()->canCreateUsers()) {
+            abort(403, 'Akses Ditolak: Anda tidak memiliki izin untuk mengelola atau membuat akun pengguna.');
+        }
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeUserManagement();
+
         $users = User::with(['roles', 'programStudi'])
             ->when($request->search, function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
@@ -32,7 +41,9 @@ class UserManagementController extends Controller
 
     public function create()
     {
-        $roles = Role::whereIn('name', ['Kaprodi', 'Dosen', 'Wakil Dekan'])->get();
+        $this->authorizeUserManagement();
+
+        $roles = Role::whereIn('name', ['BAAK', 'Wakil Dekan', 'Kaprodi', 'Dosen'])->get();
         $programStudiList = ProgramStudi::where('is_active', true)->get();
 
         return view('users.create', compact('roles', 'programStudiList'));
@@ -40,13 +51,14 @@ class UserManagementController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeUserManagement();
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => ['required', 'confirmed', Password::min(8)],
             'nip' => 'nullable|string|max:30|unique:users,nip',
             'nip_type' => ['nullable', 'string', Rule::in(['NIP', 'NIK', 'NITK'])],
-            'role' => ['required', Rule::in(['Kaprodi', 'Dosen', 'Wakil Dekan'])],
+            'role' => ['required', Rule::in(['BAAK', 'Wakil Dekan', 'Kaprodi', 'Dosen'])],
             'program_studi_id' => 'nullable|exists:program_studi,id',
         ]);
 
@@ -59,6 +71,7 @@ class UserManagementController extends Controller
             'nip_type' => $request->nip_type,
             'program_studi_id' => $request->program_studi_id,
             'is_active' => true,
+            'can_create_users' => false,
         ]);
 
         $user->assignRole($request->role);
@@ -70,13 +83,17 @@ class UserManagementController extends Controller
 
     public function show(User $user)
     {
+        $this->authorizeUserManagement();
+
         $user->load(['roles', 'programStudi']);
         return view('users.show', compact('user'));
     }
 
     public function edit(User $user)
     {
-        $roles = Role::whereIn('name', ['Kaprodi', 'Dosen', 'Wakil Dekan'])->get();
+        $this->authorizeUserManagement();
+
+        $roles = Role::whereIn('name', ['BAAK', 'Wakil Dekan', 'Kaprodi', 'Dosen'])->get();
         $programStudiList = ProgramStudi::where('is_active', true)->get();
 
         return view('users.edit', compact('user', 'roles', 'programStudiList'));
@@ -84,13 +101,15 @@ class UserManagementController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $this->authorizeUserManagement();
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable', 'confirmed', Password::min(8)],
             'nip' => ['nullable', 'string', 'max:30', Rule::unique('users')->ignore($user->id)],
             'nip_type' => ['nullable', 'string', Rule::in(['NIP', 'NIK', 'NITK'])],
-            'role' => ['required', Rule::in(['Kaprodi', 'Dosen', 'Wakil Dekan'])],
+            'role' => ['required', Rule::in(['BAAK', 'Wakil Dekan', 'Kaprodi', 'Dosen'])],
             'program_studi_id' => 'nullable|exists:program_studi,id',
             'is_active' => 'boolean',
         ]);
@@ -119,8 +138,10 @@ class UserManagementController extends Controller
 
     public function destroy(User $user)
     {
-        if ($user->hasRole('BAAK') || $user->hasRole('Pimpinan')) {
-            return back()->with('error', 'Tidak dapat menghapus akun BAAK/Pimpinan.');
+        $this->authorizeUserManagement();
+
+        if ($user->canCreateUsers() || $user->hasRole('Pimpinan')) {
+            return back()->with('error', 'Tidak dapat menghapus akun BAAK Utama / Pimpinan.');
         }
 
         $name = $user->name;
@@ -133,8 +154,10 @@ class UserManagementController extends Controller
 
     public function toggleActive(User $user)
     {
-        if ($user->hasRole('BAAK') || $user->hasRole('Pimpinan')) {
-            return back()->with('error', 'Tidak dapat menonaktifkan akun BAAK/Pimpinan.');
+        $this->authorizeUserManagement();
+
+        if ($user->canCreateUsers() || $user->hasRole('Pimpinan')) {
+            return back()->with('error', 'Tidak dapat menonaktifkan akun BAAK Utama / Pimpinan.');
         }
 
         $user->update(['is_active' => !$user->is_active]);

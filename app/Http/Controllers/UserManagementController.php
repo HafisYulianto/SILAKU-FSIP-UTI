@@ -66,7 +66,6 @@ class UserManagementController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
-            'plain_password' => $request->password,
             'nip' => $request->nip,
             'nip_type' => $request->nip_type,
             'program_studi_id' => $request->program_studi_id,
@@ -125,7 +124,6 @@ class UserManagementController extends Controller
 
         if ($request->filled('password')) {
             $userData['password'] = $request->password;
-            $userData['plain_password'] = $request->password;
         }
 
         $user->update($userData);

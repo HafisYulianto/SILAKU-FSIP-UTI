@@ -419,8 +419,7 @@ class DummyReportDataSeeder extends Seeder
         }
 
         // 8. DATA ALUMNI DENGAN KOORDINAT LENGKAP UNTUK PETA LEAFLET
-        if (Alumni::count() === 0) {
-            $alumniData = [
+        $alumniData = [
                 [
                     'nama' => 'Dimas Fajar Ramadhani, S.Hum.',
                     'nama_perusahaan' => 'PT Bank Mandiri (Persero) Tbk',
@@ -504,9 +503,8 @@ class DummyReportDataSeeder extends Seeder
             ];
 
             foreach ($alumniData as $alm) {
-                Alumni::create($alm);
+                Alumni::firstOrCreate(['nama' => $alm['nama']], $alm);
             }
-        }
 
         // 9. DATA APPROVAL REQUESTS (ANTREAN PERSETUJUAN BAAK UNTUK DI-SS)
         if (DataApprovalRequest::count() === 0) {

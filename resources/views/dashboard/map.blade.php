@@ -1,6 +1,6 @@
 <x-layouts.app :title="'Peta Sebaran Alumni'">
-    {{-- Leaflet CSS --}}
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    {{-- Leaflet CSS from Cloudflare CDN --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <style>
         .custom-leaflet-marker {
             background: transparent;
@@ -15,6 +15,14 @@
         .leaflet-popup-content {
             margin: 0;
             line-height: 1.4;
+        }
+        #map-alumni-magang {
+            height: 550px !important;
+            min-height: 550px !important;
+            width: 100% !important;
+            border-radius: 0.75rem;
+            position: relative;
+            z-index: 1;
         }
     </style>
 
@@ -36,7 +44,6 @@
         {{-- Map Card --}}
         <div class="card relative"
              x-data="{
-                isLoading: true,
                 mapView: 'lampung',
                 searchQuery: '',
                 selectedProdi: 'all',
@@ -60,13 +67,7 @@
                     }
                 }
              }"
-             x-init="window.activeMapView = 'lampung'; setTimeout(() => isLoading = false, 800)">
-
-            <!-- Skeleton overlay -->
-            <div x-show="isLoading" class="absolute inset-0 bg-white dark:bg-gray-900 z-10 flex flex-col p-6 rounded-2xl">
-                <div class="skeleton h-6 w-1/3 mb-6 animate-pulse"></div>
-                <div class="skeleton h-[550px] w-full animate-pulse"></div>
-            </div>
+             x-init="window.activeMapView = 'lampung'">
 
             <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -129,9 +130,9 @@
                 </div>
             </div>
 
-            <div :class="{ 'opacity-0': isLoading, 'opacity-100 transition-opacity duration-500': !isLoading }" class="p-6">
-                {{-- Map Container --}}
-                <div id="map-alumni-magang" class="h-[550px] rounded-xl border border-gray-200 dark:border-gray-800 z-0"></div>
+            <div class="p-6">
+                {{-- Map Container with explicit CSS dimensions --}}
+                <div id="map-alumni-magang" style="height: 550px; min-height: 550px; width: 100%; border-radius: 0.75rem; position: relative; z-index: 1;" class="border border-gray-200 dark:border-gray-800"></div>
                 
                 {{-- Alumni without coordinates notice --}}
                 @php $withoutCoords = $mapRecords->whereNull('lat')->count(); @endphp
@@ -146,7 +147,7 @@
     </div>
 
     @push('scripts')
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script>
     (function() {
         function initAlumniMap() {

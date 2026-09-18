@@ -1,4 +1,23 @@
 <x-layouts.app :title="'Peta Sebaran Alumni'">
+    {{-- Leaflet CSS --}}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        .custom-leaflet-marker {
+            background: transparent;
+            border: none;
+        }
+        .leaflet-popup-content-wrapper {
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 0;
+            overflow: hidden;
+        }
+        .leaflet-popup-content {
+            margin: 0;
+            line-height: 1.4;
+        }
+    </style>
+
     <div class="space-y-8 fade-in">
         {{-- Page Header --}}
         <div class="page-header">
@@ -127,229 +146,237 @@
     </div>
 
     @push('scripts')
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-    document.addEventListener('alpine:init', () => {
-        // Leaflet.js Geografis Map Initialization
-        const mapElement = document.getElementById('map-alumni-magang');
-        if (mapElement) {
-            // Include Leaflet style dynamically
-            const leafletLink = document.createElement('link');
-            leafletLink.rel = 'stylesheet';
-            leafletLink.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-            document.head.appendChild(leafletLink);
+    (function() {
+        function initAlumniMap() {
+            const mapElement = document.getElementById('map-alumni-magang');
+            if (!mapElement || window.alumniMap) return;
 
-            // Include Leaflet JS dynamically
-            const leafletScript = document.createElement('script');
-            leafletScript.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-            leafletScript.onload = function() {
-                // Initialize map centered in Lampung
-                const map = L.map('map-alumni-magang', {
-                    scrollWheelZoom: false,
-                    zoomControl: true
-                }).setView([-5.40, 105.26], 8.5);
+            // Initialize map centered in Lampung
+            const map = L.map('map-alumni-magang', {
+                scrollWheelZoom: false,
+                zoomControl: true
+            }).setView([-5.40, 105.26], 8.5);
 
-                window.alumniMap = map;
+            window.alumniMap = map;
 
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                    subdomains: 'abcd',
-                    maxZoom: 20
-                }).addTo(map);
+            // OpenStreetMap tile layer - fast & reliable
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
 
-                // Map data
-                const mapRecordsData = [
-                    @php $mapIdx = 0; @endphp
-                    @foreach($mapRecords as $record)
-                    @if($record->lat && $record->lng)
-                    @php $mapIdx++; @endphp
-                    {
-                        no:      {{ $mapIdx }},
-                        nama:    "{{ addslashes($record->nama) }}",
-                        lokasi:  "{{ addslashes($record->lokasi) }}",
-                        instansi:"{{ addslashes($record->nama_perusahaan) }}",
-                        posisi:  "{{ addslashes($record->posisi) }}",
-                        prodi:   "{{ addslashes($record->programStudi->name ?? 'FSIP') }}",
-                        lat:     {{ $record->lat }},
-                        lng:     {{ $record->lng }},
-                    },
-                    @endif
-                    @endforeach
-                ];
+            // Invalidate size on load to ensure full rendering
+            setTimeout(() => map.invalidateSize(), 200);
+            setTimeout(() => map.invalidateSize(), 600);
+            setTimeout(() => map.invalidateSize(), 1000);
 
-                let currentMarkers = [];
+            // Map data
+            const mapRecordsData = [
+                @php $mapIdx = 0; @endphp
+                @foreach($mapRecords as $record)
+                @if($record->lat && $record->lng)
+                @php $mapIdx++; @endphp
+                {
+                    no:      {{ $mapIdx }},
+                    nama:    "{{ addslashes($record->nama) }}",
+                    lokasi:  "{{ addslashes($record->lokasi) }}",
+                    instansi:"{{ addslashes($record->nama_perusahaan) }}",
+                    posisi:  "{{ addslashes($record->posisi) }}",
+                    prodi:   "{{ addslashes($record->programStudi->name ?? 'FSIP') }}",
+                    lat:     {{ $record->lat }},
+                    lng:     {{ $record->lng }},
+                },
+                @endif
+                @endforeach
+            ];
 
-                function renderMarkers(dataToRender) {
-                    // Remove all old markers
-                    currentMarkers.forEach(m => map.removeLayer(m));
-                    currentMarkers = [];
+            let currentMarkers = [];
 
-                    // Group markers by coordinate
-                    const locationGroups = {};
-                    dataToRender.forEach(item => {
-                        const key = `${item.lat.toFixed(4)}_${item.lng.toFixed(4)}`;
-                        if (!locationGroups[key]) {
-                            locationGroups[key] = {
-                                lat: item.lat,
-                                lng: item.lng,
-                                lokasi: item.lokasi,
-                                alumni: []
-                            };
-                        }
-                        locationGroups[key].alumni.push(item);
-                    });
+            function renderMarkers(dataToRender) {
+                // Remove all old markers
+                currentMarkers.forEach(m => map.removeLayer(m));
+                currentMarkers = [];
 
-                    Object.values(locationGroups).forEach(group => {
-                        const count = group.alumni.length;
-                        const primaryAlumni = group.alumni[0];
-                        let markerHtml = '';
-                        let markerSize = [28, 28];
-                        let markerAnchor = [14, 14];
+                // Group markers by coordinate
+                const locationGroups = {};
+                dataToRender.forEach(item => {
+                    const key = `${item.lat.toFixed(4)}_${item.lng.toFixed(4)}`;
+                    if (!locationGroups[key]) {
+                        locationGroups[key] = {
+                            lat: item.lat,
+                            lng: item.lng,
+                            lokasi: item.lokasi,
+                            alumni: []
+                        };
+                    }
+                    locationGroups[key].alumni.push(item);
+                });
 
-                        if (count === 1) {
-                            markerHtml = `
-                                <div style="position:relative; display:flex; align-items:center; justify-content:center; width:28px; height:28px;">
-                                    <span style="position:absolute; display:inline-flex; width:100%; height:100%; border-radius:50%; background:#10b981; opacity:0.4; animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></span>
-                                    <span style="position:relative; display:inline-flex; border-radius:50%; width:24px; height:24px; background:#10b981; color:white; font-size:10px; font-weight:700; font-family:sans-serif; align-items:center; justify-content:center; border:2px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.25);">${primaryAlumni.no}</span>
-                                </div>
-                            `;
-                        } else {
-                            const numbersStr = group.alumni.map(a => a.no).join(', ');
-                            markerSize = [44, 28];
-                            markerAnchor = [22, 14];
-                            markerHtml = `
-                                <div style="position:relative; display:flex; align-items:center; justify-content:center; width:44px; height:28px;">
-                                    <span style="position:absolute; display:inline-flex; width:100%; height:100%; border-radius:14px; background:#0284c7; opacity:0.4; animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></span>
-                                    <span style="position:relative; display:inline-flex; border-radius:14px; width:40px; height:24px; background:#0284c7; color:white; font-size:9px; font-weight:700; font-family:sans-serif; align-items:center; justify-content:center; border:2px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.25); white-space:nowrap; padding:0 4px;">${numbersStr}</span>
-                                </div>
-                            `;
-                        }
+                Object.values(locationGroups).forEach(group => {
+                    const count = group.alumni.length;
+                    const primaryAlumni = group.alumni[0];
+                    let markerHtml = '';
+                    let markerSize = [28, 28];
+                    let markerAnchor = [14, 14];
 
-                        let popupHtml = `
-                            <div style="padding:12px; min-width:210px; max-width:280px; font-family:sans-serif; max-height:240px; overflow-y:auto; scrollbar-width:thin;">
-                                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #e5e7eb; padding-right:20px;">
-                                    <span style="font-size:11px; font-weight:700; color:#374151; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 ${group.lokasi}</span>
-                                    ${count > 1 ? `<span style="background:#e0f2fe; color:#0369a1; font-size:9px; font-weight:700; padding:2px 6px; border-radius:10px; flex-shrink:0;">${count} Alumni</span>` : ''}
-                                </div>
+                    if (count === 1) {
+                        markerHtml = `
+                            <div style="position:relative; display:flex; align-items:center; justify-content:center; width:28px; height:28px;">
+                                <span style="position:absolute; display:inline-flex; width:100%; height:100%; border-radius:50%; background:#10b981; opacity:0.4; animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></span>
+                                <span style="position:relative; display:inline-flex; border-radius:50%; width:24px; height:24px; background:#10b981; color:white; font-size:10px; font-weight:700; font-family:sans-serif; align-items:center; justify-content:center; border:2px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.25);">${primaryAlumni.no}</span>
+                            </div>
                         `;
+                    } else {
+                        const numbersStr = group.alumni.map(a => a.no).join(', ');
+                        markerSize = [44, 28];
+                        markerAnchor = [22, 14];
+                        markerHtml = `
+                            <div style="position:relative; display:flex; align-items:center; justify-content:center; width:44px; height:28px;">
+                                <span style="position:absolute; display:inline-flex; width:100%; height:100%; border-radius:14px; background:#0284c7; opacity:0.4; animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></span>
+                                <span style="position:relative; display:inline-flex; border-radius:14px; width:40px; height:24px; background:#0284c7; color:white; font-size:9px; font-weight:700; font-family:sans-serif; align-items:center; justify-content:center; border:2px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.25); white-space:nowrap; padding:0 4px;">${numbersStr}</span>
+                            </div>
+                        `;
+                    }
 
-                        group.alumni.forEach((alumni, idx) => {
-                            popupHtml += `
-                                <div style="margin-bottom:${idx === count - 1 ? '0' : '8'}px; padding-bottom:${idx === count - 1 ? '0' : '8'}px; border-bottom:${idx === count - 1 ? 'none' : '1px dashed #f3f4f6'};">
-                                    <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
-                                        <span style="display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; background:${count > 1 ? '#0284c7' : '#10b981'}; color:white; border-radius:50%; font-size:9px; font-weight:700; flex-shrink:0;">
-                                            ${alumni.no}
-                                        </span>
-                                        <span style="font-size:12px; font-weight:700; color:#111827;">${alumni.nama}</span>
-                                    </div>
-                                    <div style="font-size:10px; font-weight:600; color:${count > 1 ? '#0284c7' : '#059669'}; margin-left:24px; margin-bottom:1px;">${alumni.instansi}</div>
-                                    <div style="font-size:9px; color:#6b7280; margin-left:24px;">${alumni.posisi} · ${alumni.prodi}</div>
+                    let popupHtml = `
+                        <div style="padding:12px; min-width:210px; max-width:280px; font-family:sans-serif; max-height:240px; overflow-y:auto; scrollbar-width:thin;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #e5e7eb; padding-right:20px;">
+                                <span style="font-size:11px; font-weight:700; color:#374151; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 ${group.lokasi}</span>
+                                ${count > 1 ? `<span style="background:#e0f2fe; color:#0369a1; font-size:9px; font-weight:700; padding:2px 6px; border-radius:10px; flex-shrink:0;">${count} Alumni</span>` : ''}
+                            </div>
+                    `;
+
+                    group.alumni.forEach((alumni, idx) => {
+                        popupHtml += `
+                            <div style="margin-bottom:${idx === count - 1 ? '0' : '8'}px; padding-bottom:${idx === count - 1 ? '0' : '8'}px; border-bottom:${idx === count - 1 ? 'none' : '1px dashed #f3f4f6'};">
+                                <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
+                                    <span style="display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; background:${count > 1 ? '#0284c7' : '#10b981'}; color:white; border-radius:50%; font-size:9px; font-weight:700; flex-shrink:0;">
+                                        ${alumni.no}
+                                    </span>
+                                    <span style="font-size:12px; font-weight:700; color:#111827;">${alumni.nama}</span>
                                 </div>
-                            `;
-                        });
-
-                        popupHtml += `</div>`;
-
-                        const icon = L.divIcon({
-                            html: markerHtml,
-                            className: 'custom-leaflet-marker',
-                            iconSize: markerSize,
-                            iconAnchor: markerAnchor,
-                        });
-
-                        const marker = L.marker([group.lat, group.lng], { icon })
-                            .bindPopup(popupHtml, { className: 'premium-leaflet-popup', maxWidth: 280 })
-                            .addTo(map);
-
-                        marker.on('click', function(e) {
-                            map.flyTo(e.target.getLatLng(), 15, { duration: 1.2 });
-                        });
-
-                        currentMarkers.push(marker);
+                                <div style="font-size:10px; font-weight:600; color:${count > 1 ? '#0284c7' : '#059669'}; margin-left:24px; margin-bottom:1px;">${alumni.instansi}</div>
+                                <div style="font-size:9px; color:#6b7280; margin-left:24px;">${alumni.posisi} · ${alumni.prodi}</div>
+                            </div>
+                        `;
                     });
 
-                    // Empty notice handling
-                    const parent = mapElement.parentElement;
-                    let notice = document.getElementById('map-empty-notice');
-                    if (dataToRender.length === 0) {
-                        if (!notice) {
-                            notice = document.createElement('div');
-                            notice.id = 'map-empty-notice';
-                            notice.style.cssText = 'position:absolute; inset:0; background:rgba(255,255,255,0.8); z-index:400; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; font-family:sans-serif; color:#9ca3af; border-radius: 12px;';
-                            if (document.documentElement.classList.contains('dark')) {
-                                notice.style.background = 'rgba(17, 24, 39, 0.8)';
-                            }
-                            notice.innerHTML = `
-                                <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <p style="font-size:13px; font-weight:600;">Tidak ada alumni yang sesuai kriteria</p>
-                            `;
-                            mapElement.style.visibility = 'hidden';
-                            mapElement.after(notice);
+                    popupHtml += `</div>`;
+
+                    const icon = L.divIcon({
+                        html: markerHtml,
+                        className: 'custom-leaflet-marker',
+                        iconSize: markerSize,
+                        iconAnchor: markerAnchor,
+                    });
+
+                    const marker = L.marker([group.lat, group.lng], { icon })
+                        .bindPopup(popupHtml, { className: 'premium-leaflet-popup', maxWidth: 280 })
+                        .addTo(map);
+
+                    marker.on('click', function(e) {
+                        map.flyTo(e.target.getLatLng(), 15, { duration: 1.2 });
+                    });
+
+                    currentMarkers.push(marker);
+                });
+
+                // Empty notice handling
+                let notice = document.getElementById('map-empty-notice');
+                if (dataToRender.length === 0) {
+                    if (!notice) {
+                        notice = document.createElement('div');
+                        notice.id = 'map-empty-notice';
+                        notice.style.cssText = 'position:absolute; inset:0; background:rgba(255,255,255,0.8); z-index:400; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; font-family:sans-serif; color:#9ca3af; border-radius: 12px;';
+                        if (document.documentElement.classList.contains('dark')) {
+                            notice.style.background = 'rgba(17, 24, 39, 0.8)';
                         }
-                    } else {
-                        if (notice) {
-                            notice.remove();
-                            mapElement.style.visibility = 'visible';
+                        notice.innerHTML = `
+                            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <p style="font-size:13px; font-weight:600;">Tidak ada alumni yang sesuai kriteria</p>
+                        `;
+                        mapElement.style.visibility = 'hidden';
+                        mapElement.after(notice);
+                    }
+                } else {
+                    if (notice) {
+                        notice.remove();
+                        mapElement.style.visibility = 'visible';
+                    }
+                }
+            }
+
+            // Initial render of markers
+            renderMarkers(mapRecordsData);
+
+            // Global filter function exposed to Alpine.js
+            window.filterAlumniMap = function(query, prodi) {
+                const q = query.toLowerCase().trim();
+                const filtered = mapRecordsData.filter(item => {
+                    const matchQuery = !q || 
+                        item.nama.toLowerCase().includes(q) || 
+                        item.lokasi.toLowerCase().includes(q) || 
+                        item.instansi.toLowerCase().includes(q) || 
+                        item.posisi.toLowerCase().includes(q);
+                    const matchProdi = prodi === 'all' || item.prodi === prodi;
+                    return matchQuery && matchProdi;
+                });
+
+                renderMarkers(filtered);
+
+                // If exact match (all coordinates in filtered map to 1 unique coordinate), fly to and zoom
+                if (filtered.length > 0) {
+                    const uniqueCoords = new Set(filtered.map(x => `${x.lat.toFixed(4)}_${x.lng.toFixed(4)}`));
+                    if (uniqueCoords.size === 1) {
+                        const first = filtered[0];
+                        const matchMarker = currentMarkers.find(m => {
+                            const latLng = m.getLatLng();
+                            return latLng.lat.toFixed(4) === first.lat.toFixed(4) && 
+                                   latLng.lng.toFixed(4) === first.lng.toFixed(4);
+                        });
+                        if (matchMarker) {
+                            map.flyTo(matchMarker.getLatLng(), 15, { duration: 1.2 });
+                            setTimeout(() => matchMarker.openPopup(), 1200);
                         }
                     }
                 }
-
-                // Initial render of markers
-                renderMarkers(mapRecordsData);
-
-                // Global filter function exposed to Alpine.js
-                window.filterAlumniMap = function(query, prodi) {
-                    const q = query.toLowerCase().trim();
-                    const filtered = mapRecordsData.filter(item => {
-                        const matchQuery = !q || 
-                            item.nama.toLowerCase().includes(q) || 
-                            item.lokasi.toLowerCase().includes(q) || 
-                            item.instansi.toLowerCase().includes(q) || 
-                            item.posisi.toLowerCase().includes(q);
-                        const matchProdi = prodi === 'all' || item.prodi === prodi;
-                        return matchQuery && matchProdi;
-                    });
-
-                    renderMarkers(filtered);
-
-                    // If exact match (all coordinates in filtered map to 1 unique coordinate), fly to and zoom
-                    if (filtered.length > 0) {
-                        const uniqueCoords = new Set(filtered.map(x => `${x.lat.toFixed(4)}_${x.lng.toFixed(4)}`));
-                        if (uniqueCoords.size === 1) {
-                            const first = filtered[0];
-                            const matchMarker = currentMarkers.find(m => {
-                                const latLng = m.getLatLng();
-                                return latLng.lat.toFixed(4) === first.lat.toFixed(4) && 
-                                       latLng.lng.toFixed(4) === first.lng.toFixed(4);
-                            });
-                            if (matchMarker) {
-                                map.flyTo(matchMarker.getLatLng(), 15, { duration: 1.2 });
-                                setTimeout(() => matchMarker.openPopup(), 1200);
-                            }
-                        }
-                    }
-                };
-
-                let popupCloseTimer;
-                map.on('popupopen', function() {
-                    if (popupCloseTimer) clearTimeout(popupCloseTimer);
-                });
-
-                map.on('popupclose', function(e) {
-                    popupCloseTimer = setTimeout(() => {
-                        const views = {
-                            lampung:   { center: [-5.40, 105.26], zoom: 8.5 },
-                            indonesia: { center: [-2.50, 117.00], zoom: 5 },
-                            dunia:     { center: [20.0, 0.0],     zoom: 2 }
-                        };
-                        const activeView = window.activeMapView || 'lampung';
-                        const v = views[activeView];
-                        map.flyTo(v.center, v.zoom, { duration: 1.2 });
-                    }, 300);
-                });
             };
-            document.head.appendChild(leafletScript);
+
+            let popupCloseTimer;
+            map.on('popupopen', function() {
+                if (popupCloseTimer) clearTimeout(popupCloseTimer);
+            });
+
+            map.on('popupclose', function(e) {
+                popupCloseTimer = setTimeout(() => {
+                    const views = {
+                        lampung:   { center: [-5.40, 105.26], zoom: 8.5 },
+                        indonesia: { center: [-2.50, 117.00], zoom: 5 },
+                        dunia:     { center: [20.0, 0.0],     zoom: 2 }
+                    };
+                    const activeView = window.activeMapView || 'lampung';
+                    const v = views[activeView];
+                    map.flyTo(v.center, v.zoom, { duration: 1.2 });
+                }, 300);
+            });
         }
-    });
+
+        function tryStartMap() {
+            if (typeof L !== 'undefined') {
+                initAlumniMap();
+            } else {
+                setTimeout(tryStartMap, 100);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', tryStartMap);
+        } else {
+            tryStartMap();
+        }
+    })();
     </script>
     @endpush
 </x-layouts.app>

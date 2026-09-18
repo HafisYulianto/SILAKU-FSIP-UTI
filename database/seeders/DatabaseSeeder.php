@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             DefaultUserSeeder::class,
             AlumniSeeder::class,
+            DummyReportDataSeeder::class,
         ]);
     }
 }
